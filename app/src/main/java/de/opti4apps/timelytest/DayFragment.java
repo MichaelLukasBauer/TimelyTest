@@ -99,6 +99,7 @@ public class DayFragment extends Fragment {
                 mDayBox.put(day);
             }
             mDayQuery = mDayBox.query().equal(Day_.id, dayID).build();
+            mDay = mDayQuery.findUnique();
 
         }
         setRetainInstance(true);
@@ -207,7 +208,6 @@ public class DayFragment extends Fragment {
     }
 
     public void updateUI() {
-        mDay = mDayQuery.findUnique();
         setDateText(false);
         setStartText(false);
         setEndText(false);

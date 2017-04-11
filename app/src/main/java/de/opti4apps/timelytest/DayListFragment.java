@@ -88,9 +88,9 @@ public class DayListFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView(){
+    public void onDestroy(){
         EventBus.getDefault().unregister(this);
-        super.onDestroyView();
+        super.onDestroy();
     }
 
 
