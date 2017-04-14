@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.*;
 import android.support.v7.widget.DividerItemDecoration;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -93,6 +95,10 @@ public class DayListFragment extends Fragment {
         super.onDestroy();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
     @Override
     public void onStart() {
