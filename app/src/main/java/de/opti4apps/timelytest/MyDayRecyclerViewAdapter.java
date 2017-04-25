@@ -1,5 +1,7 @@
 package de.opti4apps.timelytest;
 
+import android.graphics.Color;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,18 +14,30 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import de.opti4apps.timelytest.data.Day;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
 
+import static de.opti4apps.timelytest.R.color.accent_material_dark;
+import static de.opti4apps.timelytest.R.color.accent_material_light;
+import static de.opti4apps.timelytest.R.color.colorAccent;
+import static de.opti4apps.timelytest.R.color.colorPrimaryLight;
+
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Day} and makes a call to the
- * specified {@link DayListFragment.OnDayListFragmentInteractionListener}.
+ * specified {@link DayListFragment}.
  */
 public class MyDayRecyclerViewAdapter extends RecyclerView.Adapter<MyDayRecyclerViewAdapter.ViewHolder> {
 
     private final List<Day> mDays;
+
+    private final Set<Day> mSelection = new HashSet<>();
 
     public MyDayRecyclerViewAdapter(List<Day> days) {
         mDays = days;
@@ -49,6 +63,25 @@ public class MyDayRecyclerViewAdapter extends RecyclerView.Adapter<MyDayRecycler
             }
         });
 
+        holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(View v) {
+                CardView view = (CardView) v.findViewById(R.id.cardView);
+                if (v.isActivated()) {
+                    v.setActivated(false);
+                    mSelection.remove(holder.mDay);
+                    view.setCardBackgroundColor(Color.WHITE);
+                } else {
+                    v.setActivated(true);
+                    mSelection.add(holder.mDay);
+                    view.setCardBackgroundColor(v.getResources().getColor(colorPrimaryLight));
+
+                }
+                return true;
+            }
+        });
+
     }
 
     @Override
@@ -56,24 +89,29 @@ public class MyDayRecyclerViewAdapter extends RecyclerView.Adapter<MyDayRecycler
         return mDays.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public final TextView mDate;
-        public final TextView mCheckIn;
-        public final TextView mCheckOut;
-        public final TextView mPause;
-        public final TextView mTotalTime;
+    public Set<Day> getSelection() {
+        return mSelection;
+    }
 
-        public View mView;
-        public Day mDay;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.dateItem)
+        TextView mDate;
+        @BindView(R.id.checkinItem)
+        TextView mCheckIn;
+        @BindView(R.id.checkoutItem)
+        TextView mCheckOut;
+        @BindView(R.id.pauseItem)
+        TextView mPause;
+        @BindView(R.id.totalTimeItem)
+        TextView mTotalTime;
 
-        public ViewHolder(View view) {
+        View mView;
+        Day mDay;
+
+        ViewHolder(View view) {
             super(view);
             mView = view;
-            mDate = (TextView) view.findViewById(R.id.dateItem);
-            mCheckIn = (TextView) view.findViewById(R.id.checkinItem);
-            mCheckOut = (TextView) view.findViewById(R.id.checkoutItem);
-            mPause = (TextView) view.findViewById(R.id.pauseItem);
-            mTotalTime = (TextView) view.findViewById(R.id.totalTimeItem);
+            ButterKnife.bind(this, mView);
         }
 
         @Override
@@ -88,25 +126,15 @@ public class MyDayRecyclerViewAdapter extends RecyclerView.Adapter<MyDayRecycler
 
         public void setData(Day day) {
             mDay = day;
-            DateTimeFormatter fmtDate = DateTimeFormat.forPattern("yyyy-MM-dd");
-            DateTimeFormatter fmtTime = DateTimeFormat.forPattern("HH:mm");
 
             String dateAt = "", dayAt = "", checkinAt = "", checkoutAt = "", pauseAt = "", totalTimeAt = "";
 
             dateAt = (day.getDay().dayOfMonth().getAsShortText() + " " + day.getDay().monthOfYear().getAsShortText());
             dayAt = (day.getDay().dayOfWeek().getAsShortText());
-            checkinAt = day.getStart().toString(fmtTime);
-            checkoutAt = day.getEnd().toString(fmtTime);
-
-            PeriodFormatter hoursMinutes = new PeriodFormatterBuilder()
-                    .appendHours()
-                    .appendSuffix("h ")
-                    .appendMinutes()
-                    .appendSuffix("min")
-                    .toFormatter();
-
-            pauseAt = day.getPause().toPeriod().toString(hoursMinutes);
-            totalTimeAt = day.getTotalWorkingTime().toPeriod().toString(hoursMinutes);
+            checkinAt = day.getStart().toString(Day.TIME_FORMATTER);
+            checkoutAt = day.getEnd().toString(Day.TIME_FORMATTER);
+            pauseAt = day.getPause().toPeriod().toString(Day.PERIOD_FORMATTER);
+            totalTimeAt = day.getTotalWorkingTime().toPeriod().toString(Day.PERIOD_FORMATTER);
 
             mDate.setText(dayAt + "\n" + dateAt);
             mCheckIn.setText(checkinAt);
