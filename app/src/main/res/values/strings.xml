@@ -16,7 +16,7 @@
 
 
     <string-array name="day_type_array">
-        <item name="0" >Other day</item>
+        <item name="0">Other day</item>
         <item name="1">Working day</item>
         <item name="2">Business trip</item>
         <item name="3">Holiday</item>
@@ -24,5 +24,19 @@
         <item name="5">Day off in lieu</item>
         <item name="6">Further education</item>
     </string-array>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign In</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
 
 </resources>
