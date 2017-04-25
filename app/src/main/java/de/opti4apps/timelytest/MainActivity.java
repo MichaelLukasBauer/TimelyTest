@@ -1,5 +1,6 @@
 package de.opti4apps.timelytest;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -15,11 +16,15 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import de.opti4apps.timelytest.data.User;
+import de.opti4apps.timelytest.data.User_;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
+import io.objectbox.Box;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -29,6 +34,12 @@ public class MainActivity extends AppCompatActivity
 
     DayListFragment mDayListFragment;
     DayFragment mDayFragment;
+
+    TextView mUserNameTextView;
+    TextView mUserEmailTextView;
+
+    User currentUser;
+    Box<User> usersBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +68,15 @@ public class MainActivity extends AppCompatActivity
             transaction.commit();
         }
 
+        Intent intent = getIntent();
+        String currentUserEmail = intent.getStringExtra("userEmail");
+        usersBox = ((App) getApplication()).getBoxStore().boxFor(User.class);
+        currentUser = getUserByEmail(currentUserEmail);
+        View headerView = navigationView.getHeaderView(0);
+        mUserNameTextView = (TextView)headerView.findViewById(R.id.tv_user_name);
+        mUserNameTextView.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
+        mUserEmailTextView = (TextView)headerView.findViewById(R.id.tv_user_email);
+        mUserEmailTextView.setText(currentUser.getEmail());
     }
 
     @Override
@@ -110,18 +130,14 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_capture_time) {
             // Handle the camera action
 
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_month_overview) {
 
-        } else if (id == R.id.nav_slideshow) {
+        } else if (id == R.id.nav_work_profile) {
 
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_signout) {
 
         }
 
@@ -155,5 +171,10 @@ public class MainActivity extends AppCompatActivity
     public  void onStop(){
         super.onStop();
        EventBus.getDefault().unregister(this);
+    }
+
+    private User getUserByEmail(String email){
+        User user = usersBox.query().equal(User_.email, email).build().findFirst();
+        return  user;
     }
 }

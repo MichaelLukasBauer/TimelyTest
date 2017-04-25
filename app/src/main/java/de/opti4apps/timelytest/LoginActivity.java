@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import de.opti4apps.timelytest.data.User;
+import de.opti4apps.timelytest.data.UserManager;
 import de.opti4apps.timelytest.data.User_;
 import io.objectbox.Box;
 
@@ -60,7 +61,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         usersBox = ((App) getApplication()).getBoxStore().boxFor(User.class);
-        if(checkIsSignedIn()){
+        if(UserManager.checkIsUserSignedIn(currentUser, usersBox)){
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra("userEmail", currentUser.getEmail());
             LoginActivity.this.startActivity(intent);
@@ -93,15 +94,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private boolean checkIsSignedIn(){
-        currentUser = usersBox.query().equal(User_.isSingedIn, true).build().findFirst();
-        if(currentUser == null){
-            return false;
-        }
-        else{
-            return true;
-        }
-    }
+
 
 
 
@@ -140,9 +133,9 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             showProgress(true);
 
-           if(checkCredentials(email, password))
+           if(UserManager.checkUserCredentials(currentUser, usersBox, email, password))
            {
-               changeSignedInStatus();
+               UserManager.changeUserSignedInStatus(currentUser, usersBox);
 
                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                intent.putExtra("userEmail", email);
@@ -198,24 +191,6 @@ public class LoginActivity extends AppCompatActivity {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
-    }
-
-
-    private boolean checkCredentials(String email, String password){
-
-        currentUser = usersBox.query().equal(User_.email, email).equal(User_.password, password).build().findFirst();
-        if(currentUser == null){
-            return false;
-        }
-        else{
-            return true;
-        }
-    }
-
-    private void changeSignedInStatus(){
-        boolean isCurrentUserSignedIn = currentUser.getIsSingedIn();
-        currentUser.setIsSingedIn(!isCurrentUserSignedIn);
-        usersBox.put(currentUser);
     }
 
 }
