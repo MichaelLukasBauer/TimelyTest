@@ -9,24 +9,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.opti4apps.timelytest.data.Day;
+import de.opti4apps.timelytest.event.DayMultibleSelectionEvent;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
 
-import static de.opti4apps.timelytest.R.color.accent_material_dark;
-import static de.opti4apps.timelytest.R.color.accent_material_light;
-import static de.opti4apps.timelytest.R.color.colorAccent;
 import static de.opti4apps.timelytest.R.color.colorPrimaryLight;
 
 /**
@@ -37,11 +30,12 @@ public class MyDayRecyclerViewAdapter extends RecyclerView.Adapter<MyDayRecycler
 
     private final List<Day> mDays;
 
-    private final Set<Day> mSelection = new HashSet<>();
+    private final Map<Day, Integer> mSelection = new HashMap<>();
 
     public MyDayRecyclerViewAdapter(List<Day> days) {
         mDays = days;
     }
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -51,7 +45,7 @@ public class MyDayRecyclerViewAdapter extends RecyclerView.Adapter<MyDayRecycler
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         Day day = mDays.get(position);
         holder.setData(day);
 
@@ -74,10 +68,11 @@ public class MyDayRecyclerViewAdapter extends RecyclerView.Adapter<MyDayRecycler
                     view.setCardBackgroundColor(Color.WHITE);
                 } else {
                     v.setActivated(true);
-                    mSelection.add(holder.mDay);
+                    mSelection.put(holder.mDay, position);
                     view.setCardBackgroundColor(v.getResources().getColor(colorPrimaryLight));
 
                 }
+                EventBus.getDefault().post(new DayMultibleSelectionEvent(mSelection.size()));
                 return true;
             }
         });
@@ -89,9 +84,10 @@ public class MyDayRecyclerViewAdapter extends RecyclerView.Adapter<MyDayRecycler
         return mDays.size();
     }
 
-    public Set<Day> getSelection() {
+    public Map<Day, Integer> getSelection() {
         return mSelection;
     }
+
 
     class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.dateItem)

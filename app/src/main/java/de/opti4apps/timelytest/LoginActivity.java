@@ -4,43 +4,26 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.app.LoaderManager.LoaderCallbacks;
-
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.ContactsContract;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import de.opti4apps.timelytest.data.User;
 import de.opti4apps.timelytest.data.UserManager;
 import de.opti4apps.timelytest.data.User_;
 import io.objectbox.Box;
-
-import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via email/password.
@@ -61,12 +44,11 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         usersBox = ((App) getApplication()).getBoxStore().boxFor(User.class);
-        if(UserManager.checkIsUserSignedIn(currentUser, usersBox)){
+        if (checkIsUserSignedIn(usersBox)) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra("userEmail", currentUser.getEmail());
             LoginActivity.this.startActivity(intent);
-        }
-        else {
+        } else {
             mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
 
             mPasswordView = (EditText) findViewById(R.id.password);
@@ -93,9 +75,6 @@ public class LoginActivity extends AppCompatActivity {
             mProgressView = findViewById(R.id.login_progress);
         }
     }
-
-
-
 
 
     private void attemptLogin() {
@@ -133,19 +112,17 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             showProgress(true);
 
-           if(UserManager.checkUserCredentials(currentUser, usersBox, email, password))
-           {
-               UserManager.changeUserSignedInStatus(currentUser, usersBox);
+            if (checkUserCredentials(usersBox, email, password)) {
+                changeUserSignedInStatus(usersBox);
 
-               Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-               intent.putExtra("userEmail", email);
-               LoginActivity.this.startActivity(intent);
-           }
-            else{
-               showProgress(false);
-               mPasswordView.setError(getString(R.string.error_incorrect_password));
-               mPasswordView.requestFocus();
-           }
+                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                intent.putExtra("userEmail", email);
+                LoginActivity.this.startActivity(intent);
+            } else {
+                showProgress(false);
+                mPasswordView.setError(getString(R.string.error_incorrect_password));
+                mPasswordView.requestFocus();
+            }
         }
     }
 
@@ -190,6 +167,33 @@ public class LoginActivity extends AppCompatActivity {
             // and hide the relevant UI components.
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    public boolean checkIsUserSignedIn(Box<User> usersBox){
+        currentUser = usersBox.query().equal(User_.isSingedIn, true).build().findFirst();
+        if(currentUser == null){
+            return false;
+        }
+        else{
+            return true;
+        }
+    }
+
+    public  void changeUserSignedInStatus( Box<User> usersBox){
+        boolean isCurrentUserSignedIn = currentUser.getIsSingedIn();
+        currentUser.setIsSingedIn(!isCurrentUserSignedIn);
+        usersBox.put(currentUser);
+    }
+
+    public boolean checkUserCredentials( Box<User> usersBox, String email, String password){
+
+        currentUser = usersBox.query().equal(User_.email, email).equal(User_.password, password).build().findFirst();
+        if(currentUser == null){
+            return false;
+        }
+        else{
+            return true;
         }
     }
 
