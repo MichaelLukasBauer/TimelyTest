@@ -13,7 +13,6 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
@@ -57,7 +56,6 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(mToolbar);
 
 
-
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDrawer.addDrawerListener(toggle);
@@ -79,9 +77,9 @@ public class MainActivity extends AppCompatActivity
         String currentUserEmail = intent.getStringExtra("userEmail");
         usersBox = ((App) getApplication()).getBoxStore().boxFor(User.class);
         currentUser = getUserByEmail(currentUserEmail);
-        mUserNameTextView = (TextView)mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_name);
+        mUserNameTextView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_name);
         mUserNameTextView.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
-        mUserEmailTextView = (TextView)mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_email);
+        mUserEmailTextView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_email);
         mUserEmailTextView.setText(currentUser.getEmail());
     }
 
@@ -177,8 +175,8 @@ public class MainActivity extends AppCompatActivity
         EventBus.getDefault().unregister(this);
     }
 
-    private User getUserByEmail(String email){
+    private User getUserByEmail(String email) {
         User user = usersBox.query().equal(User_.email, email).build().findFirst();
-        return  user;
+        return user;
     }
 }

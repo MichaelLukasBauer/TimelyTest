@@ -9,11 +9,6 @@ import java.util.Random;
 
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
-import io.objectbox.ModelBuilder.EntityBuilder;
-import io.objectbox.model.PropertyFlags;
-import io.objectbox.model.PropertyType;
-
-
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -73,10 +68,10 @@ public class UserTest {
         User object = new User();
         long id = box.put(object);
         assertTrue(id > 0);
-        assertEquals(id, (long) object.getId());
+        assertEquals(id, object.getId());
         User objectRead = box.get(id);
         assertNotNull(objectRead);
-        assertEquals(id, (long) objectRead.getId());
+        assertEquals(id, objectRead.getId());
         assertEquals(1, box.count());
 
         box.remove(id);

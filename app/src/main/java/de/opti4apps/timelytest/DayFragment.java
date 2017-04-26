@@ -110,7 +110,6 @@ public class DayFragment extends Fragment {
                              Bundle savedInstanceState) {
 
 
-
         View view = inflater.inflate(R.layout.fragment_day, container, false);
         ButterKnife.bind(this, view);
 

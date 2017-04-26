@@ -1,9 +1,9 @@
 package de.opti4apps.timelytest.shared;
 
 import android.app.Dialog;
-import android.support.v4.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
 

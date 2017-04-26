@@ -32,35 +32,17 @@ public class Day {
             .appendMinutes()
             .appendSuffix("min")
             .toFormatter();
-
-    public enum DAY_TYPE {
-        OTHER(0), WORKDAY(1), BUSINESS_TRIP(2), HOLIDAY(3), DOCTOR_APPOINTMENT(4), DAY_OFF_IN_LIEU(5), FURTHER_EDUCATION(6);
-
-        public final int id;
-
-         DAY_TYPE(int id) {
-            this.id = id;
-        }
-
-
-    }
-
     @Id(assignable = true)
     private long id;
-
     @Convert(converter = DayTypeConverter.class, dbType = Integer.class)
     private DAY_TYPE type;
-
     @Index
     @Convert(converter = DateTimeConverter.class, dbType = Long.class)
     private DateTime day;
-
     @Convert(converter = DateTimeConverter.class, dbType = Long.class)
     private DateTime start;
-
     @Convert(converter = DateTimeConverter.class, dbType = Long.class)
     private DateTime end;
-
     @Convert(converter = DurationConverter.class, dbType = Long.class)
     private Duration pause;
 
@@ -84,11 +66,107 @@ public class Day {
         this.pause = pause;
     }
 
-
     @Generated(hash = 866989762)
     public Day() {
     }
 
+    public boolean isValid() throws IllegalArgumentException {
+        switch (type) {
+            case WORKDAY:
+            case BUSINESS_TRIP:
+            case FURTHER_EDUCATION:
+            case DOCTOR_APPOINTMENT:
+                if (start.getHourOfDay() < 7 || (end.getHourOfDay() > 19 && end.getMinuteOfHour() > 30)) {
+                    throw new IllegalArgumentException(String.valueOf(R.string.outside_worktime));
+                }
+                if (end.getMillis() - start.getMillis() - pause.getMillis() <= 0) {
+                    throw new IllegalArgumentException(String.valueOf(R.string.negative_total_time));
+                }
+                if (end.getMillis() - start.getMillis() - pause.getMillis() > Hours.hours(10).toStandardDuration().getMillis()) {
+                    throw new IllegalArgumentException(String.valueOf(R.string.too_many_hours));
+                }
+                if (end.getMillis() - start.getMillis() >= Hours.hours(6).toStandardDuration().getMillis() && pause.getMillis() < Minutes.minutes(30).toStandardDuration().getMillis()) {
+                    throw new IllegalArgumentException(String.valueOf(R.string.pause_validation_short));
+                }
+                if (end.getMillis() - start.getMillis() >= Hours.hours(8).toStandardDuration().getMillis() && pause.getMillis() < Minutes.minutes(45).toStandardDuration().getMillis()) {
+                    throw new IllegalArgumentException(String.valueOf(R.string.pause_validation_long));
+                }
+                break;
+            case HOLIDAY:
+            case DAY_OFF_IN_LIEU:
+            case OTHER:
+                start = day.withTimeAtStartOfDay();
+                end = day.withTimeAtStartOfDay();
+                pause = Duration.millis(0);
+                break;
+        }
+        return true;
+    }
+
+    public Duration getTotalWorkingTime() {
+        return Duration.millis(end.toInstant().minus(start.toInstant().getMillis()).minus(pause.getMillis()).getMillis());
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public DAY_TYPE getType() {
+        return type;
+    }
+
+    public void setType(DAY_TYPE type) {
+        this.type = type;
+    }
+
+    public DateTime getDay() {
+        return day;
+    }
+
+    public void setDay(DateTime day) {
+        this.day = day;
+    }
+
+    public DateTime getStart() {
+        return start;
+    }
+
+    public void setStart(DateTime start) {
+        this.start = start;
+    }
+
+    public DateTime getEnd() {
+        return end;
+    }
+
+    public void setEnd(DateTime end) {
+        this.end = end;
+    }
+
+    public Duration getPause() {
+        return pause;
+    }
+
+    public void setPause(Duration pause) {
+        this.pause = pause;
+    }
+
+
+    public enum DAY_TYPE {
+        OTHER(0), WORKDAY(1), BUSINESS_TRIP(2), HOLIDAY(3), DOCTOR_APPOINTMENT(4), DAY_OFF_IN_LIEU(5), FURTHER_EDUCATION(6);
+
+        public final int id;
+
+        DAY_TYPE(int id) {
+            this.id = id;
+        }
+
+
+    }
 
     public static class DayTypeConverter implements PropertyConverter<DAY_TYPE, Integer> {
 
@@ -133,102 +211,6 @@ public class Day {
         public Long convertToDatabaseValue(Duration duration) {
             return duration.getMillis();
         }
-    }
-
-    public boolean isValid() throws IllegalArgumentException {
-        switch (type) {
-            case WORKDAY:
-            case BUSINESS_TRIP:
-            case FURTHER_EDUCATION:
-            case DOCTOR_APPOINTMENT:
-                if (start.getHourOfDay() < 7 || (end.getHourOfDay() > 19 && end.getMinuteOfHour() > 30)) {
-                    throw new IllegalArgumentException(String.valueOf(R.string.outside_worktime));
-                }
-                if (end.getMillis() - start.getMillis() - pause.getMillis()<= 0) {
-                    throw new IllegalArgumentException(String.valueOf(R.string.negative_total_time));
-                }
-                if (end.getMillis() - start.getMillis() - pause.getMillis() > Hours.hours(10).toStandardDuration().getMillis()) {
-                    throw new IllegalArgumentException(String.valueOf(R.string.too_many_hours));
-                }
-                if (end.getMillis() - start.getMillis() >= Hours.hours(6).toStandardDuration().getMillis() && pause.getMillis() < Minutes.minutes(30).toStandardDuration().getMillis()) {
-                    throw new IllegalArgumentException(String.valueOf(R.string.pause_validation_short));
-                }
-                if (end.getMillis() - start.getMillis() >= Hours.hours(8).toStandardDuration().getMillis() && pause.getMillis() < Minutes.minutes(45).toStandardDuration().getMillis()) {
-                    throw new IllegalArgumentException(String.valueOf(R.string.pause_validation_long));
-                }
-                break;
-            case HOLIDAY:
-            case DAY_OFF_IN_LIEU:
-            case OTHER:
-                start = day.withTimeAtStartOfDay();
-                end = day.withTimeAtStartOfDay();
-                pause = Duration.millis(0);
-                break;
-        }
-        return true;
-    }
-
-    public Duration getTotalWorkingTime() {
-        return Duration.millis(end.toInstant().minus(start.toInstant().getMillis()).minus(pause.getMillis()).getMillis());
-    }
-
-
-    public long getId() {
-        return id;
-    }
-
-
-    public DAY_TYPE getType() {
-        return type;
-    }
-
-
-    public void setType(DAY_TYPE type) {
-        this.type = type;
-    }
-
-
-    public DateTime getDay() {
-        return day;
-    }
-
-
-    public void setDay(DateTime day) {
-        this.day = day;
-    }
-
-
-    public DateTime getStart() {
-        return start;
-    }
-
-
-    public void setStart(DateTime start) {
-        this.start = start;
-    }
-
-
-    public DateTime getEnd() {
-        return end;
-    }
-
-
-    public void setEnd(DateTime end) {
-        this.end = end;
-    }
-
-
-    public Duration getPause() {
-        return pause;
-    }
-
-
-    public void setPause(Duration pause) {
-        this.pause = pause;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
 }

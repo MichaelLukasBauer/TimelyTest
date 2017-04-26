@@ -21,7 +21,6 @@ import android.widget.TextView;
 import java.util.regex.Pattern;
 
 import de.opti4apps.timelytest.data.User;
-import de.opti4apps.timelytest.data.UserManager;
 import de.opti4apps.timelytest.data.User_;
 import io.objectbox.Box;
 
@@ -170,31 +169,21 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public boolean checkIsUserSignedIn(Box<User> usersBox){
+    public boolean checkIsUserSignedIn(Box<User> usersBox) {
         currentUser = usersBox.query().equal(User_.isSingedIn, true).build().findFirst();
-        if(currentUser == null){
-            return false;
-        }
-        else{
-            return true;
-        }
+        return currentUser != null;
     }
 
-    public  void changeUserSignedInStatus( Box<User> usersBox){
+    public void changeUserSignedInStatus(Box<User> usersBox) {
         boolean isCurrentUserSignedIn = currentUser.getIsSingedIn();
         currentUser.setIsSingedIn(!isCurrentUserSignedIn);
         usersBox.put(currentUser);
     }
 
-    public boolean checkUserCredentials( Box<User> usersBox, String email, String password){
+    public boolean checkUserCredentials(Box<User> usersBox, String email, String password) {
 
         currentUser = usersBox.query().equal(User_.email, email).equal(User_.password, password).build().findFirst();
-        if(currentUser == null){
-            return false;
-        }
-        else{
-            return true;
-        }
+        return currentUser != null;
     }
 
 }

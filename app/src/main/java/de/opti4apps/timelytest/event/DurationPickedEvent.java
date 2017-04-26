@@ -5,9 +5,9 @@ package de.opti4apps.timelytest.event;
  */
 
 public class DurationPickedEvent {
+    public final long duration;
+
     public DurationPickedEvent(long duration) {
         this.duration = duration;
     }
-
-    public final long duration;
 }

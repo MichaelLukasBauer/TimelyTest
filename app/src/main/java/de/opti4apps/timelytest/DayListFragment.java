@@ -10,7 +10,6 @@ import android.support.v7.view.ActionMode;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -43,16 +42,15 @@ import io.objectbox.query.Query;
 public class DayListFragment extends Fragment {
 
     public static final String TAG = DayListFragment.class.getSimpleName();
-
+    private final List<Day> mDayList = new ArrayList<>();
     @BindView(R.id.list)
     RecyclerView mRecyclerView;
-
     @BindView(R.id.fab)
     FloatingActionButton mFloatingActionButton;
-
-    private final List<Day> mDayList = new ArrayList<>();
     private Box<Day> mDayBox;
     private Query<Day> mDayQuery;
+    private ActionMode mActionMode;
+    private ActionModeCallback mActionModeCallback = new ActionModeCallback();
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -145,9 +143,6 @@ public class DayListFragment extends Fragment {
         }
         ((MyDayRecyclerViewAdapter) mRecyclerView.getAdapter()).getSelection().clear();
     }
-
-    private ActionMode mActionMode;
-    private ActionModeCallback mActionModeCallback = new ActionModeCallback();
 
     private class ActionModeCallback implements ActionMode.Callback {
 

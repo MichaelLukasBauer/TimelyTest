@@ -2,8 +2,8 @@ package de.opti4apps.timelytest.shared;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.support.v4.app.DialogFragment;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.widget.DatePicker;
 
 import org.greenrobot.eventbus.EventBus;
@@ -16,7 +16,7 @@ import de.opti4apps.timelytest.event.DatePickedEvent;
  * Created by Miluba on 03.04.2017.
  */
 
-public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener{
+public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
 
     @Override
@@ -32,6 +32,6 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
-        EventBus.getDefault().post(new DatePickedEvent(year,month,day));
+        EventBus.getDefault().post(new DatePickedEvent(year, month, day));
     }
 }

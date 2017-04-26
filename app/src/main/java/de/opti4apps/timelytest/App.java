@@ -6,15 +6,13 @@ import java.util.List;
 
 import de.opti4apps.timelytest.data.MyObjectBox;
 import de.opti4apps.timelytest.data.User;
-import de.opti4apps.timelytest.data.User_;
 import io.objectbox.Box;
 import io.objectbox.BoxStore;
 
 public class App extends Application {
     private static final String TAG = App.class.getSimpleName();
-
-    private BoxStore mBoxStore;
     Box<User> usersBox;
+    private BoxStore mBoxStore;
 
     @Override
     public void onCreate() {
@@ -30,10 +28,10 @@ public class App extends Application {
         return mBoxStore;
     }
 
-    private void addDefaultUsers(){
+    private void addDefaultUsers() {
         List<User> users = usersBox.query().build().find();
 
-        if(users == null || users.size() == 0) {
+        if (users == null || users.size() == 0) {
             User user = new User(0, "kateryna.sergieieva@hs-heilbronn.de", "test123", false, "Kateryna", "Sergieieva");
             usersBox.put(user);
 

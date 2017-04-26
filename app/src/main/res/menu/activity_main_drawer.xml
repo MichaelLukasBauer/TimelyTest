@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:id="@+id/grp1" android:checkableBehavior="single">
+    <group
+        android:id="@+id/grp1"
+        android:checkableBehavior="single">
         <item
             android:id="@+id/nav_capture_time"
             android:title="Capture Time" />
@@ -14,10 +16,12 @@
 
     </group>
 
-    <group android:id="@+id/grp2" android:checkableBehavior="single">
-            <item
-                android:id="@+id/nav_signout"
-                android:title="Sign Out" />
+    <group
+        android:id="@+id/grp2"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_signout"
+            android:title="Sign Out" />
 
     </group>
 
