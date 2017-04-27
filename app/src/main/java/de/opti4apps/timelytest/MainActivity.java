@@ -21,6 +21,7 @@ import org.greenrobot.eventbus.Subscribe;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.opti4apps.timelytest.data.User;
+import de.opti4apps.timelytest.data.UserManager;
 import de.opti4apps.timelytest.data.User_;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
 import io.objectbox.Box;
@@ -35,8 +36,8 @@ public class MainActivity extends AppCompatActivity
     DayFragment mDayFragment;
 
     User currentUser;
-
     Box<User> usersBox;
+
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
     @BindView(R.id.drawer_layout)
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity
         Intent intent = getIntent();
         String currentUserEmail = intent.getStringExtra("userEmail");
         usersBox = ((App) getApplication()).getBoxStore().boxFor(User.class);
-        currentUser = getUserByEmail(currentUserEmail);
+        currentUser = UserManager.getUserByEmail(usersBox, currentUserEmail);
         mUserNameTextView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_name);
         mUserNameTextView.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
         mUserEmailTextView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_email);
@@ -134,14 +135,23 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_capture_time) {
-            // Handle the camera action
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(0), DayFragment.TAG);
+            transaction.addToBackStack(null);
+            transaction.commit();
 
         } else if (id == R.id.nav_month_overview) {
+            if(!mDayListFragment.isAdded()) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, mDayListFragment, DayListFragment.TAG);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
 
         } else if (id == R.id.nav_work_profile) {
 
         } else if (id == R.id.nav_signout) {
-
+            UserManager.changeUserSignedInStatus(currentUser, usersBox);
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            MainActivity.this.startActivity(intent);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -175,8 +185,8 @@ public class MainActivity extends AppCompatActivity
         EventBus.getDefault().unregister(this);
     }
 
-    private User getUserByEmail(String email) {
-        User user = usersBox.query().equal(User_.email, email).build().findFirst();
-        return user;
-    }
+//    private User getUserByEmail(String email) {
+//        User user = usersBox.query().equal(User_.email, email).build().findFirst();
+//        return user;
+//    }
 }

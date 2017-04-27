@@ -8,21 +8,31 @@ import io.objectbox.Box;
 
 public class UserManager {
 
-    public boolean checkIsUserSignedIn(User user, Box<User> usersBox) {
-        user = usersBox.query().equal(User_.isSingedIn, true).build().findFirst();
+    static public boolean checkIsUserSignedIn(Box<User> usersBox) {
+        User user = usersBox.query().equal(User_.isSingedIn, true).build().findFirst();
         return user != null;
     }
 
-    public void changeUserSignedInStatus(User user, Box<User> usersBox) {
+    static public void changeUserSignedInStatus(User user, Box<User> usersBox) {
         boolean isCurrentUserSignedIn = user.getIsSingedIn();
         user.setIsSingedIn(!isCurrentUserSignedIn);
         usersBox.put(user);
     }
 
-    public boolean checkUserCredentials(User user, Box<User> usersBox, String email, String password) {
+    static public boolean checkUserCredentials(Box<User> usersBox, String email, String password) {
 
-        user = usersBox.query().equal(User_.email, email).equal(User_.password, password).build().findFirst();
+        User user = usersBox.query().equal(User_.email, email).equal(User_.password, password).build().findFirst();
         return user != null;
+    }
+
+    static public  User getUserByEmail(Box<User> usersBox, String email) {
+        User user = usersBox.query().equal(User_.email, email).build().findFirst();
+        return user;
+    }
+
+    static public  User getSignedInUser(Box<User> usersBox) {
+        User user = usersBox.query().equal(User_.isSingedIn, true).build().findFirst();
+        return user;
     }
 
 

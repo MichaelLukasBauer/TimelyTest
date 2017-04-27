@@ -21,6 +21,7 @@ import android.widget.TextView;
 import java.util.regex.Pattern;
 
 import de.opti4apps.timelytest.data.User;
+import de.opti4apps.timelytest.data.UserManager;
 import de.opti4apps.timelytest.data.User_;
 import io.objectbox.Box;
 
@@ -43,7 +44,8 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         usersBox = ((App) getApplication()).getBoxStore().boxFor(User.class);
-        if (checkIsUserSignedIn(usersBox)) {
+        if (UserManager.checkIsUserSignedIn(usersBox)) {
+            currentUser = UserManager.getSignedInUser(usersBox);
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             intent.putExtra("userEmail", currentUser.getEmail());
             LoginActivity.this.startActivity(intent);
@@ -111,8 +113,9 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             showProgress(true);
 
-            if (checkUserCredentials(usersBox, email, password)) {
-                changeUserSignedInStatus(usersBox);
+            if (UserManager.checkUserCredentials( usersBox, email, password)) {
+                currentUser = UserManager.getUserByEmail(usersBox, email);
+                UserManager.changeUserSignedInStatus(currentUser,usersBox);
 
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 intent.putExtra("userEmail", email);
@@ -168,23 +171,5 @@ public class LoginActivity extends AppCompatActivity {
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
-
-    public boolean checkIsUserSignedIn(Box<User> usersBox) {
-        currentUser = usersBox.query().equal(User_.isSingedIn, true).build().findFirst();
-        return currentUser != null;
-    }
-
-    public void changeUserSignedInStatus(Box<User> usersBox) {
-        boolean isCurrentUserSignedIn = currentUser.getIsSingedIn();
-        currentUser.setIsSingedIn(!isCurrentUserSignedIn);
-        usersBox.put(currentUser);
-    }
-
-    public boolean checkUserCredentials(Box<User> usersBox, String email, String password) {
-
-        currentUser = usersBox.query().equal(User_.email, email).equal(User_.password, password).build().findFirst();
-        return currentUser != null;
-    }
-
 }
 
