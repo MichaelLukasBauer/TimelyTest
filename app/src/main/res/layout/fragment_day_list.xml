@@ -9,6 +9,45 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/list_spinners"
+        android:layout_width="0dp"
+        android:layout_height="42dp"
+        android:background="@color/colorPrimaryLight"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/list_header"
+        tools:context="de.opti4apps.timelytest.DayListFragment">
+
+        <Spinner
+            android:id="@+id/month_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:spinnerMode="dialog"
+            android:textColor="@color/colorTextWhite"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar" />
+
+        <Spinner
+            android:id="@+id/year_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center_horizontal"
+            android:spinnerMode="dialog"
+            android:textColor="@color/colorTextWhite"
+            android:theme="@android:style/Theme.Holo.Light.DarkActionBar" />
+
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/list_header"
         android:layout_width="0dp"
         android:layout_height="42dp"
@@ -80,7 +119,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/list_header"
+        app:layout_constraintTop_toBottomOf="@+id/list_spinners"
         app:layout_constraintVertical_bias="1.0"
         tools:context="de.opti4apps.timelytest.DayListFragment"
 

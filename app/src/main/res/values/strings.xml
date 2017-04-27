@@ -24,6 +24,7 @@
         <item name="5">Day off in lieu</item>
         <item name="6">Further education</item>
     </string-array>
+
     <string name="title_activity_login">Sign in</string>
 
     <!-- Strings related to login -->
