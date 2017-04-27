@@ -138,8 +138,10 @@ public class DayListFragment extends Fragment {
 
         for (Map.Entry<Day, Integer> entry : ((MyDayRecyclerViewAdapter) mRecyclerView.getAdapter()).getSelection().entrySet()) {
             CardView view = (CardView) mRecyclerView.getLayoutManager().findViewByPosition(entry.getValue());
-            view.setActivated(false);
-            view.setCardBackgroundColor(Color.WHITE);
+            if (view != null) {
+                view.setActivated(false);
+                view.setCardBackgroundColor(Color.WHITE);
+            }
         }
         ((MyDayRecyclerViewAdapter) mRecyclerView.getAdapter()).getSelection().clear();
     }
