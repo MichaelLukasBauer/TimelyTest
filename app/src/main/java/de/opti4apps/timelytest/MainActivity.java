@@ -3,6 +3,7 @@ package de.opti4apps.timelytest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity
 
     DayListFragment mDayListFragment;
     DayFragment mDayFragment;
+
+    WorkProfileFragment mWorkProfileFragment;
 
     User currentUser;
     Box<User> usersBox;
@@ -75,9 +78,11 @@ public class MainActivity extends AppCompatActivity
         }
 
         Intent intent = getIntent();
+
         String currentUserEmail = intent.getStringExtra("userEmail");
         usersBox = ((App) getApplication()).getBoxStore().boxFor(User.class);
         currentUser = UserManager.getUserByEmail(usersBox, currentUserEmail);
+
         mUserNameTextView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_name);
         mUserNameTextView.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
         mUserEmailTextView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_email);
@@ -138,16 +143,17 @@ public class MainActivity extends AppCompatActivity
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(0), DayFragment.TAG);
             transaction.addToBackStack(null);
             transaction.commit();
-
         } else if (id == R.id.nav_month_overview) {
             if(!mDayListFragment.isAdded()) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, mDayListFragment, DayListFragment.TAG);
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
-
         } else if (id == R.id.nav_work_profile) {
-
+            //we need to get the current user ID and use it to create the working profile instance
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, WorkProfileFragment.newInstance(currentUser.getId()), WorkProfileFragment.TAG);
+            transaction.addToBackStack(null);
+            transaction.commit();
         } else if (id == R.id.nav_signout) {
             UserManager.changeUserSignedInStatus(currentUser, usersBox);
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
