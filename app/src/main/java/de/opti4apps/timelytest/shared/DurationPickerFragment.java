@@ -16,15 +16,20 @@ import mobi.upod.timedurationpicker.TimeDurationPickerDialog;
 
 public class DurationPickerFragment extends DialogFragment implements TimeDurationPickerDialog.OnDurationSetListener {
 
+    private String day;
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         long duration = 0;
         return new TimeDurationPickerDialog(getActivity(), this, duration, TimeDurationPicker.HH_MM);
     }
 
+    public void setDay(String day) {
+        this.day = day;
+    }
 
     @Override
     public void onDurationSet(TimeDurationPicker view, long duration) {
-        EventBus.getDefault().post(new DurationPickedEvent(duration));
+        EventBus.getDefault().post(new DurationPickedEvent(duration,day));
     }
 }
