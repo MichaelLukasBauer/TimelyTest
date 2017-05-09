@@ -1,8 +1,6 @@
 package de.opti4apps.timelytest;
 
-import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,13 +20,10 @@ import de.opti4apps.timelytest.data.Day;
 import de.opti4apps.timelytest.data.WorkProfile;
 import de.opti4apps.timelytest.data.WorkProfile_;
 import de.opti4apps.timelytest.event.DurationPickedEvent;
-import de.opti4apps.timelytest.event.TimePickedEvent;
 import de.opti4apps.timelytest.event.WorkingProfileDatasetChangedEvent;
 import de.opti4apps.timelytest.shared.DurationPickerFragment;
 import io.objectbox.Box;
 import io.objectbox.query.Query;
-
-import static android.util.JsonToken.NULL;
 
 /**
  * Created by TCHATCHO on 23.04.2017.
@@ -57,6 +52,8 @@ public class WorkProfileFragment extends Fragment {
 
     @BindView(R.id.totalWorkingHours)
     TextView mtotalWorkHours;
+
+    int mSelectedText;
 
     private WorkProfile mWorkProfile;
     private Box<WorkProfile> mWorkProfileBox;
@@ -129,27 +126,10 @@ public class WorkProfileFragment extends Fragment {
 
     @OnClick({R.id.monTimeText, R.id.tuesTimeText,R.id.wedTimeText, R.id.thursTimeText,R.id.friTimeText})
     public void showTimePickerDialog(View v) {
-        if (v.getId() == R.id.monTimeText) {
+        mSelectedText = v.getId();
             DurationPickerFragment newFragment = new DurationPickerFragment();
-            newFragment.setDay("monday");
             newFragment.show(getFragmentManager(), "durationMon");
-        } else if (v.getId() == R.id.tuesTimeText) {
-            DurationPickerFragment newFragment = new DurationPickerFragment();
-            newFragment.setDay("tuesday");
-            newFragment.show(getFragmentManager(), "durationTues");
-        } else if (v.getId() == R.id.wedTimeText){
-            DurationPickerFragment newFragment = new DurationPickerFragment();
-            newFragment.setDay("wednesday");
-            newFragment.show(getFragmentManager(), "durationWed");
-        } else if (v.getId() == R.id.thursTimeText){
-            DurationPickerFragment newFragment = new DurationPickerFragment();
-            newFragment.setDay("thursday");
-            newFragment.show(getFragmentManager(), "durationThurs");
-        } else if (v.getId() == R.id.friTimeText){
-            DurationPickerFragment newFragment = new DurationPickerFragment();
-            newFragment.setDay("friday");
-            newFragment.show(getFragmentManager(), "durationFri");
-        }
+
 
     }
 
@@ -169,20 +149,20 @@ public class WorkProfileFragment extends Fragment {
 
     @Subscribe
     public void onDurationPickedEvent(DurationPickedEvent event) {
-            switch (event.day) {
-                case "monday":
+        switch (mSelectedText) {
+            case R.id.monTimeText:
                     mWorkProfile.setMonWorkHours(Duration.millis(event.duration));
                     break;
-                case "tuesday":
+            case R.id.tuesTimeText:
                     mWorkProfile.setTuesWorkHours(Duration.millis(event.duration));
                     break;
-                case "wednesday":
+            case R.id.wedTimeText:
                     mWorkProfile.setWedWorkHours(Duration.millis(event.duration));
                     break;
-                case "thursday":
+            case R.id.thursTimeText:
                     mWorkProfile.setThursWorkHours(Duration.millis(event.duration));
                     break;
-                case "friday":
+            case R.id.friTimeText:
                     mWorkProfile.setFriWorkHours(Duration.millis(event.duration));
                     break;
             }
