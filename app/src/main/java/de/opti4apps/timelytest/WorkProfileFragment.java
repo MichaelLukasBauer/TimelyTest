@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 import butterknife.BindView;
@@ -34,6 +35,21 @@ public class WorkProfileFragment extends Fragment {
     public static final String TAG = WorkProfileFragment.class.getSimpleName();
     private static final String ARG_WORK_PROFILE_ID = "workProfileID";
     private static final String ARG_USER_ID = "userID";
+
+    @BindView(R.id.monTimeLabel)
+    TextView mMonLabel;
+
+    @BindView(R.id.tuesTimeLabel)
+    TextView mTueLabel;
+
+    @BindView(R.id.wedTimeLabel)
+    TextView mWedLabel;
+
+    @BindView(R.id.thursTimeLabel)
+    TextView mThursLabel;
+
+    @BindView(R.id.friTimeLabel)
+    TextView mFriLabel;
 
     @BindView(R.id.monTimeText)
     TextView mMonWorkHours;
@@ -81,6 +97,8 @@ public class WorkProfileFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
+
+
         if (getArguments() != null) {
             // long workProfileID = getArguments().getLong(ARG_WORK_PROFILE_ID); in case we will want to save the previous workprofile
             long userID = getArguments().getLong(ARG_USER_ID);
@@ -106,7 +124,16 @@ public class WorkProfileFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_work_profile, container, false);
         ButterKnife.bind(this, view);
-
+        DateTime dt = DateTime.parse("2017-05-08");
+        mMonLabel.setText(dt.dayOfWeek().getAsShortText());
+        dt = dt.plusHours(24);
+        mTueLabel.setText(dt.dayOfWeek().getAsShortText());
+        dt = dt.plusHours(24);
+        mWedLabel.setText(dt.dayOfWeek().getAsShortText());
+        dt = dt.plusHours(24);
+        mThursLabel.setText(dt.dayOfWeek().getAsShortText());
+        dt = dt.plusHours(24);
+        mFriLabel.setText(dt.dayOfWeek().getAsShortText());
        updateUI();
 
         return view;
