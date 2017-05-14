@@ -154,12 +154,17 @@ public class MainActivity extends AppCompatActivity
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, WorkProfileFragment.newInstance(currentUser.getId()), WorkProfileFragment.TAG);
             transaction.addToBackStack(null);
             transaction.commit();
-        } else if (id == R.id.nav_signout) {
+        }
+        else if (id == R.id.nav_signout) {
             UserManager.changeUserSignedInStatus(currentUser, usersBox);
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             MainActivity.this.startActivity(intent);
         }
-
+        else if (id == R.id.nav_time_sheet)
+        {
+            Intent timesheetPDF = new Intent(MainActivity.this, PDFCreation.class);
+            MainActivity.this.startActivity(timesheetPDF);
+        }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

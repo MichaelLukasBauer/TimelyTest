@@ -20,6 +20,9 @@
         android:id="@+id/grp2"
         android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_time_sheet"
+            android:title="Create Time Sheet" />
+        <item
             android:id="@+id/nav_signout"
             android:title="Sign Out" />
 
