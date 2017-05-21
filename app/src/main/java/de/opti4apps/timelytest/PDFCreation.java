@@ -15,8 +15,10 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
@@ -46,7 +48,8 @@ public class PDFCreation extends AppCompatActivity {
     private File file;
     //use to set background color
     BaseColor myColor = WebColors.getRGBColor("#9E9E9E");
-    BaseColor myColor1 = WebColors.getRGBColor("#757575");
+    BaseColor NoColor = WebColors.getRGBColor("#FFFFFF");
+    BaseColor HolidaysColor = WebColors.getRGBColor("#C5D8F0");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -123,136 +126,69 @@ public class PDFCreation extends AppCompatActivity {
 
             //open the document
             doc.open();
-//create table
-            PdfPTable pt = new PdfPTable(3);
-            pt.setWidthPercentage(100);
-            float[] fl = new float[]{20, 45, 35};
-            pt.setWidths(fl);
-            cell = new PdfPCell();
-            cell.setBorder(Rectangle.NO_BORDER);
-
-            //set drawable in cell
-            Drawable myImage = PDFCreation.this.getResources().getDrawable(R.mipmap.ic_launcher);
-            Bitmap bitmap = ((BitmapDrawable) myImage).getBitmap();
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byte[] bitmapdata = stream.toByteArray();
+//create Unity Lab Empyloyees Sheet
+            //Create headline
+            Paragraph p1 =new Paragraph("Working Time Page");
+            p1.setAlignment(Element.ALIGN_LEFT);
+            doc.add(p1);
+            doc.add(Chunk.NEWLINE);
             try {
-                bgImage = Image.getInstance(bitmapdata);
-                bgImage.setAbsolutePosition(330f, 642f);
-                cell.addElement(bgImage);
-                pt.addCell(cell);
-                cell = new PdfPCell();
-                cell.setBorder(Rectangle.NO_BORDER);
-                cell.addElement(new Paragraph("UniTyLab Employees Monthly Time sheet"));
-
-                cell.addElement(new Paragraph(""));
-                cell.addElement(new Paragraph(""));
-                pt.addCell(cell);
-                cell = new PdfPCell(new Paragraph(""));
-                cell.setBorder(Rectangle.NO_BORDER);
-                pt.addCell(cell);
-
-                PdfPTable pTable = new PdfPTable(1);
-                pTable.setWidthPercentage(100);
-                cell = new PdfPCell();
-                cell.setColspan(1);
-                cell.addElement(pt);
-                pTable.addCell(cell);
-                PdfPTable table = new PdfPTable(6);
-
-                float[] columnWidth = new float[]{6, 30, 30, 20, 20, 30};
-                table.setWidths(columnWidth);
-
-
-                cell = new PdfPCell();
-
-
-                cell.setBackgroundColor(myColor);
-                cell.setColspan(6);
-                cell.addElement(pTable);
-                table.addCell(cell);
-                cell = new PdfPCell(new Phrase(" "));
-                cell.setColspan(6);
-                table.addCell(cell);
-                cell = new PdfPCell();
-                cell.setColspan(6);
-
-                cell.setBackgroundColor(myColor1);
-
-                cell = new PdfPCell(new Phrase("#"));
-                cell.setBackgroundColor(myColor1);
-                table.addCell(cell);
-                cell = new PdfPCell(new Phrase("Header 1"));
-                cell.setBackgroundColor(myColor1);
-                table.addCell(cell);
-                cell = new PdfPCell(new Phrase("Header 2"));
-                cell.setBackgroundColor(myColor1);
-                table.addCell(cell);
-                cell = new PdfPCell(new Phrase("Header 3"));
-                cell.setBackgroundColor(myColor1);
-                table.addCell(cell);
-                cell = new PdfPCell(new Phrase("Header 4"));
-                cell.setBackgroundColor(myColor1);
-                table.addCell(cell);
-                cell = new PdfPCell(new Phrase("Header 5"));
-                cell.setBackgroundColor(myColor1);
-                table.addCell(cell);
-
-                //table.setHeaderRows(3);
-                cell = new PdfPCell();
-                cell.setColspan(6);
-
-                for (int i = 1; i <= 10; i++) {
-                    table.addCell(String.valueOf(i));
-                    table.addCell("Header 1 row " + i);
-                    table.addCell("Header 2 row " + i);
-                    table.addCell("Header 3 row " + i);
-                    table.addCell("Header 4 row " + i);
-                    table.addCell("Header 5 row " + i);
-
-                }
-
-                PdfPTable ftable = new PdfPTable(6);
+                PdfPTable Firsttable = new PdfPTable(2);
+                Firsttable.setWidthPercentage(70.0F);
+                Firsttable.setHorizontalAlignment(Element.ALIGN_LEFT);
+                // the cell object
+                PdfPCell cell;
+                cell = new PdfPCell(new Phrase("Juni 2016"));
+                cell.setColspan(2);
+                Firsttable.addCell(cell);
+                Firsttable.addCell("Mi");
+                Firsttable.addCell("01.06.2016");
+                Firsttable.addCell("Do");
+                Firsttable.addCell("02.06.2016");
+                Firsttable.addCell("Fr");
+                Firsttable.addCell("03.06.2016");
+                Firsttable.addCell("Sa");
+                Firsttable.addCell("04.06.2016");
+                PdfPTable ftable = new PdfPTable(5);
                 ftable.setWidthPercentage(100);
-                float[] columnWidthaa = new float[]{30, 10, 30, 10, 30, 10};
+                float[] columnWidthaa = new float[]{60, 60, 60, 60, 60};
                 ftable.setWidths(columnWidthaa);
                 cell = new PdfPCell();
                 cell.setColspan(6);
-                cell.setBackgroundColor(myColor1);
-                cell = new PdfPCell(new Phrase("Total Monthly hours:"));
+                cell.setBackgroundColor(NoColor);
+                cell = new PdfPCell(new Phrase("Übertrag"));
                 cell.setBorder(Rectangle.NO_BORDER);
-                cell.setBackgroundColor(myColor1);
+                cell.setBackgroundColor(HolidaysColor);
                 ftable.addCell(cell);
                 cell = new PdfPCell(new Phrase(""));
                 cell.setBorder(Rectangle.NO_BORDER);
-                cell.setBackgroundColor(myColor1);
+                cell.setBackgroundColor(NoColor);
                 ftable.addCell(cell);
                 cell = new PdfPCell(new Phrase(""));
                 cell.setBorder(Rectangle.NO_BORDER);
-                cell.setBackgroundColor(myColor1);
+                cell.setBackgroundColor(NoColor);
                 ftable.addCell(cell);
                 cell = new PdfPCell(new Phrase(""));
                 cell.setBorder(Rectangle.NO_BORDER);
-                cell.setBackgroundColor(myColor1);
+                cell.setBackgroundColor(NoColor);
                 ftable.addCell(cell);
                 cell = new PdfPCell(new Phrase(""));
                 cell.setBorder(Rectangle.NO_BORDER);
-                cell.setBackgroundColor(myColor1);
+                cell.setBackgroundColor(NoColor);
                 ftable.addCell(cell);
                 cell = new PdfPCell(new Phrase(""));
                 cell.setBorder(Rectangle.NO_BORDER);
-                cell.setBackgroundColor(myColor1);
+                cell.setBackgroundColor(NoColor);
                 ftable.addCell(cell);
-                cell = new PdfPCell(new Paragraph("Footer"));
+                cell = new PdfPCell(new Paragraph("8:46"));
                 cell.setColspan(6);
                 ftable.addCell(cell);
                 cell = new PdfPCell();
                 cell.setColspan(6);
                 cell.addElement(ftable);
-                table.addCell(cell);
-                doc.add(table);
-                Toast.makeText(getApplicationContext(), "Time sheet created and stored in your device", Toast.LENGTH_LONG).show();
+                Firsttable.addCell(cell);
+                doc.add(Firsttable);
+                Toast.makeText(getApplicationContext(), "Time sheet Created and stored in device", Toast.LENGTH_LONG).show();
             } catch (DocumentException de) {
                 Log.e("PDFCreator", "DocumentException:" + de);
             }
