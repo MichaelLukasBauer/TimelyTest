@@ -40,7 +40,7 @@ public class PDFCreation extends AppCompatActivity {
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 try {
-                    new PDFGenerator(getApplicationContext()).createPDF(path);
+                    new PDFGenerator(PDFCreation.this).createPDF(path);
                     loadListView();
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
