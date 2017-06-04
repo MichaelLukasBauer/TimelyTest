@@ -39,5 +39,13 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="_0min">0min</string>
+    <string name="m">M</string>
+    <string name="t">T</string>
+    <string name="w">W</string>
+    <string name="f">F</string>
+    <string name="week_exceed_total_time">You can not work more than 40 hours per week</string>
+    <string name="weekly_working_hours">Weekly Working Hours</string>
+    <string name="weekly_hours_distribution">weekly hours Distribution</string>
 
 </resources>

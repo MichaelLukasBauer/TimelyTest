@@ -16,6 +16,7 @@ import mobi.upod.timedurationpicker.TimeDurationPickerDialog;
 
 public class DurationPickerFragment extends DialogFragment implements TimeDurationPickerDialog.OnDurationSetListener {
 
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         long duration = 0;

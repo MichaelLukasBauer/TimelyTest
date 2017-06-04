@@ -65,9 +65,44 @@
           "name": "lastName"
         }
       ]
+    },
+    {
+      "id": "3:4840276200026964638",
+      "lastPropertyId": "7:673960233682425238",
+      "name": "WorkProfile",
+      "properties": [
+        {
+          "id": "1:2966305267762494064",
+          "name": "id"
+        },
+        {
+          "id": "2:2012900232039219432",
+          "name": "userID"
+        },
+        {
+          "id": "3:2169187522537819324",
+          "name": "monWorkHours"
+        },
+        {
+          "id": "4:4237293027068146453",
+          "name": "tuesWorkHours"
+        },
+        {
+          "id": "5:5191178430222650133",
+          "name": "wedWorkHours"
+        },
+        {
+          "id": "6:9028564242402833917",
+          "name": "thursWorkHours"
+        },
+        {
+          "id": "7:673960233682425238",
+          "name": "friWorkHours"
+        }
+      ]
     }
   ],
-  "lastEntityId": "2:4919586996653860251",
+  "lastEntityId": "3:4840276200026964638",
   "lastIndexId": "1:3420540316475997930",
   "lastSequenceId": "0:0",
   "modelVersion": 2,

@@ -105,7 +105,7 @@ public class DayListFragment extends Fragment {
         }
 
         for (int i = 0; i < mYearArray.length; i++) {
-            date = new LocalDate(2000 + i, 1, 1);
+            date = LocalDate.now().minusYears(10).plusYears(i);
             mYearArray[i] = date.year().getAsShortText();
         }
     }

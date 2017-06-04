@@ -79,7 +79,7 @@ public class Day {
                 if (start.getHourOfDay() < 7 || (end.getHourOfDay() > 19 && end.getMinuteOfHour() > 30)) {
                     throw new IllegalArgumentException(String.valueOf(R.string.outside_worktime));
                 }
-                if (end.getMillis() - start.getMillis() - pause.getMillis() <= 0) {
+                if (end.getMillis() - start.getMillis() - pause.getMillis() < 0) {
                     throw new IllegalArgumentException(String.valueOf(R.string.negative_total_time));
                 }
                 if (end.getMillis() - start.getMillis() - pause.getMillis() > Hours.hours(10).toStandardDuration().getMillis()) {
