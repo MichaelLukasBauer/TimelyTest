@@ -6,7 +6,7 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "de.opti4apps.timelytest"
-        minSdkVersion 21
+        minSdkVersion 16
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -29,7 +29,7 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile files('libs/itextpdf-5.4.1.jar')
+
     compile 'com.android.support:appcompat-v7:25.3.0'
     compile 'com.android.support:support-v4:25.3.0'
     compile 'com.android.support:design:25.3.0'
@@ -41,6 +41,7 @@ dependencies {
     compile 'io.objectbox:objectbox-android:0.9.9'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.jakewharton:butterknife:8.5.1'
+    compile 'com.itextpdf:itextg:5.5.10'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile files('libs/itextpdf-5.1.0.jar')
