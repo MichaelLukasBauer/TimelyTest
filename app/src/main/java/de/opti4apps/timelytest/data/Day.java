@@ -9,6 +9,8 @@ import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
+import java.util.Calendar;
+
 import de.opti4apps.timelytest.R;
 import io.objectbox.annotation.Convert;
 import io.objectbox.annotation.Entity;
@@ -45,6 +47,8 @@ public class Day {
     private DateTime end;
     @Convert(converter = DurationConverter.class, dbType = Long.class)
     private Duration pause;
+    @Convert(converter = DurationConverter.class, dbType = Long.class)
+    private Duration extraHours;
 
     @Keep
     public Day(DAY_TYPE type, DateTime day, DateTime start, DateTime end, Duration pause) {
@@ -56,14 +60,15 @@ public class Day {
         this.id = day.withTimeAtStartOfDay().getMillis();
     }
 
-    @Generated(hash = 439792684)
-    public Day(long id, DAY_TYPE type, DateTime day, DateTime start, DateTime end, Duration pause) {
+    @Generated(hash = 1714423002)
+    public Day(long id, DAY_TYPE type, DateTime day, DateTime start, DateTime end, Duration pause, Duration extraHours) {
         this.id = id;
         this.type = type;
         this.day = day;
         this.start = start;
         this.end = end;
         this.pause = pause;
+        this.extraHours = extraHours;
     }
 
     @Generated(hash = 866989762)
@@ -155,7 +160,33 @@ public class Day {
         this.pause = pause;
     }
 
+    public Duration getExtraHours() { return extraHours; }
 
+    public void setExtraHours(Duration extraHours) { this.extraHours = extraHours; }
+
+    public void computeTheExtraHours(WorkProfile wp)
+    {
+        if (this.day.dayOfWeek().equals( Calendar.MONDAY))
+        {
+            this.extraHours = getTotalWorkingTime().minus(wp.getMonWorkHours());
+        }
+        else if (this.day.dayOfWeek().equals(Calendar.TUESDAY))
+        {
+            this.extraHours = getTotalWorkingTime().minus(wp.getTuesWorkHours());
+        }
+        else if (this.day.dayOfWeek().equals(Calendar.WEDNESDAY))
+        {
+            this.extraHours = getTotalWorkingTime().minus(wp.getWedWorkHours());
+        }
+        else if (this.day.dayOfWeek().equals(Calendar.THURSDAY))
+        {
+            this.extraHours = getTotalWorkingTime().minus(wp.getThursWorkHours());
+        }
+        else if (this.day.dayOfWeek().equals(Calendar.FRIDAY))
+        {
+            this.extraHours = getTotalWorkingTime().minus(wp.getFriWorkHours());
+        }
+    }
     public enum DAY_TYPE {
         OTHER(0), WORKDAY(1), BUSINESS_TRIP(2), HOLIDAY(3), DOCTOR_APPOINTMENT(4), DAY_OFF_IN_LIEU(5), FURTHER_EDUCATION(6);
 

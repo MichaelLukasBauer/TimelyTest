@@ -65,19 +65,18 @@ public class WorkProfile {
         this.startDate = day;
         this.endDate = day;
     }
-    @Generated(hash = 382147514)
-    public WorkProfile(long id, long userID, Duration monWorkHours, Duration tuesWorkHours,
-            Duration wedWorkHours, Duration thursWorkHours, Duration friWorkHours) {
+    @Generated(hash = 72047393)
+    public WorkProfile(long id, long userID, DateTime startDate, DateTime endDate, Duration monWorkHours, Duration tuesWorkHours, Duration wedWorkHours, Duration thursWorkHours,
+            Duration friWorkHours) {
         this.id = id;
         this.userID = userID;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.monWorkHours = monWorkHours;
         this.tuesWorkHours = tuesWorkHours;
         this.wedWorkHours = wedWorkHours;
         this.thursWorkHours = thursWorkHours;
         this.friWorkHours = friWorkHours;
-        DateTime day = new DateTime();
-        this.startDate = day;
-        this.endDate = day;
     }
     @Generated(hash = 1509302824)
     public WorkProfile() {

@@ -18,9 +18,11 @@ import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.joda.time.Duration;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.opti4apps.timelytest.data.TotalExtraHours;
 import de.opti4apps.timelytest.data.User;
 import de.opti4apps.timelytest.data.UserManager;
 import de.opti4apps.timelytest.data.User_;
@@ -40,6 +42,8 @@ public class MainActivity extends AppCompatActivity
 
     User currentUser;
     Box<User> usersBox;
+
+    Box<TotalExtraHours> TotalExtraHoursBox;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -81,7 +85,11 @@ public class MainActivity extends AppCompatActivity
 
         String currentUserEmail = intent.getStringExtra("userEmail");
         usersBox = ((App) getApplication()).getBoxStore().boxFor(User.class);
+
         currentUser = UserManager.getUserByEmail(usersBox, currentUserEmail);
+
+        TotalExtraHoursBox = ((App) getApplication()).getBoxStore().boxFor(TotalExtraHours.class);
+
 
         mUserNameTextView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_name);
         mUserNameTextView.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
@@ -140,7 +148,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_capture_time) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(0), DayFragment.TAG);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(0,currentUser.getId()), DayFragment.TAG);
             transaction.addToBackStack(null);
             transaction.commit();
         } else if (id == R.id.nav_month_overview) {
@@ -175,15 +183,15 @@ public class MainActivity extends AppCompatActivity
         Log.d(TAG, "onDaySelected: received DaySelectedEvent with id of day = " + event.dayID);
         mDayListFragment = (DayListFragment) getSupportFragmentManager().findFragmentByTag(DayListFragment.TAG);
         if (mDayFragment == null) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(event.dayID), DayFragment.TAG);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(event.dayID,currentUser.getId()), DayFragment.TAG);
             transaction.addToBackStack(null);
             transaction.commit();
         } else if (mDayFragment.getDay().getId() != event.dayID && event.dayID > 0) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(event.dayID), DayFragment.TAG);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(event.dayID,currentUser.getId()), DayFragment.TAG);
             transaction.addToBackStack(null);
             transaction.commit();
         } else if (event.dayID <= 0) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(0), DayFragment.TAG);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(0,currentUser.getId()), DayFragment.TAG);
             transaction.addToBackStack(null);
             transaction.commit();
         }

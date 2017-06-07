@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:127443039650948533",
-      "lastPropertyId": "6:8473710514419809326",
+      "lastPropertyId": "7:6106746748185489582",
       "name": "Day",
       "properties": [
         {
@@ -32,6 +32,10 @@
         {
           "id": "6:8473710514419809326",
           "name": "pause"
+        },
+        {
+          "id": "7:6106746748185489582",
+          "name": "extraHours"
         }
       ]
     },
@@ -68,7 +72,7 @@
     },
     {
       "id": "3:4840276200026964638",
-      "lastPropertyId": "7:673960233682425238",
+      "lastPropertyId": "9:1729584474525397348",
       "name": "WorkProfile",
       "properties": [
         {
@@ -98,11 +102,34 @@
         {
           "id": "7:673960233682425238",
           "name": "friWorkHours"
+        },
+        {
+          "id": "8:2982088315602013327",
+          "name": "startDate"
+        },
+        {
+          "id": "9:1729584474525397348",
+          "name": "endDate"
+        }
+      ]
+    },
+    {
+      "id": "4:1341972792160751715",
+      "lastPropertyId": "2:3835860655907302677",
+      "name": "TotalExtraHours",
+      "properties": [
+        {
+          "id": "1:7507507035923055534",
+          "name": "totalExtraHours"
+        },
+        {
+          "id": "2:3835860655907302677",
+          "name": "id"
         }
       ]
     }
   ],
-  "lastEntityId": "3:4840276200026964638",
+  "lastEntityId": "4:1341972792160751715",
   "lastIndexId": "1:3420540316475997930",
   "lastSequenceId": "0:0",
   "modelVersion": 2,
