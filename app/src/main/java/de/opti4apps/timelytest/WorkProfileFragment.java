@@ -14,6 +14,8 @@ import org.greenrobot.eventbus.Subscribe;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -25,6 +27,8 @@ import de.opti4apps.timelytest.event.WorkingProfileDatasetChangedEvent;
 import de.opti4apps.timelytest.shared.DurationPickerFragment;
 import io.objectbox.Box;
 import io.objectbox.query.Query;
+
+import static de.opti4apps.timelytest.data.Day_.day;
 
 /**
  * Created by TCHATCHO on 23.04.2017.
@@ -72,6 +76,7 @@ public class WorkProfileFragment extends Fragment {
     int mSelectedText;
 
     private WorkProfile mWorkProfile;
+    private WorkProfile mWorkProfileOld;
     private Box<WorkProfile> mWorkProfileBox;
     private Query<WorkProfile> mWorkProfileQuery;
 
@@ -100,10 +105,10 @@ public class WorkProfileFragment extends Fragment {
 
 
         if (getArguments() != null) {
-            // long workProfileID = getArguments().getLong(ARG_WORK_PROFILE_ID); in case we will want to save the previous workprofile
             long userID = getArguments().getLong(ARG_USER_ID);
             mWorkProfileQuery = mWorkProfileBox.query().equal(WorkProfile_.userID, userID).build();
-            mWorkProfile = mWorkProfileQuery.findUnique();
+            List<WorkProfile> allWP = mWorkProfileQuery.find();
+            mWorkProfile = mWorkProfileOld = allWP.get(0);
 
             if (mWorkProfile == null){
                 WorkProfile wp = new WorkProfile(userID, Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0));
@@ -200,7 +205,28 @@ public class WorkProfileFragment extends Fragment {
     private void updateWorkingWeekhours() {
         try {
             if (mWorkProfile.isValid()) {
-                mWorkProfileBox.put(mWorkProfile);
+                DateTime day = new DateTime();
+                //if today's date is different than the current working profile startDate, then we can create a new working profile
+                //otherwise we simply update it
+                if(mWorkProfile.getStartDate().withTimeAtStartOfDay().getMillis() != day.withTimeAtStartOfDay().getMillis()  )
+                {
+                    if(!mWorkProfileOld.isWorkingHoursEquals(mWorkProfile))
+                    {
+
+                        mWorkProfile.setId(day.withTimeAtStartOfDay().getMillis());
+                        mWorkProfile.setStartDate(day);
+                        mWorkProfileBox.put(mWorkProfile);
+                        mWorkProfileOld.setEndDate(day);
+                        mWorkProfileBox.put(mWorkProfileOld);
+                        mWorkProfileOld = mWorkProfile;
+                    }
+                }
+                else
+                {
+                    mWorkProfileBox.put(mWorkProfile);
+                    mWorkProfileOld = mWorkProfile;
+                }
+
                 EventBus.getDefault().post(new WorkingProfileDatasetChangedEvent(TAG));
             }
         } catch (IllegalArgumentException e) {

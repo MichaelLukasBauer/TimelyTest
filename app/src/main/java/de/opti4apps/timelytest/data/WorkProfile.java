@@ -28,6 +28,12 @@ public class WorkProfile {
     //@Id(assignable = true)
     private long userID;
 
+    @Convert(converter = Day.DateTimeConverter.class, dbType = Long.class)
+    private DateTime startDate;
+
+    @Convert(converter = Day.DateTimeConverter.class, dbType = Long.class)
+    private DateTime endDate;
+
     @Convert(converter = Day.DurationConverter.class, dbType = Long.class)
     private Duration monWorkHours;
 
@@ -56,6 +62,8 @@ public class WorkProfile {
         this.friWorkHours = friWorkHours;
         DateTime day = new DateTime();
         this.id = day.withTimeAtStartOfDay().getMillis();
+        this.startDate = day;
+        this.endDate = day;
     }
     @Generated(hash = 382147514)
     public WorkProfile(long id, long userID, Duration monWorkHours, Duration tuesWorkHours,
@@ -67,12 +75,20 @@ public class WorkProfile {
         this.wedWorkHours = wedWorkHours;
         this.thursWorkHours = thursWorkHours;
         this.friWorkHours = friWorkHours;
+        DateTime day = new DateTime();
+        this.startDate = day;
+        this.endDate = day;
     }
     @Generated(hash = 1509302824)
     public WorkProfile() {
     }
 
-
+    public boolean isWorkingHoursEquals(WorkProfile wp)
+    {
+        return (this.monWorkHours == wp.monWorkHours) && (this.tuesWorkHours == wp.tuesWorkHours) &&
+                (this.friWorkHours == wp.friWorkHours) && (this.thursWorkHours == wp.thursWorkHours) &&
+                (this.wedWorkHours == wp.wedWorkHours);
+    }
       public boolean isValid() throws IllegalArgumentException {
                 if (monWorkHours.getMillis()  > 36000000 || tuesWorkHours.getMillis()  > 36000000 ||
                         wedWorkHours.getMillis()  > 36000000 || thursWorkHours.getMillis()  > 36000000
@@ -139,6 +155,14 @@ public class WorkProfile {
     public void setUserID(long userID) {
         this.userID = userID;
     }
+
+    public DateTime getStartDate() { return startDate; }
+
+    public void setStartDate(DateTime startDate) { this.startDate = startDate; }
+
+    public DateTime getEndDate() { return endDate; }
+
+    public void setEndDate(DateTime endDate) { this.endDate = endDate; }
 
     public Duration getTotalWorkingTime() {
         return Duration.millis(monWorkHours.getMillis()).plus(tuesWorkHours.getMillis()).plus(wedWorkHours.getMillis()).plus(thursWorkHours.getMillis()).plus(friWorkHours.getMillis());
