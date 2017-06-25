@@ -108,9 +108,10 @@ public class WorkProfileFragment extends Fragment {
             long userID = getArguments().getLong(ARG_USER_ID);
             mWorkProfileQuery = mWorkProfileBox.query().equal(WorkProfile_.userID, userID).build();
             List<WorkProfile> allWP = mWorkProfileQuery.find();
-            mWorkProfile = mWorkProfileOld = allWP.get(0);
-
-            if (mWorkProfile == null){
+            if(allWP != null) {
+                mWorkProfile = mWorkProfileOld = allWP.get(0);
+            }
+            else {
                 WorkProfile wp = new WorkProfile(userID, Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0));
                 mWorkProfileBox.put(wp);
 

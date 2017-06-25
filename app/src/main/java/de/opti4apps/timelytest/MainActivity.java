@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity
 
         currentUser = UserManager.getUserByEmail(usersBox, currentUserEmail);
 
-        TotalExtraHoursBox = ((App) getApplication()).getBoxStore().boxFor(TotalExtraHours.class);
+        //TotalExtraHoursBox = ((App) getApplication()).getBoxStore().boxFor(TotalExtraHours.class);
 
 
         mUserNameTextView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_name);

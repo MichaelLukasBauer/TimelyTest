@@ -38,6 +38,7 @@ import de.opti4apps.timelytest.event.TimePickedEvent;
 import de.opti4apps.timelytest.shared.DatePickerFragment;
 import de.opti4apps.timelytest.shared.DurationPickerFragment;
 import de.opti4apps.timelytest.shared.TimePickerFragment;
+import de.opti4apps.timelytest.shared.TimelyHelper;
 import io.objectbox.Box;
 import io.objectbox.query.Query;
 
@@ -141,12 +142,10 @@ public class DayFragment extends Fragment {
     }
 
     private void getTheCurrentWorkingProfile() {
-        long userID = getArguments().getLong(ARG_USER_ID);
-        mWorkProfileQuery = mWorkProfileBox.query().equal(WorkProfile_.userID, userID).build();
-        List<WorkProfile> allWP = mWorkProfileQuery.find();
-        mWorkProfile = allWP.get(0);
+        mWorkProfile = TimelyHelper.getValidWorkingProfile(mDay,mWorkProfileBox);
 
         if (mWorkProfile == null) {
+            long userID = getArguments().getLong(ARG_USER_ID);
             mWorkProfile  = new WorkProfile(userID, Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0));
         }
     }
