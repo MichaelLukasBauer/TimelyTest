@@ -3,7 +3,6 @@ package de.opti4apps.timelytest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -18,14 +17,11 @@ import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
-import org.joda.time.Duration;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import de.opti4apps.timelytest.data.TotalExtraHours;
 import de.opti4apps.timelytest.data.User;
 import de.opti4apps.timelytest.data.UserManager;
-import de.opti4apps.timelytest.data.User_;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
 import io.objectbox.Box;
 
@@ -43,7 +39,6 @@ public class MainActivity extends AppCompatActivity
     User currentUser;
     Box<User> usersBox;
 
-    Box<TotalExtraHours> TotalExtraHoursBox;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;

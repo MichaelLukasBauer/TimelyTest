@@ -19,16 +19,12 @@ import org.greenrobot.eventbus.Subscribe;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
-import java.util.Calendar;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemSelected;
 import de.opti4apps.timelytest.data.Day;
 import de.opti4apps.timelytest.data.Day_;
-import de.opti4apps.timelytest.data.TotalExtraHours;
 import de.opti4apps.timelytest.data.WorkProfile;
 import de.opti4apps.timelytest.data.WorkProfile_;
 import de.opti4apps.timelytest.event.DatePickedEvent;
@@ -79,12 +75,8 @@ public class DayFragment extends Fragment {
     private Box<Day> mDayBox;
     private WorkProfile mWorkProfile;
     private Box<WorkProfile> mWorkProfileBox;
-    private TotalExtraHours mTotalExtraHours;
-    private Box<TotalExtraHours> mTotalExtraHoursBox;
     private Query<Day> mDayQuery;
     private Query<WorkProfile> mWorkProfileQuery;
-    private Query<TotalExtraHours> mTotalExtraHoursQuery;
-    private Duration oldExtrahours;
 
     public DayFragment() {
         // Required empty public constructor
@@ -111,12 +103,10 @@ public class DayFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
-        mTotalExtraHoursBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(TotalExtraHours.class);
 
         if (getArguments() != null) {
             long dayID = getArguments().getLong(ARG_DAY_ID);
             getTheCurrentWorkingProfile();
-            getTheCurentTotalExtraHours();
             if (dayID == 0) {
                 Day day = new Day(Day.DAY_TYPE.WORKDAY, DateTime.now(), DateTime.now(), DateTime.now(), Duration.standardMinutes(0));
                 dayID = day.getId();
@@ -125,20 +115,8 @@ public class DayFragment extends Fragment {
             }
             mDayQuery = mDayBox.query().equal(Day_.id, dayID).build();
             mDay = mDayQuery.findUnique();
-            oldExtrahours = mDay.getExtraHours();
         }
         setRetainInstance(true);
-    }
-
-    private void getTheCurentTotalExtraHours() {
-        long userID = getArguments().getLong(ARG_USER_ID);
-        mTotalExtraHoursQuery = mTotalExtraHoursBox.query().equal(WorkProfile_.userID, userID).build();
-        mTotalExtraHours = mTotalExtraHoursQuery.findUnique();
-
-        if (mTotalExtraHours == null) {
-            mTotalExtraHours  = new TotalExtraHours(userID, Duration.standardMinutes(0));
-        }
-
     }
 
     private void getTheCurrentWorkingProfile() {
@@ -291,10 +269,6 @@ public class DayFragment extends Fragment {
             if (mDay.isValid()) {
                 mDay.computeTheExtraHours(mWorkProfile);
                 mDayBox.put(mDay);
-                //need to add to the overall extrahours  the difference of new extra - old
-                mTotalExtraHours.updateTotalExtraHours(mDay.getExtraHours().minus(oldExtrahours));
-                mTotalExtraHoursBox.put(mTotalExtraHours);
-                oldExtrahours = mDay.getExtraHours();
                 EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
             }
         } catch (IllegalArgumentException e) {
@@ -344,7 +318,7 @@ public class DayFragment extends Fragment {
     }
 
     private void setTotalOvertime(boolean error) {
-        String totalOvertime = mTotalExtraHours.getTotalExtraHours().toPeriod().toString(Day.PERIOD_FORMATTER);
+        String totalOvertime = Duration.millis(TimelyHelper.getTotalOvertime(mDayBox,mWorkProfileBox)).toPeriod().toString(Day.PERIOD_FORMATTER);
         mTotalOvertime.setText(totalOvertime);
         setTextColor(mTotalOvertime, error);
     }

@@ -115,12 +115,16 @@
     },
     {
       "id": "4:1341972792160751715",
-      "lastPropertyId": "1:7507507035923055534",
+      "lastPropertyId": "2:3835860655907302677",
       "name": "TotalExtraHours",
       "properties": [
         {
           "id": "1:7507507035923055534",
           "name": "totalExtraHours"
+        },
+        {
+          "id": "2:3835860655907302677",
+          "name": "id"
         }
       ]
     }

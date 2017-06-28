@@ -1,18 +1,11 @@
 package de.opti4apps.timelytest.shared;
 
-import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import de.opti4apps.timelytest.App;
-import de.opti4apps.timelytest.WorkProfileFragment;
 import de.opti4apps.timelytest.data.Day;
-import de.opti4apps.timelytest.data.TotalExtraHours;
 import de.opti4apps.timelytest.data.WorkProfile;
-import de.opti4apps.timelytest.data.WorkProfile_;
 import io.objectbox.Box;
 import io.objectbox.query.Query;
 
@@ -26,12 +19,8 @@ public class TimelyHelper {
     private static Box<Day> mDayBox;
     private static WorkProfile mWorkProfile;
     private static Box<WorkProfile> mWorkProfileBox;
-    private static TotalExtraHours mTotalExtraHours;
-    private static Box<TotalExtraHours> mTotalExtraHoursBox;
     private static Query<Day> mDayQuery;
     private static Query<WorkProfile> mWorkProfileQuery;
-    private static Query<TotalExtraHours> mTotalExtraHoursQuery;
-    private static Duration oldExtrahours;
 
     public static WorkProfile getValidWorkingProfile(Day d,Box<WorkProfile> mWorkProfileBox)
     {
@@ -57,6 +46,18 @@ public class TimelyHelper {
         return false;
     }
 
-
+    public static long getTotalOvertime(Box<Day> mDayBox, Box<WorkProfile> mWorkProfileBox)
+    {
+        long totalOvertime = 0;
+        mDayQuery = mDayBox.query().build();
+        List<Day> allDay = mDayQuery.find();
+        for (Day d: allDay)
+        {
+            WorkProfile wp = getValidWorkingProfile(d,mWorkProfileBox);
+            d.computeTheExtraHours(wp);
+            totalOvertime += d.getExtraHours().getMillis();
+        }
+        return totalOvertime;
+    }
 
 }
