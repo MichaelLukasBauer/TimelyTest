@@ -49,7 +49,18 @@ public class WorkProfile {
     @Convert(converter = Day.DurationConverter.class, dbType = Long.class)
     private Duration friWorkHours;
 
-
+    @Keep
+    public WorkProfile(WorkProfile wp) {
+        this.userID = wp.getUserID();
+        this.monWorkHours = wp.getMonWorkHours();
+        this.tuesWorkHours = wp.getTuesWorkHours();
+        this.wedWorkHours = wp.getWedWorkHours();
+        this.thursWorkHours = wp.getThursWorkHours();
+        this.friWorkHours = wp.getFriWorkHours();
+        this.id = wp.getId();
+        this.startDate = wp.getStartDate();
+        this.endDate = wp.getEndDate();
+    }
     @Keep
     public WorkProfile(long userID, Duration monWorkHours,
                        Duration tuesWorkHours, Duration wedWorkHours, Duration thursWorkHours,

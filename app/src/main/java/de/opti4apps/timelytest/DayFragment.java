@@ -106,7 +106,6 @@ public class DayFragment extends Fragment {
 
         if (getArguments() != null) {
             long dayID = getArguments().getLong(ARG_DAY_ID);
-            getTheCurrentWorkingProfile();
             if (dayID == 0) {
                 Day day = new Day(Day.DAY_TYPE.WORKDAY, DateTime.now(), DateTime.now(), DateTime.now(), Duration.standardMinutes(0));
                 dayID = day.getId();
@@ -115,6 +114,7 @@ public class DayFragment extends Fragment {
             }
             mDayQuery = mDayBox.query().equal(Day_.id, dayID).build();
             mDay = mDayQuery.findUnique();
+            getTheCurrentWorkingProfile();
         }
         setRetainInstance(true);
     }

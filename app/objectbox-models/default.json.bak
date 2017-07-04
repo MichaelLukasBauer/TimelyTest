@@ -112,29 +112,19 @@
           "name": "endDate"
         }
       ]
-    },
-    {
-      "id": "4:1341972792160751715",
-      "lastPropertyId": "2:3835860655907302677",
-      "name": "TotalExtraHours",
-      "properties": [
-        {
-          "id": "1:7507507035923055534",
-          "name": "totalExtraHours"
-        },
-        {
-          "id": "2:3835860655907302677",
-          "name": "id"
-        }
-      ]
     }
   ],
   "lastEntityId": "4:1341972792160751715",
   "lastIndexId": "1:3420540316475997930",
   "lastSequenceId": "0:0",
   "modelVersion": 2,
-  "retiredEntityUids": [],
+  "retiredEntityUids": [
+    1341972792160751715
+  ],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredPropertyUids": [
+    7507507035923055534,
+    3835860655907302677
+  ],
   "version": 1
 }

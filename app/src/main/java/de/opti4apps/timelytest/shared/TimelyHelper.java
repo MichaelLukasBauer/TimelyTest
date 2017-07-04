@@ -24,26 +24,37 @@ public class TimelyHelper {
 
     public static WorkProfile getValidWorkingProfile(Day d,Box<WorkProfile> mWorkProfileBox)
     {
+        WorkProfile resultWorkProfile = null;
         mWorkProfileQuery = mWorkProfileBox.query().build();
         List<WorkProfile> allWP = mWorkProfileQuery.find();
         for (WorkProfile wp: allWP)
         {
             if (isDayInWokingProfile(d,wp))
             {
-                return wp;
+                resultWorkProfile = wp;
+                break;
             }
         }
 
-        return null;
+        if(allWP.size() > 0 && (d.getDay().withTimeAtStartOfDay().getMillis() > allWP.get(allWP.size()-1).getEndDate().withTimeAtStartOfDay().getMillis()))
+        {
+            resultWorkProfile = allWP.get(allWP.size()-1);
+        }
+
+        return resultWorkProfile;
     }
 
     public static boolean isDayInWokingProfile(Day d, WorkProfile wp)
     {
-        if (d.getDay().getMillis() >= wp.getStartDate().getMillis() && d.getDay().getMillis() <= wp.getEndDate().getMillis())
+        Boolean result = false;
+        if ((d.getDay().withTimeAtStartOfDay().getMillis() >= wp.getStartDate().withTimeAtStartOfDay().getMillis()) && (d.getDay().withTimeAtStartOfDay().getMillis() <= wp.getEndDate().withTimeAtStartOfDay().getMillis()))
         {
-            return true;
+            result = true;
         }
-        return false;
+
+
+        return result;
+
     }
 
     public static long getTotalOvertime(Box<Day> mDayBox, Box<WorkProfile> mWorkProfileBox)
@@ -54,6 +65,9 @@ public class TimelyHelper {
         for (Day d: allDay)
         {
             WorkProfile wp = getValidWorkingProfile(d,mWorkProfileBox);
+            if (wp == null) {
+                wp  = new WorkProfile(0, Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0));
+            }
             d.computeTheExtraHours(wp);
             totalOvertime += d.getExtraHours().getMillis();
         }

@@ -108,8 +108,9 @@ public class WorkProfileFragment extends Fragment {
             long userID = getArguments().getLong(ARG_USER_ID);
             mWorkProfileQuery = mWorkProfileBox.query().equal(WorkProfile_.userID, userID).build();
             List<WorkProfile> allWP = mWorkProfileQuery.find();
-            if(allWP != null) {
-                mWorkProfile = mWorkProfileOld = allWP.get(0);
+            if(allWP.size() !=  0) {
+                mWorkProfile  = allWP.get(allWP.size()-1);
+                mWorkProfileOld = new WorkProfile(mWorkProfile);
             }
             else {
                 WorkProfile wp = new WorkProfile(userID, Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0));
@@ -117,6 +118,7 @@ public class WorkProfileFragment extends Fragment {
 
                 mWorkProfileQuery = mWorkProfileBox.query().equal(WorkProfile_.userID, userID).build();
                 mWorkProfile = mWorkProfileQuery.findUnique();
+                mWorkProfileOld = new WorkProfile(mWorkProfile);
             }
             setRetainInstance(true);
         }
@@ -216,16 +218,17 @@ public class WorkProfileFragment extends Fragment {
 
                         mWorkProfile.setId(day.withTimeAtStartOfDay().getMillis());
                         mWorkProfile.setStartDate(day);
+                        mWorkProfile.setEndDate(day);
                         mWorkProfileBox.put(mWorkProfile);
-                        mWorkProfileOld.setEndDate(day);
+                        mWorkProfileOld.setEndDate(day.minusDays(1));
                         mWorkProfileBox.put(mWorkProfileOld);
-                        mWorkProfileOld = mWorkProfile;
+                        mWorkProfileOld = new WorkProfile(mWorkProfile);
                     }
                 }
                 else
                 {
                     mWorkProfileBox.put(mWorkProfile);
-                    mWorkProfileOld = mWorkProfile;
+                    mWorkProfileOld = new WorkProfile(mWorkProfile);;
                 }
 
                 EventBus.getDefault().post(new WorkingProfileDatasetChangedEvent(TAG));

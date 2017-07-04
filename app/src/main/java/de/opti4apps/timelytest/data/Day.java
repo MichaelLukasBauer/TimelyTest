@@ -57,6 +57,7 @@ public class Day {
         this.start = start;
         this.end = end;
         this.pause = pause;
+        this.extraHours = Duration.ZERO;
         this.id = day.withTimeAtStartOfDay().getMillis();
     }
 
@@ -164,27 +165,62 @@ public class Day {
 
     public void setExtraHours(Duration extraHours) { this.extraHours = extraHours; }
 
+    public long convertDayTextToNumber (String dafOfWeek)
+    {
+        long dayAsNumber = 0;
+        if(dafOfWeek.compareToIgnoreCase("monday") == 0)
+        {
+            dayAsNumber = Calendar.MONDAY;
+        }
+        else if(dafOfWeek.compareToIgnoreCase("tuesday") == 0)
+        {
+            dayAsNumber = Calendar.TUESDAY;
+        }
+        else if(dafOfWeek.compareToIgnoreCase("wednesday") == 0)
+        {
+            dayAsNumber = Calendar.WEDNESDAY;
+        }
+        else if(dafOfWeek.compareToIgnoreCase("thursday") == 0)
+        {
+            dayAsNumber = Calendar.THURSDAY;
+        }
+        else if(dafOfWeek.compareToIgnoreCase("friday") == 0)
+        {
+            dayAsNumber = Calendar.FRIDAY;
+        }
+        else if(dafOfWeek.compareToIgnoreCase("saturday") == 0)
+        {
+            dayAsNumber = Calendar.SATURDAY;
+        }
+        else if(dafOfWeek.compareToIgnoreCase("sunday") == 0)
+        {
+            dayAsNumber = Calendar.SUNDAY;
+        }
+
+        return dayAsNumber;
+
+    }
+
+
     public void computeTheExtraHours(WorkProfile wp)
     {
-        if (this.day.dayOfWeek().equals( Calendar.MONDAY))
-        {
-            this.extraHours = getTotalWorkingTime().minus(wp.getMonWorkHours());
+        if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) !=  Calendar.SATURDAY && convertDayTextToNumber(this.day.dayOfWeek().getAsText()) !=  Calendar.SUNDAY && this.getType() == DAY_TYPE.WORKDAY ) {
+            //long r = Calendar.MONDAY;
+            if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) == Calendar.MONDAY) {
+                this.extraHours = getTotalWorkingTime().minus(wp.getMonWorkHours());
+            } else if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) == Calendar.TUESDAY) {
+                setExtraHours(getTotalWorkingTime().minus(wp.getTuesWorkHours()));
+            } else if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) == Calendar.WEDNESDAY) {
+                this.extraHours = getTotalWorkingTime().minus(wp.getWedWorkHours());
+            } else if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) == Calendar.THURSDAY) {
+                this.extraHours = getTotalWorkingTime().minus(wp.getThursWorkHours());
+            } else if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) == Calendar.FRIDAY) {
+                this.extraHours = getTotalWorkingTime().minus(wp.getFriWorkHours());
+            }
         }
-        else if (this.day.dayOfWeek().equals(Calendar.TUESDAY))
+        else
         {
-            this.extraHours = getTotalWorkingTime().minus(wp.getTuesWorkHours());
-        }
-        else if (this.day.dayOfWeek().equals(Calendar.WEDNESDAY))
-        {
-            this.extraHours = getTotalWorkingTime().minus(wp.getWedWorkHours());
-        }
-        else if (this.day.dayOfWeek().equals(Calendar.THURSDAY))
-        {
-            this.extraHours = getTotalWorkingTime().minus(wp.getThursWorkHours());
-        }
-        else if (this.day.dayOfWeek().equals(Calendar.FRIDAY))
-        {
-            this.extraHours = getTotalWorkingTime().minus(wp.getFriWorkHours());
+            this.extraHours = Duration.ZERO;
         }
     }
     public enum DAY_TYPE {
