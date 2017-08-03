@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,6 +20,8 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -71,6 +75,9 @@ public class DayFragment extends Fragment {
     @BindView(R.id.dayTypeSpinner)
     Spinner mSpinner;
 
+    @BindView(R.id.workingHourstext)
+    TextView mtotalWorkingHours;
+
     private Day mDay;
     private Box<Day> mDayBox;
     private WorkProfile mWorkProfile;
@@ -106,14 +113,36 @@ public class DayFragment extends Fragment {
 
         if (getArguments() != null) {
             long dayID = getArguments().getLong(ARG_DAY_ID);
-            if (dayID == 0) {
-                Day day = new Day(Day.DAY_TYPE.WORKDAY, DateTime.now(), DateTime.now(), DateTime.now(), Duration.standardMinutes(0));
-                dayID = day.getId();
 
-                mDayBox.put(day);
+            if(dayID == 0)
+            {
+                mDayQuery = mDayBox.query().greater (Day_.day, DateTime.now().withTimeAtStartOfDay().getMillis()).build();
+                List<Day> days = mDayQuery.find();
+
+                mDay = days.get(0);
+
+                if (mDay == null)
+                {
+                    mDay = new Day(Day.DAY_TYPE.WORKDAY, DateTime.now(), DateTime.now(), DateTime.now(), Duration.standardMinutes(0));
+                    mDay.setToDefaultDay();
+                }
             }
-            mDayQuery = mDayBox.query().equal(Day_.id, dayID).build();
-            mDay = mDayQuery.findUnique();
+            else
+            {
+                mDayQuery = mDayBox.query().equal(Day_.id, dayID).build();
+                mDay = mDayQuery.findUnique();
+            }
+
+
+//            if (dayID == 0) {
+//                Day day = new Day(Day.DAY_TYPE.WORKDAY, DateTime.now(), DateTime.now(), DateTime.now(), Duration.standardMinutes(0));
+//               dayID = day.getId();
+//
+//                mDayBox.put(day);
+//            }
+//            mDayQuery = mDayBox.query().equal(Day_.id, dayID).build();
+//            mDay = mDayQuery.findUnique();
+
             getTheCurrentWorkingProfile();
         }
         setRetainInstance(true);
@@ -182,11 +211,26 @@ public class DayFragment extends Fragment {
         newFragment.show(getFragmentManager(), "durationPicker");
     }
 
+    @OnClick(R.id.saveImageButton)
+    public void saveDayInfo(View v)
+    {
+        updateDay();
+    }
+
+    @OnClick(R.id.cancelImageButton)
+    public void cancelDayInfo(View v)
+    {
+        mDay.setToDefaultDay();
+        mDay.computeTheExtraHours(mWorkProfile);
+        EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
+    }
+
     @OnItemSelected(R.id.dayTypeSpinner)
     public void onDayTypePicked(AdapterView<ArrayAdapter<String>> parent, int position) {
         //This only works because the spinner and Day.DAY_TYPE values are in the same order
         mDay.setType(Day.DAY_TYPE.values()[position]);
-        updateDay();
+        //updateDay();
+        EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
     }
 
     @Subscribe
@@ -200,7 +244,8 @@ public class DayFragment extends Fragment {
                 mDay.setEnd(time);
                 break;
         }
-        updateDay();
+        mDay.computeTheExtraHours(mWorkProfile);
+        EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
     }
 
     @Subscribe
@@ -214,14 +259,16 @@ public class DayFragment extends Fragment {
         } else {
             mDayQuery = newQuery;
             mDay = newDay;
-            updateDay();
+            EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
+            //updateDay();
         }
     }
 
     @Subscribe
     public void onDurationPicked(DurationPickedEvent event) {
         mDay.setPause(Duration.millis(event.duration));
-        updateDay();
+        EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
+        //updateDay();
     }
 
     @Subscribe
@@ -236,6 +283,7 @@ public class DayFragment extends Fragment {
         setPauseText(false);
         setDayOvertime(false);
         setTotalOvertime(false);
+        setTotalWorkingTime(false);
         setSpinnerItem();
 
     }
@@ -252,10 +300,13 @@ public class DayFragment extends Fragment {
                 setPauseText(true);
                 break;
             case R.string.too_many_hours:
+                setTotalWorkingTime(true);
+                break;
             case R.string.negative_total_time:
                 setStartText(true);
                 setEndText(true);
                 setPauseText(true);
+                setTotalWorkingTime(true);
                 break;
             case R.string.outside_worktime:
                 setStartText(true);
@@ -311,6 +362,11 @@ public class DayFragment extends Fragment {
         setTextColor(mPause, error);
     }
 
+    private void setTotalWorkingTime(boolean error) {
+        String totalWorkingTime = mDay.getTotalWorkingTime().toPeriod().toString(Day.PERIOD_FORMATTER);
+        mtotalWorkingHours.setText(totalWorkingTime);
+        setTextColor(mPause, error);
+    }
     private void setDayOvertime(boolean error) {
         String dayOvertime = mDay.getExtraHours().toPeriod().toString(Day.PERIOD_FORMATTER);
         mDayOvertime.setText(dayOvertime);

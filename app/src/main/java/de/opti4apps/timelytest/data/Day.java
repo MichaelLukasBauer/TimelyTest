@@ -201,7 +201,13 @@ public class Day {
 
     }
 
-
+    public void setToDefaultDay()
+    {
+        this.type = Day.DAY_TYPE.WORKDAY;
+        this.start = new DateTime(getDay()).withTime(9,0,0,0);
+        this.end = new DateTime(getDay()).withTime(17,0,0,0);
+        this.pause = Duration.standardMinutes(45);
+    }
     public void computeTheExtraHours(WorkProfile wp)
     {
         if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) !=  Calendar.SATURDAY && convertDayTextToNumber(this.day.dayOfWeek().getAsText()) !=  Calendar.SUNDAY && this.getType() == DAY_TYPE.WORKDAY ) {
