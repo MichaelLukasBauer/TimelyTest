@@ -215,6 +215,10 @@ public class DayFragment extends Fragment {
     public void saveDayInfo(View v)
     {
         updateDay();
+        String message = getResources().getString(R.string.Save_Day_message);
+        Log.d(TAG, "Day: " + mDay.getDay().toString()+ " " + message);
+        Toast.makeText(getActivity(), message,
+                Toast.LENGTH_LONG).show();
     }
 
     @OnClick(R.id.cancelImageButton)
