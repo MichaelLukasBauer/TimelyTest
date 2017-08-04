@@ -47,5 +47,6 @@
     <string name="week_exceed_total_time">You can not work more than 40 hours per week</string>
     <string name="weekly_working_hours">Weekly Working Hours</string>
     <string name="weekly_hours_distribution">weekly hours Distribution</string>
+    <string name = "Save_Day_message"> day information successfully saved</string>
 
 </resources>
