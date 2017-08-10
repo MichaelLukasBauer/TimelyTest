@@ -165,7 +165,7 @@ public class Day {
 
     public void setExtraHours(Duration extraHours) { this.extraHours = extraHours; }
 
-    public long convertDayTextToNumber (String dafOfWeek)
+    public  long convertDayTextToNumber (String dafOfWeek)
     {
         long dayAsNumber = 0;
         if(dafOfWeek.compareToIgnoreCase("monday") == 0)
