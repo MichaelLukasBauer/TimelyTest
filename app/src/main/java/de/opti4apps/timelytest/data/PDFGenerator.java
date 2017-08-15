@@ -554,6 +554,7 @@ public class PDFGenerator {
 
         return secondTable;
     }
+
     //CONVENIENCE METHODS
     private Chunk getChunk(String text, BaseColor textColor, Font _font) {
         Font font = new Font(_font);

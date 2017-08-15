@@ -216,8 +216,9 @@ public class Day {
     }
     public void computeTheExtraHours(WorkProfile wp)
     {
-        if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) !=  Calendar.SATURDAY && convertDayTextToNumber(this.day.dayOfWeek().getAsText()) !=  Calendar.SUNDAY && this.getType() == DAY_TYPE.WORKDAY ) {
-            //long r = Calendar.MONDAY;
+        if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) !=  Calendar.SATURDAY && convertDayTextToNumber(this.day.dayOfWeek().getAsText()) !=  Calendar.SUNDAY &&
+                (this.getType() == DAY_TYPE.WORKDAY || this.getType() == DAY_TYPE.BUSINESS_TRIP || this.getType() == DAY_TYPE.FURTHER_EDUCATION || this.getType() == DAY_TYPE.DOCTOR_APPOINTMENT)) {
+
             if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) == Calendar.MONDAY) {
                 this.extraHours = getTotalWorkingTime().minus(wp.getMonWorkHours());
             } else if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) == Calendar.TUESDAY) {

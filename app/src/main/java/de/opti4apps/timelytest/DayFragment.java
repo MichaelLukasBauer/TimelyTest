@@ -380,6 +380,7 @@ public class DayFragment extends Fragment {
         setTextColor(mtotalWorkingHours, error);
     }
     private void setDayOvertime(boolean error) {
+        mDay.computeTheExtraHours(mWorkProfile);
         String dayOvertime = mDay.getExtraHours().toPeriod().toString(Day.PERIOD_FORMATTER);
         mDayOvertime.setText(dayOvertime);
         setTextColor(mDayOvertime, error);
