@@ -246,7 +246,8 @@ public class DayFragment extends Fragment {
 
     @Subscribe
     public void onTimePicked(TimePickedEvent event) {
-        DateTime time = new DateTime(0, 1, 1, event.hoursOfDay, event.minute);
+        DateTime time = new DateTime(mDay.getDay().getYear(), mDay.getDay().getMonthOfYear(), mDay.getDay().getDayOfMonth(), event.hoursOfDay, event.minute);
+
         switch (event.type) {
             case "start":
                 mDay.setStart(time);
@@ -375,19 +376,19 @@ public class DayFragment extends Fragment {
     }
 
     private void setTotalWorkingTime(boolean error) {
-        String totalWorkingTime = mDay.getTotalWorkingTime().toPeriod().toString(Day.PERIOD_FORMATTER);
+        String totalWorkingTime = TimelyHelper.negativeTimePeriodFormatter(mDay.getTotalWorkingTime().toPeriod(), Day.PERIOD_FORMATTER);
         mtotalWorkingHours.setText(totalWorkingTime);
         setTextColor(mtotalWorkingHours, error);
     }
     private void setDayOvertime(boolean error) {
         mDay.computeTheExtraHours(mWorkProfile);
-        String dayOvertime = mDay.getExtraHours().toPeriod().toString(Day.PERIOD_FORMATTER);
+        String dayOvertime = TimelyHelper.negativeTimePeriodFormatter(mDay.getExtraHours().toPeriod(), Day.PERIOD_FORMATTER);
         mDayOvertime.setText(dayOvertime);
         setTextColor(mDayOvertime, error);
     }
 
     private void setTotalOvertime(boolean error) {
-        String totalOvertime = Duration.millis(TimelyHelper.getTotalOvertime(mDayBox,mWorkProfileBox)).toPeriod().toString(Day.PERIOD_FORMATTER);
+        String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(Duration.millis(TimelyHelper.getTotalOvertime(mDayBox,mWorkProfileBox)).toPeriod(), Day.PERIOD_FORMATTER);
         mTotalOvertime.setText(totalOvertime);
         setTextColor(mTotalOvertime, error);
     }

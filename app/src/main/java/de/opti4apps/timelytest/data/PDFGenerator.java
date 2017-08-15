@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 
 import de.opti4apps.timelytest.App;
+import de.opti4apps.timelytest.shared.TimelyHelper;
 import io.objectbox.Box;
 import io.objectbox.query.Query;
 
@@ -262,21 +263,7 @@ public class PDFGenerator {
 
                        // PLUSMINUSSTD REQUIRES BOTH WORKING DURATIONS | CHECK MINUS VAL POSSIVLE
                         Period workingHoursDiffSigned = workingHoursTotal.toStandardDuration().minus(workingHoursWP.toStandardDuration()).toPeriod();
-                        Period workingHoursDiff;
-                        if(workingHoursDiffSigned.getHours() == 0 && workingHoursDiffSigned.getMinutes() < 0){
-                            workingHoursDiff = new Period( workingHoursDiffSigned.getHours(), -workingHoursDiffSigned.getMinutes(), 0, 0);
-                            plusMinusStd = "-" + hoursMinutesFormatter.print(workingHoursDiff);
-                        }
-                        else if (workingHoursDiffSigned.getHours() < 0 && workingHoursDiffSigned.getMinutes() < 0){
-                            workingHoursDiff = new Period( workingHoursDiffSigned.getHours(), -workingHoursDiffSigned.getMinutes(), 0, 0);
-                            plusMinusStd = hoursMinutesFormatter.print(workingHoursDiff);
-                        }
-                        else{
-                            workingHoursDiff = workingHoursDiffSigned;
-                            plusMinusStd = hoursMinutesFormatter.print(workingHoursDiff);
-                        }
-
-
+                        plusMinusStd = TimelyHelper.negativeTimePeriodFormatter(workingHoursDiffSigned, hoursMinutesFormatter);
 
                         //AZA
 
