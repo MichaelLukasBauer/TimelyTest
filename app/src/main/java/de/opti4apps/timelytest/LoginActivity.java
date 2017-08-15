@@ -116,13 +116,12 @@ public class LoginActivity extends AppCompatActivity {
             if (UserManager.checkUserCredentials( usersBox, email, password)) {
                 currentUser = UserManager.getUserByEmail(usersBox, email);
                 UserManager.changeUserSignedInStatus(currentUser,usersBox);
-
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 intent.putExtra("userEmail", email);
                 LoginActivity.this.startActivity(intent);
             } else {
                 showProgress(false);
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
+                mPasswordView.setError(getString(R.string.error_login_failed));
                 mPasswordView.requestFocus();
             }
         }

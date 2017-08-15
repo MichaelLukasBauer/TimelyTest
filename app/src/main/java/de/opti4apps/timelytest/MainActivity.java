@@ -165,8 +165,9 @@ public class MainActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_time_sheet)
         {
-            Intent timesheetPDF = new Intent(MainActivity.this, PDFCreation.class);
-            MainActivity.this.startActivity(timesheetPDF);
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, PdfGenerationFragment.newInstance(currentUser.getId()), PdfGenerationFragment.TAG);
+            transaction.addToBackStack(null);
+            transaction.commit();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

@@ -133,6 +133,12 @@ public class Day {
         return day;
     }
 
+    public Calendar getDayAsCalendar(){
+        Calendar dayCal = Calendar.getInstance();
+        dayCal.setTime(day.toDate());
+        return dayCal;
+    }
+
     public void setDay(DateTime day) {
         this.day = day;
     }

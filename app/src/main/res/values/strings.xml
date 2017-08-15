@@ -35,6 +35,7 @@
     <string name="error_invalid_email">This email address is invalid</string>
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_login_failed">Authentication failed</string>
     <string name="error_field_required">This field is required</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
@@ -48,5 +49,11 @@
     <string name="weekly_working_hours">Weekly Working Hours</string>
     <string name="weekly_hours_distribution">weekly hours Distribution</string>
     <string name = "Save_Day_message"> day information successfully saved</string>
+
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+
+    <string name="calendar_icon">calendar icon</string>
+    <string name="generate_report">Generate Report</string>
 
 </resources>

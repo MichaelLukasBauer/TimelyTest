@@ -20,8 +20,13 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
+import org.joda.time.Hours;
+import org.joda.time.Period;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,7 +34,10 @@ import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.opti4apps.timelytest.App;
 import io.objectbox.Box;
@@ -53,13 +61,37 @@ public class PDFGenerator {
     private File dir;
     private File file;
 
+    private Calendar reportDate;
+    private Calendar reportEndDate;
+
     Document doc;
 
-    public void createPDF(String _path) throws FileNotFoundException, DocumentException {
+    private User currentUser;
+    private Box<User> usersBox;
+
+    private List<Day> mDayList = new ArrayList<>();
+    private Box<Day> mDayBox;
+    private Query<Day> mDayQuery;
+
+   // private WorkProfile[] mWorkProfileArray;
+
+    Date startDate, endDate;
+
+    Map<Integer, String> germanDays = new HashMap<>();
+
+    private String[] germanMonths = new String[] {"Jän","Feb","März","Apr","Mai","Juni","Juli","Aug","Sept","Okt","Nov","Dez"};
+
+    public void createPDF(String _path, Calendar _reportSelectedDate) throws FileNotFoundException, DocumentException {
 
         path = _path;
         dir = new File(path);
+        reportDate = _reportSelectedDate;
+        reportEndDate = Calendar.getInstance();
+        reportEndDate.setTime(reportDate.getTime());
+        reportEndDate.add(Calendar.MONTH, 1);
+        reportEndDate.add(Calendar.DAY_OF_MONTH, -1);
 
+        setupWeekdaysArr();
         //create document file
         try {
 
@@ -112,33 +144,37 @@ public class PDFGenerator {
         doc.setMargins(25,25,25,25);
 
         Log.e("PDFCreator", "PDF Path: " + path);
-        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy");
-        file = new File(dir, "UniTyLab_Employees_Timesheet" + sdf.format(Calendar.getInstance().getTime()) + ".pdf");
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMyyyy");
+        file = new File(dir, "UniTyLabEmployeesTimesheet_" + sdf.format(reportDate.getTime()) + ".pdf");
         FileOutputStream fOut = new FileOutputStream(file);
         PdfWriter writer = PdfWriter.getInstance(doc, fOut);
     }
 
-    private User currentUser;
-    private Box<User> usersBox;
-
-    private List<Day> mDayList = new ArrayList<>();
-    private Box<Day> mDayBox;
-    private Query<Day> mDayQuery;
-
-    DateTime selectedMonth;
-    DateTime startDate, endDate;
+    private void setupWeekdaysArr(){
+        germanDays.put(Calendar.MONDAY, "Mo");
+        germanDays.put(Calendar.TUESDAY, "Di");
+        germanDays.put(Calendar.WEDNESDAY, "Mi");
+        germanDays.put(Calendar.THURSDAY, "Do");
+        germanDays.put(Calendar.FRIDAY, "Fr");
+        germanDays.put(Calendar.SATURDAY, "Sa");
+        germanDays.put(Calendar.SUNDAY, "So");
+    }
 
     private void loadData() {
         usersBox = ((App) c.getApplication()).getBoxStore().boxFor(User.class);
         currentUser = UserManager.getSignedInUser(usersBox);
+
         mDayBox = ((App) c.getApplication()).getBoxStore().boxFor(Day.class);
-        DateTime dt = DateTime.now();
-        selectedMonth = new DateTime(dt.getYear(),dt.getMonthOfYear(),1,0,0);
-        startDate = selectedMonth.withDayOfMonth(1);
-        endDate = selectedMonth.withDayOfMonth(1).plusMonths(1).minusDays(1);
-        mDayQuery = mDayBox.query().between(Day_.day, startDate.toDate(), endDate.toDate()).orderDesc(Day_.day).build();
+        startDate = reportDate.getTime();
+        endDate = reportEndDate.getTime();
+        mDayQuery = mDayBox.query().between(Day_.day, startDate, endDate).orderDesc(Day_.day).build();
         mDayList.addAll(mDayQuery.find());
-        mDayList.size();
+
+//        Box<WorkProfile> mWorkProfileBox = ((App) c.getApplication()).getBoxStore().boxFor(WorkProfile.class);
+//        Query<WorkProfile> mWorkProfileQuery =  mWorkProfileBox.query().between(WorkProfile_.startDate, startDate, endDate).orderDesc(WorkProfile_.startDate).build();
+//        List<WorkProfile> mWorkProfileList = new ArrayList<>();
+//        mWorkProfileList.addAll(mWorkProfileQuery.find());
+//        mWorkProfileList.toArray(mWorkProfileArray);
     }
 
     private Day findDay(Integer dom) {
@@ -160,9 +196,6 @@ public class PDFGenerator {
 
     //MAIN TABLE
 
-    private String[] germanDays = new String[] {"Mo","Di","Mi","Do","Fr","Sa","So"};
-    private String[] germanMonths = new String[] {"Jän","Feb","März","Apr","Mai","Juni","Juli","Aug","Sept","Okt","Nov","Dez"};
-
     private PdfPTable getMainTable() throws DocumentException {
         PdfPTable firstTable = new PdfPTable(14);
         firstTable.setWidthPercentage(100.0F);
@@ -179,27 +212,77 @@ public class PDFGenerator {
         }
 
         for (int i = 1;i<=31;i++) {
-            if (endDate.dayOfMonth().get()>=i) {
+            if (reportEndDate.get(Calendar.DAY_OF_MONTH)>=i) {
                 Day thisDay = findDay(i);
-                DateTime date;
-                if (thisDay == null) {
-                    date = startDate.withDayOfMonth(i);
-                } else {
-                    date = thisDay.getDay();
-                }
-                boolean blue = (date.dayOfWeek().get() == 6 || date.dayOfWeek().get() == 7);
-                firstTable.addCell(getTupleCell(germanDays[date.dayOfWeek().get() - 1], 1, 1, blue));
-                DateTimeFormatter fmt = DateTimeFormat.forPattern("dd.MM.yy");
-                firstTable.addCell(getTupleCell(date.toString(fmt), 1, 1, blue));
+                Calendar date = Calendar.getInstance();
+                date.setTime(reportDate.getTime());
+                date.set(Calendar.DAY_OF_MONTH, i);
+                date.setFirstDayOfWeek(Calendar.MONDAY);
+                boolean blue = (date.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || date.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY);
+                firstTable.addCell(getTupleCell(germanDays.get(date.get(Calendar.DAY_OF_WEEK)), 1, 1, blue));
+                firstTable.addCell(getTupleCell(new SimpleDateFormat("dd.MM.yy").format(date.getTime()), 1, 1, blue));
 
-                String beginn = "", mVon = "", mBis = "", zVon = "", zBis = "", ende = "";
+                String beginn = "", mVon = "", mBis = "", zVon = "", zBis = "", ende = "", istStd = "00:00", sollStd = "00:00", plusMinusStd = "00:00", aza = "00:00", uebertrag = "00:00", bemerkungen = "";
                 if (thisDay != null) {
-                    beginn = thisDay.getStart().toString(Day.TIME_FORMATTER);
-                    ende = thisDay.getEnd().toString(Day.TIME_FORMATTER);
 
-                    DateTime breakstart = thisDay.getStart().plusHours(1);
-                    mVon = breakstart.toString(Day.TIME_FORMATTER);
-                    mBis = breakstart.plus(thisDay.getPause()).toString(Day.TIME_FORMATTER);
+                    //BEMERKUNGEN
+                    bemerkungen = getDayTypeRepostString(thisDay);
+
+                    if(thisDay.getType().compareTo(Day.DAY_TYPE.HOLIDAY) != 0 && thisDay.getType().compareTo(Day.DAY_TYPE.DAY_OFF_IN_LIEU) != 0 &&
+                            thisDay.getType().compareTo(Day.DAY_TYPE.OTHER) != 0) { //ADD ILLNESS - Currently not in a day type enum
+                        beginn = thisDay.getStart().toString(Day.TIME_FORMATTER);
+                        ende = thisDay.getEnd().toString(Day.TIME_FORMATTER);
+
+                        //BREAK IS SAVED AS DURATION, SWITCH TO START & END DATE
+                        DateTime breakStart = thisDay.getStart().plusHours(1);
+                        mVon = breakStart.toString(Day.TIME_FORMATTER);
+                        mBis = breakStart.plus(thisDay.getPause()).toString(Day.TIME_FORMATTER);
+
+                        //CHECK WITH NORMAL ENDDATE
+
+                        PeriodFormatter hoursMinutesFormatter = new PeriodFormatterBuilder()
+                                .printZeroAlways()
+                                .minimumPrintedDigits(2)
+                                .appendHours()
+                                .appendSeparator(":")
+                                .appendMinutes()
+                                .toFormatter();
+
+                        Period workingHoursTotal = new Period(thisDay.getStart(), thisDay.getEnd());
+                        istStd = hoursMinutesFormatter.print(workingHoursTotal);
+
+
+                        //SWITCH TO THE DAY PROPERTY | DELETE CURRENT WP CALCULATIONS!
+                        Period workingHoursWP = new Period(7, 0, 0, 0);
+                        //                Duration workingHoursWP = thisDay.getWorkingHoursWP();
+                        //                long hoursWP = workingHoursWP.getStandardHours();
+                        //                long minutesWP = workingHoursWP.getStandardMinutes();
+                        //                sollStd = hoursWP + ":" + minutesWP;
+                       // sollStd = getWorkingHoursFromWP(thisDay);
+
+                       // PLUSMINUSSTD REQUIRES BOTH WORKING DURATIONS | CHECK MINUS VAL POSSIVLE
+                        Period workingHoursDiffSigned = workingHoursTotal.toStandardDuration().minus(workingHoursWP.toStandardDuration()).toPeriod();
+                        Period workingHoursDiff;
+                        if(workingHoursDiffSigned.getHours() == 0 && workingHoursDiffSigned.getMinutes() < 0){
+                            workingHoursDiff = new Period( workingHoursDiffSigned.getHours(), -workingHoursDiffSigned.getMinutes(), 0, 0);
+                            plusMinusStd = "-" + hoursMinutesFormatter.print(workingHoursDiff);
+                        }
+                        else if (workingHoursDiffSigned.getHours() < 0 && workingHoursDiffSigned.getMinutes() < 0){
+                            workingHoursDiff = new Period( workingHoursDiffSigned.getHours(), -workingHoursDiffSigned.getMinutes(), 0, 0);
+                            plusMinusStd = hoursMinutesFormatter.print(workingHoursDiff);
+                        }
+                        else{
+                            workingHoursDiff = workingHoursDiffSigned;
+                            plusMinusStd = hoursMinutesFormatter.print(workingHoursDiff);
+                        }
+
+
+
+                        //AZA
+
+                        //UEBERTRAG
+                    }
+
                 }
 
                 firstTable.addCell(getTupleCell(beginn, 1, 1, blue));
@@ -208,12 +291,12 @@ public class PDFGenerator {
                 firstTable.addCell(getTupleCell(zVon, 1, 1, blue));
                 firstTable.addCell(getTupleCell(zBis, 1, 1, blue));
                 firstTable.addCell(getTupleCell(ende, 1, 1, blue));
-                firstTable.addCell(getTupleCell(" ", 1, 1, blue));
-                firstTable.addCell(getTupleCell(" ", 1, 1, blue));
-                firstTable.addCell(getTupleCell(" ", 1, 1, blue));
-                firstTable.addCell(getTupleCell(" ", 1, 1, blue));
-                firstTable.addCell(getTupleCell(" ", 1, 1, blue));
-                firstTable.addCell(getTupleCell(" ", 1, 1, blue));
+                firstTable.addCell(getTupleCell(istStd, 1, 1, blue));
+                firstTable.addCell(getTupleCell(sollStd, 1, 1, blue));
+                firstTable.addCell(getTupleCell(plusMinusStd, 1, 1, blue));
+                firstTable.addCell(getTupleCell(aza, 1, 1, blue));
+                firstTable.addCell(getTupleCell(uebertrag, 1, 1, blue));
+                firstTable.addCell(getTupleCell(bemerkungen, 1, 1, blue));
             }
             else {
                 firstTable = addEmptyTupleCells(firstTable,14,false);
@@ -240,6 +323,63 @@ public class PDFGenerator {
         return firstTable;
     }
 
+    private String getDayTypeRepostString(Day thisDay){
+
+        switch(thisDay.getType()){
+            case OTHER:
+                return "S";
+            case BUSINESS_TRIP:
+                return "D";
+            case HOLIDAY:
+                return "U";
+            case DOCTOR_APPOINTMENT:
+                return "A";
+            case FURTHER_EDUCATION:
+                return "F";
+            case DAY_OFF_IN_LIEU:
+                return "AZA";
+            default:
+                return "";
+        }
+    }
+
+
+// DELETE METHOD!
+//    private String getWorkingHoursFromWP(Day thisDay){
+//
+//        WorkProfile currentWorkProfile = null;
+//        for(int i = 0; i < mWorkProfileArray.length; i++){
+//            currentWorkProfile = mWorkProfileArray[i];
+//            if(currentWorkProfile.getStartDate().isEqual(thisDay.getDay())){
+//                break;
+//            }
+//            else if(currentWorkProfile.getStartDate().isBefore(thisDay.getDay())){
+//                if(mWorkProfileArray[i+1].getStartDate().isAfter(thisDay.getDay())){
+//                    break;
+//                }
+//                else
+//                    continue;
+//            }
+//        }
+
+//        Calendar cal = Calendar.getInstance();
+//        cal.setTime(thisDay.getDay().toDate());
+//        switch(cal.get(Calendar.DAY_OF_WEEK)){
+//            case Calendar.MONDAY:
+//                return currentWorkProfile.getMonWorkHours().toString();
+//            case Calendar.TUESDAY:
+//                return currentWorkProfile.getTuesWorkHours().toString();
+//            case Calendar.WEDNESDAY:
+//                return currentWorkProfile.getMonWorkHours().toString();
+//            case Calendar.THURSDAY:
+//                return currentWorkProfile.getTuesWorkHours().toString();
+//            case Calendar.FRIDAY:
+//                return currentWorkProfile.getMonWorkHours().toString();
+//            default:
+//                return "";
+//        }
+//    }
+
     private PdfPTable populateMainTableHeader(PdfPTable firstTable) {
         Font monthFont = new Font(Font.FontFamily.HELVETICA, 13, Font.BOLD);
         PdfPCell hCell = getCell(null,2,2,monthFont);
@@ -249,11 +389,11 @@ public class PDFGenerator {
         p.setLeading(0,1f);
         p.setSpacingBefore(0);
         p.setSpacingAfter(0);
-        String month = germanMonths[selectedMonth.monthOfYear().get()-1];
+        String month = germanMonths[reportDate.get(Calendar.MONTH)];
         p.add(new Chunk(month,monthFont));
         p.add(Chunk.NEWLINE);
         DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy");
-        p.add(new Chunk(selectedMonth.toString(fmt),monthFont));
+        p.add(new Chunk(new SimpleDateFormat("yyyy").format(reportDate.getTime()),monthFont));
         hCell.setPadding(4.0f);
 
         hCell.setLeading(0,0);
