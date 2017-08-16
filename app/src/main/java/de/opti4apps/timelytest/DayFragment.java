@@ -197,7 +197,6 @@ public class DayFragment extends Fragment {
     @OnClick({R.id.startTimeText, R.id.endTimeText})
     public void showTimePickerDialog(View v) {
         if (v.getId() == R.id.startTimeText) {
-
             DialogFragment newFragment = TimePickerFragment.newInstance("start");
             newFragment.show(getFragmentManager(), "startTimePicker");
         } else if (v.getId() == R.id.endTimeText) {
@@ -246,7 +245,7 @@ public class DayFragment extends Fragment {
 
     @Subscribe
     public void onTimePicked(TimePickedEvent event) {
-        DateTime time = new DateTime(mDay.getDay().getYear(), mDay.getDay().getMonthOfYear(), mDay.getDay().getDayOfMonth(), event.hoursOfDay, event.minute);
+        DateTime time = new DateTime(0, 1, 1, event.hoursOfDay, event.minute);
 
         switch (event.type) {
             case "start":
@@ -388,7 +387,7 @@ public class DayFragment extends Fragment {
     }
 
     private void setTotalOvertime(boolean error) {
-        String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(Duration.millis(TimelyHelper.getTotalOvertime(mDayBox,mWorkProfileBox)).toPeriod(), Day.PERIOD_FORMATTER);
+        String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(Duration.millis(TimelyHelper.getTotalOvertimeForDay(mDay, mDayBox,mWorkProfileBox)).toPeriod(), Day.PERIOD_FORMATTER);
         mTotalOvertime.setText(totalOvertime);
         setTextColor(mTotalOvertime, error);
     }
