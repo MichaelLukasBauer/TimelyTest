@@ -77,6 +77,12 @@ public class Day {
     }
 
     public boolean isValid() throws IllegalArgumentException {
+        String dayText = this.day.dayOfWeek().getAsText();
+        if(convertDayTextToNumber(dayText) ==  Calendar.SATURDAY || convertDayTextToNumber(dayText) ==  Calendar.SUNDAY  )
+        {
+            throw new IllegalArgumentException(String.valueOf(R.string.no_work_on_weekend));
+        }
+
         switch (type) {
             case WORKDAY:
             case BUSINESS_TRIP:
@@ -131,6 +137,12 @@ public class Day {
 
     public DateTime getDay() {
         return day;
+    }
+
+    public Calendar getDayAsCalendar(){
+        Calendar dayCal = Calendar.getInstance();
+        dayCal.setTime(day.toDate());
+        return dayCal;
     }
 
     public void setDay(DateTime day) {
@@ -204,14 +216,17 @@ public class Day {
     public void setToDefaultDay()
     {
         this.type = Day.DAY_TYPE.WORKDAY;
-        this.start = new DateTime(getDay()).withTime(9,0,0,0);
-        this.end = new DateTime(getDay()).withTime(17,0,0,0);
+       // this.start = new DateTime(getDay()).withTime(9,0,0,0);
+          this.start = new DateTime(0, 1, 1, 9, 0);
+       // this.end = new DateTime(getDay()).withTime(17,0,0,0);
+          this.end = new DateTime(0, 1, 1, 17, 0);
         this.pause = Duration.standardMinutes(45);
     }
     public void computeTheExtraHours(WorkProfile wp)
     {
-        if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) !=  Calendar.SATURDAY && convertDayTextToNumber(this.day.dayOfWeek().getAsText()) !=  Calendar.SUNDAY && this.getType() == DAY_TYPE.WORKDAY ) {
-            //long r = Calendar.MONDAY;
+        if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) !=  Calendar.SATURDAY && convertDayTextToNumber(this.day.dayOfWeek().getAsText()) !=  Calendar.SUNDAY &&
+                (this.getType() == DAY_TYPE.WORKDAY || this.getType() == DAY_TYPE.BUSINESS_TRIP || this.getType() == DAY_TYPE.FURTHER_EDUCATION || this.getType() == DAY_TYPE.DOCTOR_APPOINTMENT)) {
+
             if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) == Calendar.MONDAY) {
                 this.extraHours = getTotalWorkingTime().minus(wp.getMonWorkHours());
             } else if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) == Calendar.TUESDAY) {

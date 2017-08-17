@@ -1,10 +1,14 @@
 package de.opti4apps.timelytest.shared;
 
 import org.joda.time.Duration;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormatter;
+import org.joda.time.format.PeriodFormatterBuilder;
 
 import java.util.List;
 
 import de.opti4apps.timelytest.data.Day;
+import de.opti4apps.timelytest.data.Day_;
 import de.opti4apps.timelytest.data.WorkProfile;
 import io.objectbox.Box;
 import io.objectbox.query.Query;
@@ -57,11 +61,13 @@ public class TimelyHelper {
 
     }
 
-    public static long getTotalOvertime(Box<Day> mDayBox, Box<WorkProfile> mWorkProfileBox)
+    public static long getTotalOvertimeForDay(Day mDay, Box<Day> mDayBox, Box<WorkProfile> mWorkProfileBox)
     {
         long totalOvertime = 0;
-        mDayQuery = mDayBox.query().build();
+       // mDayQuery = mDayBox.query().build();
+        mDayQuery = mDayBox.query().less (Day_.day, mDay.getDay().toDate()).build();
         List<Day> allDay = mDayQuery.find();
+        allDay.add(mDay);
         for (Day d: allDay)
         {
             WorkProfile wp = getValidWorkingProfile(d,mWorkProfileBox);
@@ -72,6 +78,26 @@ public class TimelyHelper {
             totalOvertime += d.getExtraHours().getMillis();
         }
         return totalOvertime;
+    }
+
+    public static String negativeTimePeriodFormatter(Period period, PeriodFormatter periodFormatter){
+        PeriodFormatter hoursMinutesFormatter = periodFormatter;
+        Period newPeriod;
+
+        String timeStr;
+        if(period.getHours() == 0 && period.getMinutes() < 0){
+            newPeriod = new Period( period.getHours(), -period.getMinutes(), 0, 0);
+            timeStr = "-" + hoursMinutesFormatter.print(newPeriod);
+        }
+        else if (period.getHours() < 0 && period.getMinutes() < 0){
+            newPeriod = new Period( period.getHours(), -period.getMinutes(), 0, 0);
+            timeStr = hoursMinutesFormatter.print(newPeriod);
+        }
+        else{
+            newPeriod = period;
+            timeStr = hoursMinutesFormatter.print(newPeriod);
+        }
+        return  timeStr;
     }
 
 }
