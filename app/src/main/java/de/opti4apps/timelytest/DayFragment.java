@@ -208,7 +208,7 @@ public class DayFragment extends Fragment {
 
     @OnClick(R.id.dateText)
     public void showDatePickerDialog(View v) {
-        DialogFragment newFragment = new DatePickerFragment();
+        DialogFragment newFragment = DatePickerFragment.newInstance(mDay.getDay().getDayOfMonth(),mDay.getDay().getMonthOfYear()-1,mDay.getDay().getYear());
         newFragment.show(getFragmentManager(), "datePicker");
     }
 
@@ -221,11 +221,25 @@ public class DayFragment extends Fragment {
     @OnClick(R.id.saveImageButton)
     public void saveDayInfo(View v)
     {
-        updateDay();
-        String message = getResources().getString(R.string.Save_Day_message);
-        Log.d(TAG, "Day: " + mDay.getDay().toString()+ " " + message);
-        Toast.makeText(getActivity(), message,
-                Toast.LENGTH_LONG).show();
+        try {
+            if (mDay.isValid()) {
+                mDay.computeTheExtraHours(mWorkProfile);
+                mDayBox.put(mDay);
+                EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
+                String message = getResources().getString(R.string.Save_Day_message);
+                Log.d(TAG, "Day: " + mDay.getDay().toString()+ " " + message);
+                Toast.makeText(getActivity(), message,
+                        Toast.LENGTH_LONG).show();
+            }
+        } catch (IllegalArgumentException e) {
+            String msg = e.getMessage();
+            int res = Integer.decode(msg);
+            updateOnError(res);
+            String message = getResources().getString(res);
+            Log.d(TAG, res + " " + message);
+            Toast.makeText(getActivity(), message,
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     @OnClick(R.id.cancelImageButton)
@@ -308,8 +322,18 @@ public class DayFragment extends Fragment {
         setPauseText(false);
 
         switch (error) {
+            case R.string.no_work_on_weekend:
+                setDateText(true);
+                setPauseText(true);
+                setStartText(true);
+                setEndText(true);
+                setPauseText(true);
+                break;
             case R.string.pause_validation_short:
             case R.string.pause_validation_long:
+                setPauseText(true);
+                setStartText(true);
+                setEndText(true);
                 setPauseText(true);
                 break;
             case R.string.too_many_hours:
@@ -325,24 +349,6 @@ public class DayFragment extends Fragment {
                 setStartText(true);
                 setEndText(true);
                 break;
-        }
-    }
-
-    private void updateDay() {
-        try {
-            if (mDay.isValid()) {
-                mDay.computeTheExtraHours(mWorkProfile);
-                mDayBox.put(mDay);
-                EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
-            }
-        } catch (IllegalArgumentException e) {
-            String msg = e.getMessage();
-            int res = Integer.decode(msg);
-            updateOnError(res);
-            String message = getResources().getString(res);
-            Log.d(TAG, res + " " + message);
-            Toast.makeText(getActivity(), message,
-                    Toast.LENGTH_LONG).show();
         }
     }
 

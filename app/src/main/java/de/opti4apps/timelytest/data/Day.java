@@ -77,6 +77,12 @@ public class Day {
     }
 
     public boolean isValid() throws IllegalArgumentException {
+        String dayText = this.day.dayOfWeek().getAsText();
+        if(convertDayTextToNumber(dayText) ==  Calendar.SATURDAY || convertDayTextToNumber(dayText) ==  Calendar.SUNDAY  )
+        {
+            throw new IllegalArgumentException(String.valueOf(R.string.no_work_on_weekend));
+        }
+
         switch (type) {
             case WORKDAY:
             case BUSINESS_TRIP:
