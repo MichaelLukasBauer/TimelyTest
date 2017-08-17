@@ -16,16 +16,33 @@ import mobi.upod.timedurationpicker.TimeDurationPickerDialog;
 
 public class DurationPickerFragment extends DialogFragment implements TimeDurationPickerDialog.OnDurationSetListener {
 
+    private static final String ARG_DURATION = "duration";
+    private long mDuration = 0 ;
+
+    public static  DurationPickerFragment newInstance(long duration)
+    {
+        DurationPickerFragment fragment = new DurationPickerFragment();
+
+        // Supply duration input as an argument.
+        Bundle args = new Bundle();
+        args.putLong(ARG_DURATION, duration);
+        fragment.setArguments(args);
+
+        return fragment;
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        long duration = 0;
-        return new TimeDurationPickerDialog(getActivity(), this, duration, TimeDurationPicker.HH_MM);
-    }
+        if (getArguments() != null) {
+            mDuration = getArguments().getLong(ARG_DURATION);;
 
+        }
+        return new TimeDurationPickerDialog(getActivity(), this, mDuration, TimeDurationPicker.HH_MM);
+    }
 
     @Override
     public void onDurationSet(TimeDurationPicker view, long duration) {
         EventBus.getDefault().post(new DurationPickedEvent(duration));
     }
+
 }
