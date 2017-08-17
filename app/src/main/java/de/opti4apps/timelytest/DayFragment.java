@@ -120,7 +120,7 @@ public class DayFragment extends Fragment {
 
             if(dayID == 0)
             {
-                mDayQuery = mDayBox.query().greater (Day_.day, DateTime.now().withTimeAtStartOfDay().getMillis()).build();
+                mDayQuery = mDayBox.query().equal (Day_.day, DateTime.now().toDate()).build();
                 List<Day> days = mDayQuery.find();
 
 
@@ -254,6 +254,26 @@ public class DayFragment extends Fragment {
         //This only works because the spinner and Day.DAY_TYPE values are in the same order
         mDay.setType(Day.DAY_TYPE.values()[position]);
         //updateDay();
+        if(mDay.getType().compareTo(Day.DAY_TYPE.HOLIDAY) == 0 || mDay.getType().compareTo(Day.DAY_TYPE.DAY_OFF_IN_LIEU) == 0 ||
+                mDay.getType().compareTo(Day.DAY_TYPE.OTHER) == 0 || mDay.getType().compareTo(Day.DAY_TYPE.ILLNESS) == 0){
+            mStart.setEnabled(false);
+            mEnd.setEnabled(false);
+            mPause.setEnabled(false);
+            mDay.isValid();
+        }
+        else{
+            mStart.setEnabled(true);
+            mEnd.setEnabled(true);
+            mPause.setEnabled(true);
+            if(mDay.getStart().compareTo(mDay.getDay().withTimeAtStartOfDay()) == 0 && mDay.getEnd().compareTo(mDay.getDay().withTimeAtStartOfDay()) == 0 &&
+                    mDay.getPause().compareTo(Duration.millis(0)) == 0){
+                mDay.setStart(new DateTime(0, 1, 1, 9, 0));
+                mDay.setEnd(new DateTime(0, 1, 1, 17, 0));
+                mDay.setPause(Duration.standardMinutes(45));
+            }
+
+        }
+
         EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
     }
 
@@ -283,6 +303,7 @@ public class DayFragment extends Fragment {
                     Toast.LENGTH_LONG).show();
         } else {
             mDayQuery = newQuery;
+            newDay.setToDefaultDay();
             mDay = newDay;
             EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
             //updateDay();
