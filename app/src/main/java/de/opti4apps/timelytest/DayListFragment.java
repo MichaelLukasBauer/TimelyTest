@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -38,6 +39,7 @@ import butterknife.OnClick;
 import butterknife.OnItemSelected;
 import de.opti4apps.timelytest.data.Day;
 import de.opti4apps.timelytest.data.Day_;
+import de.opti4apps.timelytest.data.WorkProfile;
 import de.opti4apps.timelytest.event.DayDatasetChangedEvent;
 import de.opti4apps.timelytest.event.DayMultibleSelectionEvent;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
@@ -64,6 +66,9 @@ public class DayListFragment extends Fragment {
     Spinner mMonthSpinner;
     private Box<Day> mDayBox;
     private Query<Day> mDayQuery;
+    private WorkProfile mWorkProfile;
+    private Box<WorkProfile> mWorkProfileBox;
+    private Query<WorkProfile> mWorkProfileQuery;
     private ActionMode mActionMode;
     private ActionModeCallback mActionModeCallback = new ActionModeCallback();
     private int mCurrentMonthArrayPosition = -1;
@@ -86,6 +91,8 @@ public class DayListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
+        mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
+
         mDayQuery = mDayBox.query().orderDesc(Day_.day).build();
         EventBus.getDefault().register(this);
 
@@ -156,7 +163,19 @@ public class DayListFragment extends Fragment {
 
     @OnClick(R.id.fab)
     public void onFABClicked() {
-        EventBus.getDefault().post(new DaySelectedEvent(0));
+        mWorkProfileQuery = mWorkProfileBox.query().build();
+        List<WorkProfile> allWP = mWorkProfileQuery.find();
+        if(allWP.size()== 0)
+        {
+            String message = getResources().getString(R.string.no_working_profile);
+            Log.d(TAG,  message);
+            Toast.makeText(getActivity(), message,
+                    Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            EventBus.getDefault().post(new DaySelectedEvent(0));
+        }
     }
 
     @OnItemSelected(R.id.month_spinner)
