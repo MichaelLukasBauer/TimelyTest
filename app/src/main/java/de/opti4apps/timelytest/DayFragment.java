@@ -42,6 +42,7 @@ import de.opti4apps.timelytest.shared.TimePickerFragment;
 import de.opti4apps.timelytest.shared.TimelyHelper;
 import io.objectbox.Box;
 import io.objectbox.query.Query;
+import mobi.upod.timedurationpicker.TimeDurationPicker;
 
 
 /**
@@ -197,10 +198,10 @@ public class DayFragment extends Fragment {
     @OnClick({R.id.startTimeText, R.id.endTimeText})
     public void showTimePickerDialog(View v) {
         if (v.getId() == R.id.startTimeText) {
-            DialogFragment newFragment = TimePickerFragment.newInstance("start");
+            DialogFragment newFragment = TimePickerFragment.newInstance("start",mDay.getStart().getMinuteOfHour(),mDay.getStart().getHourOfDay());
             newFragment.show(getFragmentManager(), "startTimePicker");
         } else if (v.getId() == R.id.endTimeText) {
-            DialogFragment newFragment = TimePickerFragment.newInstance("end");
+            DialogFragment newFragment = TimePickerFragment.newInstance("end",mDay.getEnd().getMinuteOfHour(),mDay.getEnd().getHourOfDay());
             newFragment.show(getFragmentManager(), "endTimePicker");
         }
     }
@@ -213,7 +214,7 @@ public class DayFragment extends Fragment {
 
     @OnClick(R.id.pauseDurationText)
     public void showDurationPickerDialog(View v) {
-        DialogFragment newFragment = new DurationPickerFragment();
+        DialogFragment newFragment = DurationPickerFragment.newInstance(mDay.getPause().getMillis());
         newFragment.show(getFragmentManager(), "durationPicker");
     }
 

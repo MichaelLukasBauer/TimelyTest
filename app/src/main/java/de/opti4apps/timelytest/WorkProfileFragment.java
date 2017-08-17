@@ -162,10 +162,31 @@ public class WorkProfileFragment extends Fragment {
     @OnClick({R.id.monTimeText, R.id.tuesTimeText,R.id.wedTimeText, R.id.thursTimeText,R.id.friTimeText})
     public void showTimePickerDialog(View v) {
         mSelectedText = v.getId();
-            DurationPickerFragment newFragment = new DurationPickerFragment();
+        if (mSelectedText == R.id.monTimeText)
+        {
+            DurationPickerFragment newFragment = DurationPickerFragment.newInstance(mWorkProfile.getMonWorkHours().getMillis());
             newFragment.show(getFragmentManager(), "durationMon");
-
-
+        }
+        else if (mSelectedText == R.id.tuesTimeText)
+        {
+            DurationPickerFragment newFragment = DurationPickerFragment.newInstance(mWorkProfile.getTuesWorkHours().getMillis());
+            newFragment.show(getFragmentManager(), "durationTue");
+        }
+        else if (mSelectedText == R.id.wedTimeText)
+        {
+            DurationPickerFragment newFragment = DurationPickerFragment.newInstance(mWorkProfile.getWedWorkHours().getMillis());
+            newFragment.show(getFragmentManager(), "durationWed");
+        }
+        else if (mSelectedText == R.id.thursTimeText)
+        {
+            DurationPickerFragment newFragment = DurationPickerFragment.newInstance(mWorkProfile.getThursWorkHours().getMillis());
+            newFragment.show(getFragmentManager(), "durationThu");
+        }
+        else if (mSelectedText == R.id.friTimeText)
+        {
+            DurationPickerFragment newFragment = DurationPickerFragment.newInstance(mWorkProfile.getFriWorkHours().getMillis());
+            newFragment.show(getFragmentManager(), "durationFri");
+        }
     }
 
     @Subscribe
