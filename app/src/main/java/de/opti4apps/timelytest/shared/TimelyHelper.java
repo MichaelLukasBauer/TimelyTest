@@ -74,8 +74,15 @@ public class TimelyHelper {
             if (wp == null) {
                 wp  = new WorkProfile(0, Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0));
             }
-            d.computeTheExtraHours(wp);
-            totalOvertime += d.getExtraHours().getMillis();
+            if(d.getType().compareTo(Day.DAY_TYPE.DAY_OFF_IN_LIEU) == 0){
+                Duration workingHoursfromWP = d.getDayWorkingHoursFromWP(wp);
+                totalOvertime -= workingHoursfromWP.getMillis();
+            }
+            else {
+                d.computeTheExtraHours(wp);
+                totalOvertime += d.getExtraHours().getMillis();
+            }
+
         }
         return totalOvertime;
     }

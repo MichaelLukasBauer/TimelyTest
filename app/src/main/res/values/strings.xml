@@ -54,7 +54,6 @@
     <string name="cancel">Cancel</string>
 
     <string name="calendar_icon">calendar icon</string>
-    <string name="generate_report">Generate Report</string>
     <string name="no_work_on_weekend">The day information have not been saved. No work on weekend</string>
     <string name="no_working_profile">You need to set a working profile first</string>
 </resources>

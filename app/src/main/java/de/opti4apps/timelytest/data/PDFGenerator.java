@@ -230,7 +230,7 @@ public class PDFGenerator {
                     bemerkungen = getDayTypeRepostString(thisDay);
 
                     if(thisDay.getType().compareTo(Day.DAY_TYPE.HOLIDAY) != 0 && thisDay.getType().compareTo(Day.DAY_TYPE.DAY_OFF_IN_LIEU) != 0 &&
-                            thisDay.getType().compareTo(Day.DAY_TYPE.OTHER) != 0) { //ADD ILLNESS - Currently not in a day type enum
+                            thisDay.getType().compareTo(Day.DAY_TYPE.OTHER) != 0 && thisDay.getType().compareTo(Day.DAY_TYPE.ILLNESS) != 0) {
                         beginn = thisDay.getStart().toString(Day.TIME_FORMATTER);
                         ende = thisDay.getEnd().toString(Day.TIME_FORMATTER);
 

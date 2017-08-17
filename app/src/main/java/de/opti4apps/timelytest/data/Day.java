@@ -100,12 +100,13 @@ public class Day {
                 if (end.getMillis() - start.getMillis() >= Hours.hours(6).toStandardDuration().getMillis() && pause.getMillis() < Minutes.minutes(30).toStandardDuration().getMillis()) {
                     throw new IllegalArgumentException(String.valueOf(R.string.pause_validation_short));
                 }
-                if (end.getMillis() - start.getMillis() >= Hours.hours(8).toStandardDuration().getMillis() && pause.getMillis() < Minutes.minutes(45).toStandardDuration().getMillis()) {
+                if (end.getMillis() - start.getMillis() >= Hours.hours(9).toStandardDuration().getMillis() && pause.getMillis() < Minutes.minutes(45).toStandardDuration().getMillis()) {
                     throw new IllegalArgumentException(String.valueOf(R.string.pause_validation_long));
                 }
                 break;
             case HOLIDAY:
             case DAY_OFF_IN_LIEU:
+            case ILLNESS:
             case OTHER:
                 start = day.withTimeAtStartOfDay();
                 end = day.withTimeAtStartOfDay();
@@ -244,8 +245,25 @@ public class Day {
             this.extraHours = Duration.ZERO;
         }
     }
+
+    public Duration getDayWorkingHoursFromWP(WorkProfile wp){
+        if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) == Calendar.MONDAY) {
+            return wp.getMonWorkHours();
+        } else if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) == Calendar.TUESDAY) {
+            return wp.getTuesWorkHours();
+        } else if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) == Calendar.WEDNESDAY) {
+            return wp.getWedWorkHours();
+        } else if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) == Calendar.THURSDAY) {
+            return wp.getThursWorkHours();
+        } else if (convertDayTextToNumber(this.day.dayOfWeek().getAsText()) == Calendar.FRIDAY) {
+            return wp.getFriWorkHours();
+        }
+        else
+            return Duration.standardMinutes(0);
+    }
+
     public enum DAY_TYPE {
-        OTHER(0), WORKDAY(1), BUSINESS_TRIP(2), HOLIDAY(3), DOCTOR_APPOINTMENT(4), DAY_OFF_IN_LIEU(5), FURTHER_EDUCATION(6);
+       WORKDAY(0), BUSINESS_TRIP(1), HOLIDAY(2), ILLNESS(3), DAY_OFF_IN_LIEU(4), FURTHER_EDUCATION(5), DOCTOR_APPOINTMENT(6),  OTHER(7);
 
         public final int id;
 
