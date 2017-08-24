@@ -80,9 +80,6 @@ public class DayFragment extends Fragment {
     @BindView(R.id.workingHourstext)
     TextView mtotalWorkingHours;
 
-    @BindView(R.id.WPHourstextView)
-    TextView mWorkProfleHours;
-
     private Day mDay;
     private Box<Day> mDayBox;
     private WorkProfile mWorkProfile;
@@ -331,7 +328,6 @@ public class DayFragment extends Fragment {
         setDayOvertime(false);
         setTotalOvertime(false);
         setTotalWorkingTime(false);
-        setWPHours(false);
         setSpinnerItem();
 
     }
@@ -423,28 +419,6 @@ public class DayFragment extends Fragment {
     public void setSpinnerItem() {
         //This only works because the spinner and Day.DAY_TYPE values are in the same order
         mSpinner.setSelection(mDay.getType().id);
-    }
-
-    public void setWPHours(boolean error) {
-        int dayIndex = mDay.getDay().dayOfWeek().get() + 1;
-        String checkoutAt = "0min";
-        if (dayIndex !=  Calendar.SATURDAY && dayIndex !=  Calendar.SUNDAY ) {
-
-            if (dayIndex == Calendar.MONDAY) {
-                checkoutAt = mWorkProfile.getMonWorkHours().toPeriod().toString(Day.PERIOD_FORMATTER);
-            } else if (dayIndex == Calendar.TUESDAY) {
-                checkoutAt = mWorkProfile.getTuesWorkHours().toPeriod().toString(Day.PERIOD_FORMATTER);
-            } else if (dayIndex == Calendar.WEDNESDAY) {
-                checkoutAt = mWorkProfile.getWedWorkHours().toPeriod().toString(Day.PERIOD_FORMATTER);
-            } else if (dayIndex == Calendar.THURSDAY) {
-                checkoutAt = mWorkProfile.getThursWorkHours().toPeriod().toString(Day.PERIOD_FORMATTER);
-            } else if (dayIndex == Calendar.FRIDAY) {
-                checkoutAt = mWorkProfile.getFriWorkHours().toPeriod().toString(Day.PERIOD_FORMATTER);
-            }
-        }
-
-        mWorkProfleHours.setText(checkoutAt);
-       setTextColor(mWorkProfleHours, error);
     }
 
     private void setTextColor(TextView view, boolean error) {
