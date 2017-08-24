@@ -107,7 +107,7 @@ public class PdfGenerationFragment extends Fragment {
             Log.w("Wrong Date", "Report date is wrong!");
         }
 
-        String currentMonthYear = new SimpleDateFormat("MMM YYYY").format(reportSelectedDate.getTime());
+        String currentMonthYear = new SimpleDateFormat("MMM yyyy").format(reportSelectedDate.getTime());
         mGeneratePdfText.setText(currentMonthYear);
 
         return view;
@@ -204,7 +204,7 @@ public class PdfGenerationFragment extends Fragment {
             }
         }
         if (!listPermissionsNeeded.isEmpty()) {
-            ActivityCompat.requestPermissions(getActivity(), listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), 100);
+            this.requestPermissions(listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), 100);
             return false;
         }
         return true;
