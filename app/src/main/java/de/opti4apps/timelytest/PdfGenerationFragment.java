@@ -168,7 +168,7 @@ public class PdfGenerationFragment extends Fragment {
             String selectedMonthYearStr = event.year + "." + event.month + "." + FIRST_DAY_OF_MONTH;
         try {
             Date selectedMonthYear = new SimpleDateFormat("yyyy.MM.dd").parse(selectedMonthYearStr);
-            mGeneratePdfText.setText(new SimpleDateFormat("MMM YYYY").format(selectedMonthYear));
+            mGeneratePdfText.setText(new SimpleDateFormat("MMM yyyy").format(selectedMonthYear));
             reportSelectedDate.setTime(selectedMonthYear);
         }
         catch (ParseException ex)

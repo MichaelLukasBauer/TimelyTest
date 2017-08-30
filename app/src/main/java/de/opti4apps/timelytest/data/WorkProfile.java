@@ -49,6 +49,9 @@ public class WorkProfile {
     @Convert(converter = Day.DurationConverter.class, dbType = Long.class)
     private Duration friWorkHours;
 
+    @Convert(converter = Day.DurationConverter.class, dbType = Long.class)
+    private Duration previousOvertime;
+
     @Keep
     public WorkProfile(WorkProfile wp) {
         this.userID = wp.getUserID();
@@ -57,28 +60,30 @@ public class WorkProfile {
         this.wedWorkHours = wp.getWedWorkHours();
         this.thursWorkHours = wp.getThursWorkHours();
         this.friWorkHours = wp.getFriWorkHours();
-        this.id = wp.getId();
+        this.id = wp.getStartDate().withTimeAtStartOfDay().getMillis();
         this.startDate = wp.getStartDate();
         this.endDate = wp.getEndDate();
+        this.previousOvertime = wp.getPreviousOvertime();
     }
     @Keep
     public WorkProfile(long userID, Duration monWorkHours,
                        Duration tuesWorkHours, Duration wedWorkHours, Duration thursWorkHours,
-                       Duration friWorkHours) {
+                       Duration friWorkHours, Duration previousOvertime) {
         this.userID = userID;
         this.monWorkHours = monWorkHours;
         this.tuesWorkHours = tuesWorkHours;
         this.wedWorkHours = wedWorkHours;
         this.thursWorkHours = thursWorkHours;
         this.friWorkHours = friWorkHours;
-        DateTime day = new DateTime();
+        DateTime day = new DateTime().dayOfMonth().withMinimumValue();
         this.id = day.withTimeAtStartOfDay().getMillis();
         this.startDate = day;
-        this.endDate = day;
+        this.endDate = day.plusMonths(1).minusDays(1);
+        this.previousOvertime = previousOvertime;
     }
-    @Generated(hash = 72047393)
+    @Generated(hash = 1185460489)
     public WorkProfile(long id, long userID, DateTime startDate, DateTime endDate, Duration monWorkHours, Duration tuesWorkHours, Duration wedWorkHours, Duration thursWorkHours,
-            Duration friWorkHours) {
+            Duration friWorkHours, Duration previousOvertime) {
         this.id = id;
         this.userID = userID;
         this.startDate = startDate;
@@ -88,9 +93,19 @@ public class WorkProfile {
         this.wedWorkHours = wedWorkHours;
         this.thursWorkHours = thursWorkHours;
         this.friWorkHours = friWorkHours;
+        this.previousOvertime = previousOvertime;
     }
     @Generated(hash = 1509302824)
     public WorkProfile() {
+    }
+
+    public void updateWorkingProfile(WorkProfile wp){
+        this.monWorkHours = wp.getMonWorkHours();
+        this.tuesWorkHours = wp.getTuesWorkHours();
+        this.wedWorkHours = wp.getWedWorkHours();
+        this.thursWorkHours = wp.getThursWorkHours();
+        this.friWorkHours = wp.getFriWorkHours();
+        this.previousOvertime = wp.getPreviousOvertime();
     }
 
     public boolean isWorkingHoursEquals(WorkProfile wp)
@@ -106,8 +121,9 @@ public class WorkProfile {
                     throw new IllegalArgumentException(String.valueOf(R.string.too_many_hours));
                 }else if (getTotalWorkingTime().getMillis()  > 144000000) {
                     throw new IllegalArgumentException(String.valueOf(R.string.week_exceed_total_time));
+                }else if (getTotalWorkingTime().getMillis() == 0) {
+                    throw new IllegalArgumentException(String.valueOf(R.string.no_weekly_working_hours));
                 }
-
         return true;
     }
     public long getId() {
@@ -176,6 +192,14 @@ public class WorkProfile {
 
     public Duration getTotalWorkingTime() {
         return Duration.millis(monWorkHours.getMillis()).plus(tuesWorkHours.getMillis()).plus(wedWorkHours.getMillis()).plus(thursWorkHours.getMillis()).plus(friWorkHours.getMillis());
+    }
+
+    public Duration getPreviousOvertime() {
+        return previousOvertime;
+    }
+
+    public void setPreviousOvertime(Duration previousOvertime) {
+        this.previousOvertime = previousOvertime;
     }
 
 }

@@ -1,15 +1,17 @@
 package de.opti4apps.timelytest.shared;
 
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
-import org.joda.time.format.PeriodFormatterBuilder;
 
 import java.util.List;
 
+import de.opti4apps.timelytest.App;
 import de.opti4apps.timelytest.data.Day;
 import de.opti4apps.timelytest.data.Day_;
 import de.opti4apps.timelytest.data.WorkProfile;
+import de.opti4apps.timelytest.data.WorkProfile_;
 import io.objectbox.Box;
 import io.objectbox.query.Query;
 
@@ -26,26 +28,35 @@ public class TimelyHelper {
     private static Query<Day> mDayQuery;
     private static Query<WorkProfile> mWorkProfileQuery;
 
-    public static WorkProfile getValidWorkingProfile(Day d,Box<WorkProfile> mWorkProfileBox)
+    public static WorkProfile getValidWorkingProfileByDay(Day d, Box<WorkProfile> mWorkProfileBox, Box<Day> mDayBox)
     {
-        WorkProfile resultWorkProfile = null;
-        mWorkProfileQuery = mWorkProfileBox.query().build();
-        List<WorkProfile> allWP = mWorkProfileQuery.find();
-        for (WorkProfile wp: allWP)
-        {
-            if (isDayInWokingProfile(d,wp))
-            {
-                resultWorkProfile = wp;
-                break;
+        DateTime month = d.getDay().dayOfMonth().withMinimumValue();
+        return getValidWorkingProfile(month, mWorkProfileBox, mDayBox);
+    }
+
+    public static WorkProfile getValidWorkingProfile(DateTime month, Box<WorkProfile> mWorkProfileBox, Box<Day> mDayBox)
+    {
+        WorkProfile resultWorkProfile = getWorkProfileByMonth(month, mWorkProfileBox);
+        if(resultWorkProfile == null){
+            WorkProfile lastMonthWorkProfile = getWorkProfileByMonth(month.minusMonths(1), mWorkProfileBox);
+            if(lastMonthWorkProfile != null){
+                resultWorkProfile = new WorkProfile(lastMonthWorkProfile);
+                resultWorkProfile.setId(month.withTimeAtStartOfDay().getMillis());
+                resultWorkProfile.setStartDate(month);
+                resultWorkProfile.setEndDate(month.plusMonths(1).minusDays(1));
+                resultWorkProfile.setPreviousOvertime(getLastMonthOvertime(lastMonthWorkProfile, mDayBox));
+                mWorkProfileBox.put(resultWorkProfile);
             }
         }
-
-        if(allWP.size() > 0 && (d.getDay().withTimeAtStartOfDay().getMillis() > allWP.get(allWP.size()-1).getEndDate().withTimeAtStartOfDay().getMillis()))
-        {
-            resultWorkProfile = allWP.get(allWP.size()-1);
-        }
-
         return resultWorkProfile;
+    }
+
+    public static WorkProfile getWorkProfileByMonth(DateTime month, Box<WorkProfile> mWorkProfileBox){
+        DateTime startMonth = month.dayOfMonth().withMinimumValue().withTime(0, 0, 0, 0);
+        DateTime endMonth = month.plusMonths(1).minusDays(1).withTime(23, 59, 0, 0);
+        mWorkProfileQuery = mWorkProfileBox.query().between(WorkProfile_.startDate, startMonth.toDate(), endMonth.toDate()).build();
+        WorkProfile wp = mWorkProfileQuery.findUnique();
+        return wp;
     }
 
     public static boolean isDayInWokingProfile(Day d, WorkProfile wp)
@@ -61,19 +72,18 @@ public class TimelyHelper {
 
     }
 
-    public static long getTotalOvertimeForDay(Day mDay, Box<Day> mDayBox, Box<WorkProfile> mWorkProfileBox)
+    public static long getTotalOvertimeForDay(Day mDay, WorkProfile wp, Box<Day> mDayBox)
     {
         long totalOvertime = 0;
-       // mDayQuery = mDayBox.query().build();
-        mDayQuery = mDayBox.query().less (Day_.day, mDay.getDay().toDate()).build();
+
+        DateTime startMonth = wp.getStartDate().withTime(0, 0, 0, 0);
+        DateTime tillCurrentDay =  mDay.getDay().minusDays(1).withTime(23, 59, 0, 0);
+
+        mDayQuery = mDayBox.query().between(Day_.day, startMonth.toDate() , tillCurrentDay.toDate()).build();
         List<Day> allDay = mDayQuery.find();
         allDay.add(mDay);
         for (Day d: allDay)
         {
-            WorkProfile wp = getValidWorkingProfile(d,mWorkProfileBox);
-            if (wp == null) {
-                wp  = new WorkProfile(0, Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0));
-            }
             if(d.getType().compareTo(Day.DAY_TYPE.DAY_OFF_IN_LIEU) == 0){
                 Duration workingHoursfromWP = d.getDayWorkingHoursFromWP(wp);
                 totalOvertime -= workingHoursfromWP.getMillis();
@@ -82,9 +92,18 @@ public class TimelyHelper {
                 d.computeTheExtraHours(wp);
                 totalOvertime += d.getExtraHours().getMillis();
             }
-
         }
+        totalOvertime += wp.getPreviousOvertime().getMillis();
         return totalOvertime;
+    }
+
+    public static Duration getLastMonthOvertime(WorkProfile lastMonthWorkProfile, Box<Day> mDayBox){
+        long totalOvertime = 0;
+        mDayQuery = mDayBox.query().orderDesc(Day_.day).build();
+        Day lastDayOfPrevMonth = mDayQuery.findFirst();
+
+        totalOvertime = getTotalOvertimeForDay(lastDayOfPrevMonth, lastMonthWorkProfile, mDayBox);
+        return Duration.millis(totalOvertime);
     }
 
     public static String negativeTimePeriodFormatter(Period period, PeriodFormatter periodFormatter){
@@ -107,4 +126,17 @@ public class TimelyHelper {
         return  timeStr;
     }
 
+
+
+    public static WorkProfile getMinWorkingProfile(Box<WorkProfile> mWorkProfileBox){
+        mWorkProfileQuery = mWorkProfileBox.query().order(WorkProfile_.startDate).build();
+        WorkProfile wp = mWorkProfileQuery.findFirst();
+        return wp;
+    }
+
+    public static WorkProfile getMaxWorkingProfile(Box<WorkProfile> mWorkProfileBox){
+        mWorkProfileQuery = mWorkProfileBox.query().orderDesc(WorkProfile_.startDate).build();
+        WorkProfile wp = mWorkProfileQuery.findFirst();
+        return wp;
+    }
 }

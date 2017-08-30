@@ -13,6 +13,7 @@
     <string name="pause_validation_short">If you work 6 hours you have to do a 30min break</string>
     <string name="pause_validation_long">If you work 6 hours you have to do a 30min break</string>
     <string name="day_already_exists">The day already exists</string>
+    <string name="error_finding_wp">Error in finding working profile!</string>
 
 
     <string-array name="day_type_array">
@@ -42,14 +43,16 @@
         completions."
     </string>
     <string name="_0min">0min</string>
-    <string name="m">M</string>
-    <string name="t">T</string>
-    <string name="w">W</string>
-    <string name="f">F</string>
+    <string name="monday">Mon</string>
+    <string name="tuesday">Tue</string>
+    <string name="wednesday">Wed</string>
+    <string name="thursday">Thu</string>
+    <string name="friday">Fri</string>
     <string name="week_exceed_total_time">You can not work more than 40 hours per week</string>
-    <string name="weekly_working_hours">Weekly Working Hours</string>
-    <string name="weekly_hours_distribution">weekly hours Distribution</string>
-    <string name = "Save_Day_message"> day information successfully saved</string>
+    <string name="no_weekly_working_hours">You have to set weekly working hours</string>
+    <string name="weekly_hours_distribution">weekly hours distribution:</string>
+    <string name="overtime">Overtime</string>
+    <string name = "save_day_message"> Day information successfully saved</string>
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>

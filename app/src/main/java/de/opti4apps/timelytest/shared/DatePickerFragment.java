@@ -7,10 +7,14 @@ import android.support.v4.app.DialogFragment;
 import android.widget.DatePicker;
 
 import org.greenrobot.eventbus.EventBus;
+import org.joda.time.Duration;
 
 import java.util.Calendar;
 
+import de.opti4apps.timelytest.App;
+import de.opti4apps.timelytest.data.WorkProfile;
 import de.opti4apps.timelytest.event.DatePickedEvent;
+import io.objectbox.Box;
 
 /**
  * Created by Miluba on 03.04.2017.
@@ -25,6 +29,8 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     private int  day;
     private int month = 0;
     private int year = 0;
+
+    private Box<WorkProfile> mWorkProfileBox;
 
     public static DatePickerFragment newInstance(int day,int month, int year) {
         DatePickerFragment fragment = new DatePickerFragment();
@@ -54,9 +60,20 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
             day = c.get(Calendar.DAY_OF_MONTH);
         }
 
+        mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
 
+        WorkProfile maxWorkProfile = TimelyHelper.getMaxWorkingProfile(mWorkProfileBox);
+        WorkProfile minWorkProfile = TimelyHelper.getMinWorkingProfile(mWorkProfileBox);
+
+//        maxWorkProfile = new WorkProfile(145236, 123, maxWorkProfile.getStartDate().plusMonths(1), maxWorkProfile.getEndDate().plusMonths(1),
+//                Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0),
+//                Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0));
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), this, year, month, day);
+        datePickerDialog.getDatePicker().setMaxDate(maxWorkProfile.getEndDate().getMillis());
+        datePickerDialog.getDatePicker().setMinDate(minWorkProfile.getStartDate().getMillis());
         // Create a new instance of DatePickerDialog and return it
-        return new DatePickerDialog(getActivity(), this, year, month, day);
+        return datePickerDialog;
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day) {

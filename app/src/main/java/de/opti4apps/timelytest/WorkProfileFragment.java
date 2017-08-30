@@ -14,21 +14,20 @@ import org.greenrobot.eventbus.Subscribe;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
-import java.util.List;
+import java.util.Calendar;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.opti4apps.timelytest.data.Day;
 import de.opti4apps.timelytest.data.WorkProfile;
-import de.opti4apps.timelytest.data.WorkProfile_;
 import de.opti4apps.timelytest.event.DurationPickedEvent;
 import de.opti4apps.timelytest.event.WorkingProfileDatasetChangedEvent;
 import de.opti4apps.timelytest.shared.DurationPickerFragment;
+import de.opti4apps.timelytest.shared.TimelyHelper;
 import io.objectbox.Box;
 import io.objectbox.query.Query;
-
-import static de.opti4apps.timelytest.data.Day_.day;
 
 /**
  * Created by TCHATCHO on 23.04.2017.
@@ -73,12 +72,21 @@ public class WorkProfileFragment extends Fragment {
     @BindView(R.id.totalWorkingHours)
     TextView mtotalWorkHours;
 
+    @BindView(R.id.wokingHoursLabel)
+    TextView mCurrentWorkingHoursMonth;
+
+    @BindView(R.id.previousMonthOvertimeText)
+    TextView mPrevOvertimeHours;
+
     int mSelectedText;
 
     private WorkProfile mWorkProfile;
-    private WorkProfile mWorkProfileOld;
+    private WorkProfile mWorkProfileBoxed;
     private Box<WorkProfile> mWorkProfileBox;
+    private Box<Day> mDayBox;
     private Query<WorkProfile> mWorkProfileQuery;
+
+    long userID;
 
     public WorkProfileFragment() {
     }
@@ -103,22 +111,16 @@ public class WorkProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
 
-
         if (getArguments() != null) {
-            long userID = getArguments().getLong(ARG_USER_ID);
-            mWorkProfileQuery = mWorkProfileBox.query().equal(WorkProfile_.userID, userID).build();
-            List<WorkProfile> allWP = mWorkProfileQuery.find();
-            if(allWP.size() !=  0) {
-                mWorkProfile  = allWP.get(allWP.size()-1);
-                mWorkProfileOld = new WorkProfile(mWorkProfile);
-            }
-            else {
-                WorkProfile wp = new WorkProfile(userID, Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0));
-                mWorkProfileBox.put(wp);
-
-                mWorkProfileQuery = mWorkProfileBox.query().equal(WorkProfile_.userID, userID).build();
-                mWorkProfile = mWorkProfileQuery.findUnique();
-                mWorkProfileOld = new WorkProfile(mWorkProfile);
+            userID = getArguments().getLong(ARG_USER_ID);
+            DateTime currentMonth = new DateTime().dayOfMonth().withMinimumValue();
+            mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
+            mWorkProfileBoxed = TimelyHelper.getValidWorkingProfile(currentMonth, mWorkProfileBox, mDayBox);
+            if(mWorkProfileBoxed == null) {
+                    mWorkProfile = new WorkProfile(userID, Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0));
+                }
+            else{
+                    mWorkProfile = new WorkProfile(mWorkProfileBoxed);
             }
             setRetainInstance(true);
         }
@@ -128,20 +130,12 @@ public class WorkProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
-
         View view = inflater.inflate(R.layout.fragment_work_profile, container, false);
         ButterKnife.bind(this, view);
-        DateTime dt = DateTime.parse("2017-05-08");
-        mMonLabel.setText(dt.dayOfWeek().getAsShortText());
-        dt = dt.plusHours(24);
-        mTueLabel.setText(dt.dayOfWeek().getAsShortText());
-        dt = dt.plusHours(24);
-        mWedLabel.setText(dt.dayOfWeek().getAsShortText());
-        dt = dt.plusHours(24);
-        mThursLabel.setText(dt.dayOfWeek().getAsShortText());
-        dt = dt.plusHours(24);
-        mFriLabel.setText(dt.dayOfWeek().getAsShortText());
+
+        String currentMonth = Calendar.getInstance().getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
+        mCurrentWorkingHoursMonth.setText(currentMonth + " Weekly Working Hours");
+
        updateUI();
 
         return view;
@@ -159,7 +153,7 @@ public class WorkProfileFragment extends Fragment {
         EventBus.getDefault().unregister(this);
     }
 
-    @OnClick({R.id.monTimeText, R.id.tuesTimeText,R.id.wedTimeText, R.id.thursTimeText,R.id.friTimeText})
+    @OnClick({R.id.monTimeText, R.id.tuesTimeText,R.id.wedTimeText, R.id.thursTimeText,R.id.friTimeText, R.id.previousMonthOvertimeText})
     public void showTimePickerDialog(View v) {
         mSelectedText = v.getId();
         if (mSelectedText == R.id.monTimeText)
@@ -187,6 +181,11 @@ public class WorkProfileFragment extends Fragment {
             DurationPickerFragment newFragment = DurationPickerFragment.newInstance(mWorkProfile.getFriWorkHours().getMillis());
             newFragment.show(getFragmentManager(), "durationFri");
         }
+        else if (mSelectedText == R.id.previousMonthOvertimeText)
+        {
+            DurationPickerFragment newFragment = DurationPickerFragment.newInstance(mWorkProfile.getPreviousOvertime().getMillis());
+            newFragment.show(getFragmentManager(), "durationPrevOvertime");
+        }
     }
 
     @Subscribe
@@ -201,6 +200,7 @@ public class WorkProfileFragment extends Fragment {
         setthursTimeText();
         setfriTimeText();
         setTotalTime();
+        setPrevOvertime();
     }
 
     @Subscribe
@@ -221,6 +221,9 @@ public class WorkProfileFragment extends Fragment {
             case R.id.friTimeText:
                     mWorkProfile.setFriWorkHours(Duration.millis(event.duration));
                     break;
+            case R.id.previousMonthOvertimeText:
+                mWorkProfile.setPreviousOvertime(Duration.millis(event.duration));
+                break;
             }
         updateWorkingWeekhours();
     }
@@ -229,39 +232,31 @@ public class WorkProfileFragment extends Fragment {
     private void updateWorkingWeekhours() {
         try {
             if (mWorkProfile.isValid()) {
-                DateTime day = new DateTime();
-                //if today's date is different than the current working profile startDate, then we can create a new working profile
-                //otherwise we simply update it
-                if(mWorkProfile.getStartDate().withTimeAtStartOfDay().getMillis() != day.withTimeAtStartOfDay().getMillis()  )
-                {
-                    if(!mWorkProfileOld.isWorkingHoursEquals(mWorkProfile))
-                    {
 
-                        mWorkProfile.setId(day.withTimeAtStartOfDay().getMillis());
-                        mWorkProfile.setStartDate(day);
-                        mWorkProfile.setEndDate(day);
-                        mWorkProfileBox.put(mWorkProfile);
-                        mWorkProfileOld.setEndDate(day.minusDays(1));
-                        mWorkProfileBox.put(mWorkProfileOld);
-                        mWorkProfileOld = new WorkProfile(mWorkProfile);
-                    }
+                if(mWorkProfileBoxed == null){
+                    mWorkProfileBoxed = new WorkProfile(mWorkProfile);
+                    mWorkProfileBox.put(mWorkProfileBoxed);
                 }
-                else
-                {
-                    mWorkProfileBox.put(mWorkProfile);
-                    mWorkProfileOld = new WorkProfile(mWorkProfile);;
+                else{
+                    mWorkProfileBoxed.updateWorkingProfile(mWorkProfile);
+                    mWorkProfileBox.put(mWorkProfileBoxed);
                 }
-
                 EventBus.getDefault().post(new WorkingProfileDatasetChangedEvent(TAG));
             }
         } catch (IllegalArgumentException e) {
+            if(mWorkProfileBoxed != null){
+                mWorkProfile.updateWorkingProfile(mWorkProfileBoxed);
+            }
+            else {
+                mWorkProfile = new WorkProfile(userID, Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0),
+                        Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0));
+            }
             String msg = e.getMessage();
             int res = Integer.decode(msg);
             updateOnError(res);
             String message = getResources().getString(res);
             Log.d(TAG, res + " " + message);
-            Toast.makeText(getActivity(), message,
-                    Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -299,6 +294,12 @@ public class WorkProfileFragment extends Fragment {
     {
         String totalHours = mWorkProfile.getTotalWorkingTime().toPeriod().toString(Day.PERIOD_FORMATTER);
         mtotalWorkHours.setText(totalHours);
+    }
+
+    public void setPrevOvertime()
+    {
+        String previousOvertime = mWorkProfile.getPreviousOvertime().toPeriod().toString(Day.PERIOD_FORMATTER);
+        mPrevOvertimeHours.setText(previousOvertime);
     }
 
 }

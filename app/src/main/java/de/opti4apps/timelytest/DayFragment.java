@@ -10,8 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +19,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
-import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -31,7 +28,6 @@ import butterknife.OnItemSelected;
 import de.opti4apps.timelytest.data.Day;
 import de.opti4apps.timelytest.data.Day_;
 import de.opti4apps.timelytest.data.WorkProfile;
-import de.opti4apps.timelytest.data.WorkProfile_;
 import de.opti4apps.timelytest.event.DatePickedEvent;
 import de.opti4apps.timelytest.event.DayDatasetChangedEvent;
 import de.opti4apps.timelytest.event.DurationPickedEvent;
@@ -42,7 +38,6 @@ import de.opti4apps.timelytest.shared.TimePickerFragment;
 import de.opti4apps.timelytest.shared.TimelyHelper;
 import io.objectbox.Box;
 import io.objectbox.query.Query;
-import mobi.upod.timedurationpicker.TimeDurationPicker;
 
 
 /**
@@ -138,27 +133,16 @@ public class DayFragment extends Fragment {
                 mDay = mDayQuery.findUnique();
             }
 
-
-//            if (dayID == 0) {
-//                Day day = new Day(Day.DAY_TYPE.WORKDAY, DateTime.now(), DateTime.now(), DateTime.now(), Duration.standardMinutes(0));
-//               dayID = day.getId();
-//
-//                mDayBox.put(day);
-//            }
-//            mDayQuery = mDayBox.query().equal(Day_.id, dayID).build();
-//            mDay = mDayQuery.findUnique();
-
             getTheCurrentWorkingProfile();
         }
         setRetainInstance(true);
     }
 
     private void getTheCurrentWorkingProfile() {
-        mWorkProfile = TimelyHelper.getValidWorkingProfile(mDay,mWorkProfileBox);
+        mWorkProfile = TimelyHelper.getValidWorkingProfileByDay(mDay,mWorkProfileBox, mDayBox);
 
         if (mWorkProfile == null) {
-            long userID = getArguments().getLong(ARG_USER_ID);
-            mWorkProfile  = new WorkProfile(userID, Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0));
+            Toast.makeText(getActivity(), getResources().getString(R.string.error_finding_wp), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -223,7 +207,7 @@ public class DayFragment extends Fragment {
                 mDay.computeTheExtraHours(mWorkProfile);
                 mDayBox.put(mDay);
                 EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
-                String message = getResources().getString(R.string.Save_Day_message);
+                String message = getResources().getString(R.string.save_day_message);
                 Log.d(TAG, "Day: " + mDay.getDay().toString()+ " " + message);
                 Toast.makeText(getActivity(), message,
                         Toast.LENGTH_LONG).show();
@@ -303,6 +287,7 @@ public class DayFragment extends Fragment {
             mDayQuery = newQuery;
             newDay.setToDefaultDay();
             mDay = newDay;
+            getTheCurrentWorkingProfile();
             EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
             //updateDay();
         }
@@ -411,7 +396,7 @@ public class DayFragment extends Fragment {
     }
 
     private void setTotalOvertime(boolean error) {
-        String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(Duration.millis(TimelyHelper.getTotalOvertimeForDay(mDay, mDayBox,mWorkProfileBox)).toPeriod(), Day.PERIOD_FORMATTER);
+        String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(Duration.millis(TimelyHelper.getTotalOvertimeForDay(mDay, mWorkProfile, mDayBox)).toPeriod(), Day.PERIOD_FORMATTER);
         mTotalOvertime.setText(totalOvertime);
         setTextColor(mTotalOvertime, error);
     }
