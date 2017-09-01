@@ -1,10 +1,13 @@
 package de.opti4apps.timelytest.shared;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import de.opti4apps.timelytest.App;
@@ -126,8 +129,6 @@ public class TimelyHelper {
         return  timeStr;
     }
 
-
-
     public static WorkProfile getMinWorkingProfile(Box<WorkProfile> mWorkProfileBox){
         mWorkProfileQuery = mWorkProfileBox.query().order(WorkProfile_.startDate).build();
         WorkProfile wp = mWorkProfileQuery.findFirst();
@@ -138,5 +139,25 @@ public class TimelyHelper {
         mWorkProfileQuery = mWorkProfileBox.query().orderDesc(WorkProfile_.startDate).build();
         WorkProfile wp = mWorkProfileQuery.findFirst();
         return wp;
+    }
+
+    public static Duration getDayOfTheWeekWorkingHours(WorkProfile mWorkProfile, Date mDay){
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(mDay);
+
+        switch (calendar.get(Calendar.DAY_OF_WEEK)){
+            case Calendar.MONDAY:
+                return mWorkProfile.getMonWorkHours();
+            case Calendar.TUESDAY:
+                return mWorkProfile.getTuesWorkHours();
+            case Calendar.WEDNESDAY:
+                return  mWorkProfile.getWedWorkHours();
+            case Calendar.THURSDAY:
+                return mWorkProfile.getThursWorkHours();
+            case Calendar.FRIDAY:
+                return mWorkProfile.getFriWorkHours();
+        }
+        return Duration.standardMinutes(0);
     }
 }

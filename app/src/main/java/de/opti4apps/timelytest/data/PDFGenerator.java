@@ -74,7 +74,7 @@ public class PDFGenerator {
     private Box<Day> mDayBox;
     private Query<Day> mDayQuery;
 
-   // private WorkProfile[] mWorkProfileArray;
+    private WorkProfile mCurrentWorkProfile;
 
     Date startDate, endDate;
 
@@ -171,11 +171,9 @@ public class PDFGenerator {
         mDayQuery = mDayBox.query().between(Day_.day, startDate, endDate).orderDesc(Day_.day).build();
         mDayList.addAll(mDayQuery.find());
 
-//        Box<WorkProfile> mWorkProfileBox = ((App) c.getApplication()).getBoxStore().boxFor(WorkProfile.class);
-//        Query<WorkProfile> mWorkProfileQuery =  mWorkProfileBox.query().between(WorkProfile_.startDate, startDate, endDate).orderDesc(WorkProfile_.startDate).build();
-//        List<WorkProfile> mWorkProfileList = new ArrayList<>();
-//        mWorkProfileList.addAll(mWorkProfileQuery.find());
-//        mWorkProfileList.toArray(mWorkProfileArray);
+        Box<WorkProfile> mWorkProfileBox = ((App) c.getApplication()).getBoxStore().boxFor(WorkProfile.class);
+        Query<WorkProfile> mWorkProfileQuery =  mWorkProfileBox.query().between(WorkProfile_.startDate, startDate, endDate).orderDesc(WorkProfile_.startDate).build();
+        mCurrentWorkProfile = mWorkProfileQuery.findFirst();
     }
 
     private Day findDay(Integer dom) {
@@ -212,6 +210,14 @@ public class PDFGenerator {
             firstTable.addCell(cell);
         }
 
+        PeriodFormatter hoursMinutesFormatter = new PeriodFormatterBuilder()
+                .printZeroAlways()
+                .minimumPrintedDigits(2)
+                .appendHours()
+                .appendSeparator(":")
+                .appendMinutes()
+                .toFormatter();
+
         for (int i = 1;i<=31;i++) {
             if (reportEndDate.get(Calendar.DAY_OF_MONTH)>=i) {
                 Day thisDay = findDay(i);
@@ -224,10 +230,17 @@ public class PDFGenerator {
                 firstTable.addCell(getTupleCell(new SimpleDateFormat("dd.MM.yy").format(date.getTime()), 1, 1, blue));
 
                 String beginn = "", mVon = "", mBis = "", zVon = "", zBis = "", ende = "", istStd = "00:00", sollStd = "00:00", plusMinusStd = "00:00", aza = "00:00", uebertrag = "00:00", bemerkungen = "";
+
+                Period workingHoursWP = TimelyHelper.getDayOfTheWeekWorkingHours(mCurrentWorkProfile, date.getTime()).toPeriod();
+                sollStd = TimelyHelper.negativeTimePeriodFormatter(workingHoursWP, hoursMinutesFormatter);
+
                 if (thisDay != null) {
 
                     //BEMERKUNGEN
                     bemerkungen = getDayTypeRepostString(thisDay);
+                    //UEBERTRAG
+                    Period totalDayOvertime = Duration.millis(TimelyHelper.getTotalOvertimeForDay(thisDay, mCurrentWorkProfile, mDayBox)).toPeriod();
+                    uebertrag = TimelyHelper.negativeTimePeriodFormatter(totalDayOvertime, hoursMinutesFormatter);
 
                     if(thisDay.getType().compareTo(Day.DAY_TYPE.HOLIDAY) != 0 && thisDay.getType().compareTo(Day.DAY_TYPE.DAY_OFF_IN_LIEU) != 0 &&
                             thisDay.getType().compareTo(Day.DAY_TYPE.OTHER) != 0 && thisDay.getType().compareTo(Day.DAY_TYPE.ILLNESS) != 0) {
@@ -239,35 +252,17 @@ public class PDFGenerator {
                         mVon = breakStart.toString(Day.TIME_FORMATTER);
                         mBis = breakStart.plus(thisDay.getPause()).toString(Day.TIME_FORMATTER);
 
-                        //CHECK WITH NORMAL ENDDATE
-
-                        PeriodFormatter hoursMinutesFormatter = new PeriodFormatterBuilder()
-                                .printZeroAlways()
-                                .minimumPrintedDigits(2)
-                                .appendHours()
-                                .appendSeparator(":")
-                                .appendMinutes()
-                                .toFormatter();
-
-                        Period workingHoursTotal = new Period(thisDay.getStart(), thisDay.getEnd());
+                        Period workingHoursTotal = thisDay.getTotalWorkingTime().toPeriod();
                         istStd = hoursMinutesFormatter.print(workingHoursTotal);
 
-
-                        //SWITCH TO THE DAY PROPERTY | DELETE CURRENT WP CALCULATIONS!
-                        Period workingHoursWP = new Period(7, 0, 0, 0);
-                        //                Duration workingHoursWP = thisDay.getWorkingHoursWP();
-                        //                long hoursWP = workingHoursWP.getStandardHours();
-                        //                long minutesWP = workingHoursWP.getStandardMinutes();
-                        //                sollStd = hoursWP + ":" + minutesWP;
-                       // sollStd = getWorkingHoursFromWP(thisDay);
-
-                       // PLUSMINUSSTD REQUIRES BOTH WORKING DURATIONS | CHECK MINUS VAL POSSIVLE
+                       // PLUSMINUSSTD
                         Period workingHoursDiffSigned = workingHoursTotal.toStandardDuration().minus(workingHoursWP.toStandardDuration()).toPeriod();
                         plusMinusStd = TimelyHelper.negativeTimePeriodFormatter(workingHoursDiffSigned, hoursMinutesFormatter);
 
                         //AZA
-
-                        //UEBERTRAG
+                    }
+                    else if(thisDay.getType().compareTo(Day.DAY_TYPE.DAY_OFF_IN_LIEU) == 0){
+                        aza = sollStd;
                     }
 
                 }
@@ -325,6 +320,8 @@ public class PDFGenerator {
                 return "F";
             case DAY_OFF_IN_LIEU:
                 return "AZA";
+            case ILLNESS:
+                return "K";
             default:
                 return "";
         }
@@ -411,7 +408,18 @@ public class PDFGenerator {
         firstTable.addCell(getHeaderCell(" ",1,1, EXCEPT_TOP, false));
         firstTable.addCell(getHeaderCell(" ",1,1, EXCEPT_TOP, false));
         firstTable.addCell(getHeaderCell(" ",1,1, EXCEPT_TOP, false));
-        firstTable.addCell(getHeaderCell("7:25",1,1, EXCEPT_TOP, false));
+
+        PeriodFormatter hoursMinutesFormatter = new PeriodFormatterBuilder()
+                .printZeroAlways()
+                .minimumPrintedDigits(2)
+                .appendHours()
+                .appendSeparator(":")
+                .appendMinutes()
+                .toFormatter();
+        String lastMonthOvertime = TimelyHelper.negativeTimePeriodFormatter(mCurrentWorkProfile.getPreviousOvertime().toPeriod(), hoursMinutesFormatter);
+        firstTable.addCell(getHeaderCell(lastMonthOvertime,1,1, EXCEPT_TOP, false));
+
+
         firstTable.addCell(getHeaderCell(" ",1,1, EXCEPT_TOP, false));
 
         return firstTable;
