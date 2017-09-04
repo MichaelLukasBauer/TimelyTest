@@ -1,7 +1,6 @@
 package de.opti4apps.timelytest.shared;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
 import org.joda.time.Duration;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
@@ -10,7 +9,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import de.opti4apps.timelytest.App;
 import de.opti4apps.timelytest.data.Day;
 import de.opti4apps.timelytest.data.Day_;
 import de.opti4apps.timelytest.data.WorkProfile;
@@ -47,7 +45,7 @@ public class TimelyHelper {
                 resultWorkProfile.setId(month.withTimeAtStartOfDay().getMillis());
                 resultWorkProfile.setStartDate(month);
                 resultWorkProfile.setEndDate(month.plusMonths(1).minusDays(1));
-                resultWorkProfile.setPreviousOvertime(getLastMonthOvertime(lastMonthWorkProfile, mDayBox));
+                resultWorkProfile.setPreviousOvertime(getMonthTotalOvertime(lastMonthWorkProfile, mDayBox));
                 mWorkProfileBox.put(resultWorkProfile);
             }
         }
@@ -100,12 +98,17 @@ public class TimelyHelper {
         return totalOvertime;
     }
 
-    public static Duration getLastMonthOvertime(WorkProfile lastMonthWorkProfile, Box<Day> mDayBox){
+    public static Duration getMonthTotalOvertime(WorkProfile wp, Box<Day> mDayBox){
         long totalOvertime = 0;
-        mDayQuery = mDayBox.query().orderDesc(Day_.day).build();
-        Day lastDayOfPrevMonth = mDayQuery.findFirst();
 
-        totalOvertime = getTotalOvertimeForDay(lastDayOfPrevMonth, lastMonthWorkProfile, mDayBox);
+        DateTime startMonth = wp.getStartDate().withTime(0, 0, 0, 0);
+        DateTime endMonth =  wp.getEndDate().minusDays(1).withTime(23, 59, 0, 0);
+
+        mDayQuery = mDayBox.query().between(Day_.day, startMonth.toDate() , endMonth.toDate()).orderDesc(Day_.day).build();
+
+        Day lastDayOfMonth = mDayQuery.findFirst();
+
+        totalOvertime = getTotalOvertimeForDay(lastDayOfMonth, wp, mDayBox);
         return Duration.millis(totalOvertime);
     }
 

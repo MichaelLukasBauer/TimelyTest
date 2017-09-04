@@ -82,6 +82,8 @@ public class PDFGenerator {
 
     private String[] germanMonths = new String[] {"Jän","Feb","März","Apr","Mai","Juni","Juli","Aug","Sept","Okt","Nov","Dez"};
 
+    PeriodFormatter hoursMinutesFormatter;
+
     public void createPDF(String _path, Calendar _reportSelectedDate) throws FileNotFoundException, DocumentException {
 
         path = _path;
@@ -92,10 +94,17 @@ public class PDFGenerator {
         reportEndDate.add(Calendar.MONTH, 1);
         reportEndDate.add(Calendar.DAY_OF_MONTH, -1);
 
+        hoursMinutesFormatter = new PeriodFormatterBuilder()
+                .printZeroAlways()
+                .minimumPrintedDigits(2)
+                .appendHours()
+                .appendSeparator(":")
+                .appendMinutes()
+                .toFormatter();
+
         setupWeekdaysArr();
         //create document file
         try {
-
             configureDocument();
             loadData();
             //open the document
@@ -131,7 +140,7 @@ public class PDFGenerator {
 
             doc.add(holderTable);
 
-            Toast.makeText(c, "Time sheet Created and stored in device", Toast.LENGTH_LONG).show();
+            Toast.makeText(c, "Time sheet created and stored in Documents.", Toast.LENGTH_LONG).show();
 
             doc.close();
 
@@ -187,7 +196,7 @@ public class PDFGenerator {
 
     private void createHeadline() throws DocumentException {
         //Create headline
-        Paragraph p1 =new Paragraph("Working Time Page",new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD));
+        Paragraph p1 = new Paragraph("Working Time Page",new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD));
         p1.setAlignment(Element.ALIGN_LEFT);
         p1.setSpacingAfter(10);
         doc.add(p1);
@@ -209,14 +218,6 @@ public class PDFGenerator {
             cell.setBackgroundColor(WebColors.getRGBColor("#808080"));
             firstTable.addCell(cell);
         }
-
-        PeriodFormatter hoursMinutesFormatter = new PeriodFormatterBuilder()
-                .printZeroAlways()
-                .minimumPrintedDigits(2)
-                .appendHours()
-                .appendSeparator(":")
-                .appendMinutes()
-                .toFormatter();
 
         for (int i = 1;i<=31;i++) {
             if (reportEndDate.get(Calendar.DAY_OF_MONTH)>=i) {
@@ -248,18 +249,17 @@ public class PDFGenerator {
                         ende = thisDay.getEnd().toString(Day.TIME_FORMATTER);
 
                         //BREAK IS SAVED AS DURATION, SWITCH TO START & END DATE
-                        DateTime breakStart = thisDay.getStart().plusHours(1);
+                        DateTime breakStart = thisDay.getStart().plusHours(2);
                         mVon = breakStart.toString(Day.TIME_FORMATTER);
                         mBis = breakStart.plus(thisDay.getPause()).toString(Day.TIME_FORMATTER);
 
                         Period workingHoursTotal = thisDay.getTotalWorkingTime().toPeriod();
                         istStd = hoursMinutesFormatter.print(workingHoursTotal);
 
-                       // PLUSMINUSSTD
                         Period workingHoursDiffSigned = workingHoursTotal.toStandardDuration().minus(workingHoursWP.toStandardDuration()).toPeriod();
                         plusMinusStd = TimelyHelper.negativeTimePeriodFormatter(workingHoursDiffSigned, hoursMinutesFormatter);
 
-                        //AZA
+
                     }
                     else if(thisDay.getType().compareTo(Day.DAY_TYPE.DAY_OFF_IN_LIEU) == 0){
                         aza = sollStd;
@@ -295,7 +295,10 @@ public class PDFGenerator {
         footerCell1.setBorder(Rectangle.BOTTOM| Rectangle.LEFT);
         footerCell1.setHorizontalAlignment(Element.ALIGN_LEFT);
         firstTable.addCell(footerCell1);
-        PdfPCell footerCell2 = getCell("8:46",1,1,bold);
+
+        Period monthOvertime =  TimelyHelper.getMonthTotalOvertime(mCurrentWorkProfile, mDayBox).toPeriod();
+        String monthOvertimeStr = TimelyHelper.negativeTimePeriodFormatter(monthOvertime, hoursMinutesFormatter);
+        PdfPCell footerCell2 = getCell(monthOvertimeStr, 1, 1, bold);
         footerCell2.setBorder(Rectangle.BOTTOM| Rectangle.RIGHT);
         firstTable.addCell(footerCell2);
         PdfPCell ecell = getCell(null,1,1);
@@ -326,43 +329,6 @@ public class PDFGenerator {
                 return "";
         }
     }
-
-
-// DELETE METHOD!
-//    private String getWorkingHoursFromWP(Day thisDay){
-//
-//        WorkProfile currentWorkProfile = null;
-//        for(int i = 0; i < mWorkProfileArray.length; i++){
-//            currentWorkProfile = mWorkProfileArray[i];
-//            if(currentWorkProfile.getStartDate().isEqual(thisDay.getDay())){
-//                break;
-//            }
-//            else if(currentWorkProfile.getStartDate().isBefore(thisDay.getDay())){
-//                if(mWorkProfileArray[i+1].getStartDate().isAfter(thisDay.getDay())){
-//                    break;
-//                }
-//                else
-//                    continue;
-//            }
-//        }
-
-//        Calendar cal = Calendar.getInstance();
-//        cal.setTime(thisDay.getDay().toDate());
-//        switch(cal.get(Calendar.DAY_OF_WEEK)){
-//            case Calendar.MONDAY:
-//                return currentWorkProfile.getMonWorkHours().toString();
-//            case Calendar.TUESDAY:
-//                return currentWorkProfile.getTuesWorkHours().toString();
-//            case Calendar.WEDNESDAY:
-//                return currentWorkProfile.getMonWorkHours().toString();
-//            case Calendar.THURSDAY:
-//                return currentWorkProfile.getTuesWorkHours().toString();
-//            case Calendar.FRIDAY:
-//                return currentWorkProfile.getMonWorkHours().toString();
-//            default:
-//                return "";
-//        }
-//    }
 
     private PdfPTable populateMainTableHeader(PdfPTable firstTable) {
         Font monthFont = new Font(Font.FontFamily.HELVETICA, 13, Font.BOLD);
@@ -409,13 +375,6 @@ public class PDFGenerator {
         firstTable.addCell(getHeaderCell(" ",1,1, EXCEPT_TOP, false));
         firstTable.addCell(getHeaderCell(" ",1,1, EXCEPT_TOP, false));
 
-        PeriodFormatter hoursMinutesFormatter = new PeriodFormatterBuilder()
-                .printZeroAlways()
-                .minimumPrintedDigits(2)
-                .appendHours()
-                .appendSeparator(":")
-                .appendMinutes()
-                .toFormatter();
         String lastMonthOvertime = TimelyHelper.negativeTimePeriodFormatter(mCurrentWorkProfile.getPreviousOvertime().toPeriod(), hoursMinutesFormatter);
         firstTable.addCell(getHeaderCell(lastMonthOvertime,1,1, EXCEPT_TOP, false));
 
@@ -450,7 +409,7 @@ public class PDFGenerator {
         nameFont.setSize(13);
         secondTable.addCell(getSidebarCell(name,nameFont,nameBGColor, BaseColor.BLACK,35f));
         PdfPCell tCell = getSidebarCell("Schritt 1",sidebarBold,titleBGColor,titleTextColor,null);
-        tCell.setPaddingBottom(4.0f);
+        tCell.setPaddingBottom(5.0f);
         secondTable.addCell(tCell);
 
         Paragraph p1 = new Paragraph();
@@ -486,9 +445,10 @@ public class PDFGenerator {
         p1.add(Chunk.NEWLINE);
 
         p1.add(getChunk("(*ausgenommen Beamtinnen/Beamte)", BaseColor.BLACK,sidebarFineprint));
-        p1.add(Chunk.NEWLINE);
-
         p1.setSpacingAfter(10f);
+
+        p1.setLeading(0, 1.5f);
+
         secondTable.addCell(getSidebarCell(p1, BaseColor.WHITE,null));
 
         tCell = getSidebarCell("Schritt 2",sidebarBold,titleBGColor,titleTextColor,null);
@@ -497,17 +457,20 @@ public class PDFGenerator {
 
         Paragraph p2 = new Paragraph();
         p2.setAlignment(Element.ALIGN_CENTER);
+        p2.setPaddingTop(2.0f);
         p2.add(getChunk("Die/der ",titleTextColor,sidebarBold));
         p2.add(getChunk("Beschäftigte",titleTextColor,new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD| Font.UNDERLINE)));
         p2.add(Chunk.NEWLINE);
         p2.add(getChunk("bestätigt die Richtigkeit", BaseColor.BLACK,sidebarBold));
         p2.add(Chunk.NEWLINE);
         p2.add(getChunk("der gemachten Angaben.", BaseColor.BLACK,bold));
-        p2.add(Chunk.NEWLINE);
+        //p2.setSpacingAfter(10f);
+        p2.setLeading(0, 1.5f);
 
-        PdfPCell p2Cell = getSidebarCell(p2, BaseColor.WHITE,60f);
+        PdfPCell p2Cell = getSidebarCell(p2, BaseColor.WHITE,85f);
         p2Cell.setVerticalAlignment(Element.ALIGN_TOP);
         p2Cell.setBorder(EXCEPT_BOTTOM);
+        p2Cell.setPaddingBottom(2f);
         secondTable.addCell(p2Cell);
 
         PdfPCell p2Footer = getSidebarCell("Datum/Unterschrift)",sidebarBold, BaseColor.WHITE, BaseColor.BLACK,null);
@@ -521,6 +484,7 @@ public class PDFGenerator {
         secondTable.addCell(tCell);
 
         p2 = new Paragraph();
+        p2.setLeading(0, 1.5f);
         p2.setAlignment(Element.ALIGN_CENTER);
         p2.add(getChunk("Die/der ",titleTextColor,sidebarBold));
         p2.add(getChunk("Vorgesetzte",titleTextColor,new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD| Font.UNDERLINE)));
@@ -532,7 +496,7 @@ public class PDFGenerator {
         p2.add(getChunk("Regelungen.", BaseColor.BLACK,bold));
         p2.add(Chunk.NEWLINE);
 
-        p2Cell = getSidebarCell(p2, BaseColor.WHITE,75f);
+        p2Cell = getSidebarCell(p2, BaseColor.WHITE,95f);
         p2Cell.setVerticalAlignment(Element.ALIGN_TOP);
         p2Cell.setBorder(EXCEPT_BOTTOM);
         secondTable.addCell(p2Cell);
@@ -543,8 +507,9 @@ public class PDFGenerator {
         p2Footer.setCellEvent(new DottedCell(PdfPCell.TOP));
         secondTable.addCell(p2Footer);
 
-        PdfPCell footer = getSidebarCell(" ",sidebarBold,nameBGColor, BaseColor.BLACK,null);
-        footer.setBorder(Rectangle.TOP| Rectangle.BOTTOM);
+        PdfPCell footer = getSidebarCell("Professor Meixner",sidebarBold,nameBGColor, BaseColor.BLACK,null);
+        footer.setPaddingBottom(5.0f);
+        footer.setBorder(Rectangle.TOP| Rectangle.BOTTOM | Rectangle.LEFT | Rectangle.RIGHT);
         secondTable.addCell(footer);
 
         return secondTable;
