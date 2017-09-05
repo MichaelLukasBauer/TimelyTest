@@ -52,7 +52,7 @@
     <string name="no_weekly_working_hours">You have to set weekly working hours</string>
     <string name="weekly_hours_distribution">weekly hours distribution:</string>
     <string name="overtime">Overtime</string>
-    <string name = "save_day_message"> Day information successfully saved</string>
+    <string name = "save_day_message">Day saved</string>
 
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>

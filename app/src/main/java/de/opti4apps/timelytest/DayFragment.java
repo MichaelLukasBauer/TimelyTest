@@ -1,11 +1,20 @@
 package de.opti4apps.timelytest;
 
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+
+
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -82,6 +91,9 @@ public class DayFragment extends Fragment {
     private Query<Day> mDayQuery;
     private Query<WorkProfile> mWorkProfileQuery;
 
+    private ActionMode mActionMode;
+    private ActionModeCallback mActionModeCallback = new ActionModeCallback();
+
     public DayFragment() {
         // Required empty public constructor
     }
@@ -105,6 +117,8 @@ public class DayFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
         mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
 
@@ -161,8 +175,11 @@ public class DayFragment extends Fragment {
 
         updateUI();
 
+        ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+
         return view;
     }
+
 
     @Override
     public void onStart() {
@@ -199,8 +216,8 @@ public class DayFragment extends Fragment {
         newFragment.show(getFragmentManager(), "durationPicker");
     }
 
-    @OnClick(R.id.saveImageButton)
-    public void saveDayInfo(View v)
+
+    private void saveDayInfo()
     {
         try {
             if (mDay.isValid()) {
@@ -221,14 +238,6 @@ public class DayFragment extends Fragment {
             Toast.makeText(getActivity(), message,
                     Toast.LENGTH_LONG).show();
         }
-    }
-
-    @OnClick(R.id.cancelImageButton)
-    public void cancelDayInfo(View v)
-    {
-        mDay.setToDefaultDay();
-        mDay.computeTheExtraHours(mWorkProfile);
-        EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
     }
 
     @OnItemSelected(R.id.dayTypeSpinner)
@@ -414,7 +423,43 @@ public class DayFragment extends Fragment {
         }
     }
 
+    private class ActionModeCallback implements ActionMode.Callback {
 
+        @SuppressWarnings("unused")
+        private final String TAG = ActionModeCallback.class.getSimpleName();
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mActionMode = mode;
+            mode.getMenuInflater().inflate(R.menu.capture_time_menu, menu);
+            mActionMode.setTitle(getResources().getString(R.string.app_name));
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return true;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+
+                case R.id.save_day:
+                    saveDayInfo();
+                   // Toast.makeText(getActivity(), "We are here!", Toast.LENGTH_LONG).show();
+                    return true;
+
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            getActivity().onBackPressed();
+        }
+    }
 
 
 }

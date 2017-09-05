@@ -140,7 +140,7 @@ public class PDFGenerator {
 
             doc.add(holderTable);
 
-            Toast.makeText(c, "Time sheet created and stored in Documents.", Toast.LENGTH_LONG).show();
+            Toast.makeText(c, "Report saved in Documents", Toast.LENGTH_LONG).show();
 
             doc.close();
 
