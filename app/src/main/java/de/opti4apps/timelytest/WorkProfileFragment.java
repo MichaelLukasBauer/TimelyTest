@@ -2,8 +2,12 @@ package de.opti4apps.timelytest;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -88,6 +92,9 @@ public class WorkProfileFragment extends Fragment {
 
     long userID;
 
+    private ActionMode mActionMode;
+    private ActionModeCallback mActionModeCallback = new ActionModeCallback();
+
     public WorkProfileFragment() {
     }
 
@@ -136,7 +143,10 @@ public class WorkProfileFragment extends Fragment {
         String currentMonth = Calendar.getInstance().getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.getDefault());
         mCurrentWorkingHoursMonth.setText(currentMonth + " Weekly Working Hours");
 
-       updateUI();
+
+        ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+
+        updateUI();
 
         return view;
     }
@@ -225,7 +235,8 @@ public class WorkProfileFragment extends Fragment {
                 mWorkProfile.setPreviousOvertime(Duration.millis(event.duration));
                 break;
             }
-        updateWorkingWeekhours();
+        updateUI();
+       // updateWorkingWeekhours();
     }
 
 
@@ -241,7 +252,8 @@ public class WorkProfileFragment extends Fragment {
                     mWorkProfileBoxed.updateWorkingProfile(mWorkProfile);
                     mWorkProfileBox.put(mWorkProfileBoxed);
                 }
-                EventBus.getDefault().post(new WorkingProfileDatasetChangedEvent(TAG));
+               // EventBus.getDefault().post(new WorkingProfileDatasetChangedEvent(TAG));
+                Toast.makeText(getActivity(), "Working profile saved", Toast.LENGTH_LONG).show();
             }
         } catch (IllegalArgumentException e) {
             if(mWorkProfileBoxed != null){
@@ -302,4 +314,39 @@ public class WorkProfileFragment extends Fragment {
         mPrevOvertimeHours.setText(previousOvertime);
     }
 
+    private class ActionModeCallback implements ActionMode.Callback {
+
+        @SuppressWarnings("unused")
+        private final String TAG = ActionModeCallback.class.getSimpleName();
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mActionMode = mode;
+            mode.getMenuInflater().inflate(R.menu.capture_time_menu, menu);
+            mActionMode.setTitle(getResources().getString(R.string.app_name));
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return true;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.save:
+                   // Toast.makeText(getActivity(), "SAVE", Toast.LENGTH_LONG).show();
+                    updateWorkingWeekhours();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            getActivity().onBackPressed();
+        }
+    }
 }

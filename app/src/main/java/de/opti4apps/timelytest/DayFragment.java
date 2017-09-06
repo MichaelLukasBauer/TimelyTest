@@ -444,12 +444,9 @@ public class DayFragment extends Fragment {
         @Override
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
-
-                case R.id.save_day:
+                case R.id.save:
                     saveDayInfo();
-                   // Toast.makeText(getActivity(), "We are here!", Toast.LENGTH_LONG).show();
                     return true;
-
                 default:
                     return false;
             }
@@ -460,6 +457,4 @@ public class DayFragment extends Fragment {
             getActivity().onBackPressed();
         }
     }
-
-
 }
