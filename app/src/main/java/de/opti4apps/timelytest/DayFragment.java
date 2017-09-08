@@ -397,6 +397,7 @@ public class DayFragment extends Fragment {
         mtotalWorkingHours.setText(totalWorkingTime);
         setTextColor(mtotalWorkingHours, error);
     }
+
     private void setDayOvertime(boolean error) {
         mDay.computeTheExtraHours(mWorkProfile);
         String dayOvertime = TimelyHelper.negativeTimePeriodFormatter(mDay.getExtraHours().toPeriod(), Day.PERIOD_FORMATTER);

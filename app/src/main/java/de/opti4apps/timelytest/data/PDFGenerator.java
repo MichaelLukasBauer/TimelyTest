@@ -105,44 +105,50 @@ public class PDFGenerator {
         setupWeekdaysArr();
         //create document file
         try {
-            configureDocument();
+
             loadData();
-            //open the document
-            doc.open();
 
-            createHeadline();
+            if(mCurrentWorkProfile != null) {
+                configureDocument();
+                doc.open();
 
-            PdfPTable holderTable = new PdfPTable(3);
-            holderTable.setWidthPercentage(100.0F);
-            holderTable.setHorizontalAlignment(Element.ALIGN_LEFT);
-            holderTable.setWidths(new int[] {80,1,19});
+                createHeadline();
 
-            PdfPTable mainTable = getMainTable();
+                PdfPTable holderTable = new PdfPTable(3);
+                holderTable.setWidthPercentage(100.0F);
+                holderTable.setHorizontalAlignment(Element.ALIGN_LEFT);
+                holderTable.setWidths(new int[]{80, 1, 19});
 
-            PdfPCell firstTableCell = new PdfPCell();
-            firstTableCell.setPadding(0f);
-            firstTableCell.setBorder(PdfPCell.NO_BORDER);
-            firstTableCell.addElement(mainTable);
-            holderTable.addCell(firstTableCell);
+                PdfPTable mainTable = getMainTable();
 
-            PdfPCell spacer = getCell(null,1,1);
-            spacer.setPadding(0f);
-            spacer.setBorder(PdfPCell.NO_BORDER);
-            holderTable.addCell(spacer);
+                PdfPCell firstTableCell = new PdfPCell();
+                firstTableCell.setPadding(0f);
+                firstTableCell.setBorder(PdfPCell.NO_BORDER);
+                firstTableCell.addElement(mainTable);
+                holderTable.addCell(firstTableCell);
 
-            PdfPTable sidebarTable = getSidebarTable();
+                PdfPCell spacer = getCell(null, 1, 1);
+                spacer.setPadding(0f);
+                spacer.setBorder(PdfPCell.NO_BORDER);
+                holderTable.addCell(spacer);
 
-            PdfPCell secondTableCell = new PdfPCell();
-            secondTableCell.setPadding(0f);
-            secondTableCell.setBorder(PdfPCell.NO_BORDER);
-            secondTableCell.addElement(sidebarTable);
-            holderTable.addCell(secondTableCell);
+                PdfPTable sidebarTable = getSidebarTable();
 
-            doc.add(holderTable);
+                PdfPCell secondTableCell = new PdfPCell();
+                secondTableCell.setPadding(0f);
+                secondTableCell.setBorder(PdfPCell.NO_BORDER);
+                secondTableCell.addElement(sidebarTable);
+                holderTable.addCell(secondTableCell);
 
-            Toast.makeText(c, "Report saved in Documents", Toast.LENGTH_LONG).show();
+                doc.add(holderTable);
 
-            doc.close();
+                Toast.makeText(c, "Report saved in Documents", Toast.LENGTH_LONG).show();
+
+                doc.close();
+            }
+            else{
+                Toast.makeText(c, "Report can't be generated. No working profile", Toast.LENGTH_LONG).show();
+            }
 
         } catch (DocumentException de) {
             Log.e("PDFCreator", "DocumentException:" + de);

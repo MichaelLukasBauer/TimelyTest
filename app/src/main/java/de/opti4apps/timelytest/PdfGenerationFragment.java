@@ -226,27 +226,6 @@ public class PdfGenerationFragment extends Fragment {
         }
     }
 
-//    public void loadListView() {
-//        try {
-//
-//            GetFiles("/sdcard/UniTyLab/PDF Files");
-//            if (filenames.size() != 0)
-//                list.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, filenames));
-//
-//            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-//                    // Clicking on items
-//                    File file = filesList.get(position);
-//                    Intent intent = new Intent(Intent.ACTION_VIEW);
-//                    intent.setDataAndType(Uri.fromFile(file), "application/pdf");
-//                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-//                    startActivity(intent);
-//                }
-//            });
-//        } catch (NullPointerException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     public void GetFiles(String DirectoryPath) {
         filenames = new ArrayList<>();
