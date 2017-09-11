@@ -1,17 +1,25 @@
 package de.opti4apps.timelytest;
 
+
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+
+
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,7 +29,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
-import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -31,7 +38,6 @@ import butterknife.OnItemSelected;
 import de.opti4apps.timelytest.data.Day;
 import de.opti4apps.timelytest.data.Day_;
 import de.opti4apps.timelytest.data.WorkProfile;
-import de.opti4apps.timelytest.data.WorkProfile_;
 import de.opti4apps.timelytest.event.DatePickedEvent;
 import de.opti4apps.timelytest.event.DayDatasetChangedEvent;
 import de.opti4apps.timelytest.event.DurationPickedEvent;
@@ -42,7 +48,6 @@ import de.opti4apps.timelytest.shared.TimePickerFragment;
 import de.opti4apps.timelytest.shared.TimelyHelper;
 import io.objectbox.Box;
 import io.objectbox.query.Query;
-import mobi.upod.timedurationpicker.TimeDurationPicker;
 
 
 /**
@@ -86,6 +91,10 @@ public class DayFragment extends Fragment {
     private Box<WorkProfile> mWorkProfileBox;
     private Query<Day> mDayQuery;
     private Query<WorkProfile> mWorkProfileQuery;
+    private View layouttoast;
+
+    private ActionMode mActionMode;
+    private ActionModeCallback mActionModeCallback = new ActionModeCallback();
 
     public DayFragment() {
         // Required empty public constructor
@@ -110,6 +119,8 @@ public class DayFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
         mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
 
@@ -138,27 +149,16 @@ public class DayFragment extends Fragment {
                 mDay = mDayQuery.findUnique();
             }
 
-
-//            if (dayID == 0) {
-//                Day day = new Day(Day.DAY_TYPE.WORKDAY, DateTime.now(), DateTime.now(), DateTime.now(), Duration.standardMinutes(0));
-//               dayID = day.getId();
-//
-//                mDayBox.put(day);
-//            }
-//            mDayQuery = mDayBox.query().equal(Day_.id, dayID).build();
-//            mDay = mDayQuery.findUnique();
-
             getTheCurrentWorkingProfile();
         }
         setRetainInstance(true);
     }
 
     private void getTheCurrentWorkingProfile() {
-        mWorkProfile = TimelyHelper.getValidWorkingProfile(mDay,mWorkProfileBox);
+        mWorkProfile = TimelyHelper.getValidWorkingProfileByDay(mDay,mWorkProfileBox, mDayBox);
 
         if (mWorkProfile == null) {
-            long userID = getArguments().getLong(ARG_USER_ID);
-            mWorkProfile  = new WorkProfile(userID, Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0));
+            Toast.makeText(getActivity(), getResources().getString(R.string.error_finding_wp), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -170,6 +170,7 @@ public class DayFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_day, container, false);
         ButterKnife.bind(this, view);
 
+       layouttoast = inflater.inflate(R.layout.custom_toast,(ViewGroup)view.findViewById(R.id.custom_toast_layout_id));
 
         final String[] dayTypes = getResources().getStringArray(R.array.day_type_array);
         ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, dayTypes);
@@ -177,8 +178,11 @@ public class DayFragment extends Fragment {
 
         updateUI();
 
+        ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+
         return view;
     }
+
 
     @Override
     public void onStart() {
@@ -215,18 +219,26 @@ public class DayFragment extends Fragment {
         newFragment.show(getFragmentManager(), "durationPicker");
     }
 
-    @OnClick(R.id.saveImageButton)
-    public void saveDayInfo(View v)
+
+    private void saveDayInfo()
     {
         try {
             if (mDay.isValid()) {
                 mDay.computeTheExtraHours(mWorkProfile);
                 mDayBox.put(mDay);
                 EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
-                String message = getResources().getString(R.string.Save_Day_message);
-                Log.d(TAG, "Day: " + mDay.getDay().toString()+ " " + message);
-                Toast.makeText(getActivity(), message,
-                        Toast.LENGTH_LONG).show();
+                String message = getResources().getString(R.string.save_day_message);
+                Toast mytoast = new Toast(getActivity());
+                ((TextView) layouttoast.findViewById(R.id.custom_toast_text)).setText(message);
+                mytoast.setView(layouttoast);
+                mytoast.setDuration(Toast.LENGTH_LONG);
+                mytoast.setGravity(Gravity.CENTER,0,0);
+                mytoast.show();
+//
+//
+//                Log.d(TAG, "Day: " + mDay.getDay().toString()+ " " + message);
+//                Toast.makeText(getActivity(), message,
+//                        Toast.LENGTH_LONG).show();
             }
         } catch (IllegalArgumentException e) {
             String msg = e.getMessage();
@@ -237,14 +249,6 @@ public class DayFragment extends Fragment {
             Toast.makeText(getActivity(), message,
                     Toast.LENGTH_LONG).show();
         }
-    }
-
-    @OnClick(R.id.cancelImageButton)
-    public void cancelDayInfo(View v)
-    {
-        mDay.setToDefaultDay();
-        mDay.computeTheExtraHours(mWorkProfile);
-        EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
     }
 
     @OnItemSelected(R.id.dayTypeSpinner)
@@ -303,6 +307,7 @@ public class DayFragment extends Fragment {
             mDayQuery = newQuery;
             newDay.setToDefaultDay();
             mDay = newDay;
+            getTheCurrentWorkingProfile();
             EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
             //updateDay();
         }
@@ -411,7 +416,7 @@ public class DayFragment extends Fragment {
     }
 
     private void setTotalOvertime(boolean error) {
-        String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(Duration.millis(TimelyHelper.getTotalOvertimeForDay(mDay, mDayBox,mWorkProfileBox)).toPeriod(), Day.PERIOD_FORMATTER);
+        String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(Duration.millis(TimelyHelper.getTotalOvertimeForDay(mDay, mWorkProfile, mDayBox)).toPeriod(), Day.PERIOD_FORMATTER);
         mTotalOvertime.setText(totalOvertime);
         setTextColor(mTotalOvertime, error);
     }
@@ -429,7 +434,38 @@ public class DayFragment extends Fragment {
         }
     }
 
+    private class ActionModeCallback implements ActionMode.Callback {
 
+        @SuppressWarnings("unused")
+        private final String TAG = ActionModeCallback.class.getSimpleName();
 
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mActionMode = mode;
+            mode.getMenuInflater().inflate(R.menu.capture_time_menu, menu);
+            mActionMode.setTitle(getResources().getString(R.string.app_name));
+            return true;
+        }
 
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return true;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.save:
+                    saveDayInfo();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            getActivity().onBackPressed();
+        }
+    }
 }
