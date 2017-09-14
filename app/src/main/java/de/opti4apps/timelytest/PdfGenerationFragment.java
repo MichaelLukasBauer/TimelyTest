@@ -41,10 +41,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.opti4apps.timelytest.data.Day;
 import de.opti4apps.timelytest.data.PDFGenerator;
 import de.opti4apps.timelytest.event.DatePickedEvent;
 import de.opti4apps.timelytest.shared.DurationPickerFragment;
 import de.opti4apps.timelytest.shared.MonthYearPickerFragment;
+import de.opti4apps.timelytest.shared.TimelyHelper;
 
 
 /**
@@ -74,6 +76,35 @@ public class PdfGenerationFragment extends Fragment {
     @BindView(R.id.generatePdfMonthText)
     TextView mGeneratePdfText;
 
+    @BindView(R.id.total_reported_days_text)
+    TextView mTotalReportedDayText;
+
+    @BindView(R.id.total_working_days_text)
+    TextView mTotalWorkingDayText;
+
+    @BindView(R.id.total_days_business_trip_text)
+    TextView mTotalBusinessTripDayText;
+
+    @BindView(R.id.total_days_illness_text)
+    TextView mTotalIllnessDayText;
+
+    @BindView(R.id.total_days_further_education_text)
+    TextView mTotalFurtherEducationDayText;
+
+    @BindView(R.id.total_days_off_in_lieu_text)
+    TextView mTotalDayOffInLieuText;
+
+    @BindView(R.id.total_days_others_text)
+    TextView mTotalOtherDayText;
+
+    @BindView(R.id.Total_days_on_vacation_text)
+    TextView mTotalVacationDayText;
+
+    @BindView(R.id.Total_doc_appointments_text)
+    TextView mTotalDocAppointmentDayText;
+
+    @BindView(R.id.total_overtime_text)
+    TextView mTotalOvertimeText;
 
     public static PdfGenerationFragment newInstance(long userID) {
         PdfGenerationFragment fragment = new PdfGenerationFragment();
@@ -103,6 +134,7 @@ public class PdfGenerationFragment extends Fragment {
         try {
             Date currentMonthYear = new SimpleDateFormat("yyyy.MM.dd").parse(currentMonthYearStr);
             reportSelectedDate.setTime(currentMonthYear);
+            updateSummary();
         } catch (ParseException e) {
             Log.w("Wrong Date", "Report date is wrong!");
         }
@@ -170,6 +202,7 @@ public class PdfGenerationFragment extends Fragment {
             Date selectedMonthYear = new SimpleDateFormat("yyyy.MM.dd").parse(selectedMonthYearStr);
             mGeneratePdfText.setText(new SimpleDateFormat("MMM yyyy").format(selectedMonthYear));
             reportSelectedDate.setTime(selectedMonthYear);
+            updateSummary();
         }
         catch (ParseException ex)
         {
@@ -240,5 +273,25 @@ public class PdfGenerationFragment extends Fragment {
         }
     }
 
+    public void updateSummary()
+    {
+        if (reportSelectedDate != null)
+        {
+
+            int year = reportSelectedDate.get(Calendar.YEAR);
+            int month = reportSelectedDate.get(Calendar.MONTH) + 1;
+            DateTime currentMonth = new DateTime(year,month,0,0,0);
+            mTotalReportedDayText.setText(TimelyHelper.getTotalReportedDayForMonth(currentMonth));
+            mTotalBusinessTripDayText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.BUSINESS_TRIP,currentMonth));
+            mTotalDayOffInLieuText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.DAY_OFF_IN_LIEU,currentMonth));
+            mTotalDocAppointmentDayText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.DOCTOR_APPOINTMENT,currentMonth));
+            mTotalFurtherEducationDayText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.FURTHER_EDUCATION,currentMonth));
+            mTotalIllnessDayText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.ILLNESS,currentMonth));
+            mTotalOtherDayText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.OTHER,currentMonth));
+            mTotalVacationDayText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.HOLIDAY,currentMonth));
+            mTotalWorkingDayText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.WORKDAY,currentMonth));
+        }
+
+    }
 
 }

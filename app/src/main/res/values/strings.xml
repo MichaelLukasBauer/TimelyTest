@@ -61,4 +61,14 @@
     <string name="generate_report">Generate Report</string>
     <string name="no_work_on_weekend">The day information have not been saved. No work on weekend</string>
     <string name="no_working_profile">You need to set a working profile first</string>
+    <string name="total_reported_days">Total reported days:</string>
+    <string name="total_working_days">Total working days</string>
+    <string name="total_days_on_vacation">Total days on vacation:</string>
+    <string name="total_doc_appointment">Total doctor appointments:</string>
+    <string name="total_illness_days">Total days of illness:</string>
+    <string name="total_days_off_in_lieu">Total days off in lieu:</string>
+    <string name="total_days_further_education">Total days for further education:</string>
+    <string name="total_days_business_trip">Total days for business trip:</string>
+    <string name="total_days_others">Total other days:</string>
+    <string name="total_overtime_hours">Total overtime:</string>
 </resources>

@@ -163,4 +163,30 @@ public class TimelyHelper {
         }
         return Duration.standardMinutes(0);
     }
+
+    public static int getTotalDayForDayType(Day.DAY_TYPE day_type, DateTime month)
+    {
+        int daysNumber = 0;
+        DateTime startMonth = month.dayOfMonth().withMinimumValue().withTime(0, 0, 0, 0);
+        DateTime endMonth = month.plusMonths(1).minusDays(1).withTime(23, 59, 0, 0);
+        mDayQuery = mDayBox.query().between(Day_.day, startMonth.toDate() , endMonth.toDate()).build();
+        List<Day> allDay = mDayQuery.find();
+        for (Day d: allDay)
+        {
+            if(d.getType().compareTo(day_type) == 0){
+                daysNumber++;
+            }
+
+        }
+        return daysNumber;
+    }
+
+    public static int getTotalReportedDayForMonth( DateTime month)
+    {
+        DateTime startMonth = month.dayOfMonth().withMinimumValue().withTime(0, 0, 0, 0);
+        DateTime endMonth = month.plusMonths(1).minusDays(1).withTime(23, 59, 0, 0);
+        mDayQuery = mDayBox.query().between(Day_.day, startMonth.toDate() , endMonth.toDate()).build();
+        List<Day> allDay = mDayQuery.find();
+        return allDay.size();
+    }
 }
