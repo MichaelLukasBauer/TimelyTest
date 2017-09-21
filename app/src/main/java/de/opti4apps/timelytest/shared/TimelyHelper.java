@@ -164,7 +164,7 @@ public class TimelyHelper {
         return Duration.standardMinutes(0);
     }
 
-    public static int getTotalDayForDayType(Day.DAY_TYPE day_type, DateTime month)
+    public static int getTotalDayForDayType(Day.DAY_TYPE day_type, DateTime month, Box<Day> mDayBox)
     {
         int daysNumber = 0;
         DateTime startMonth = month.dayOfMonth().withMinimumValue().withTime(0, 0, 0, 0);
@@ -181,7 +181,7 @@ public class TimelyHelper {
         return daysNumber;
     }
 
-    public static int getTotalReportedDayForMonth( DateTime month)
+    public static int getTotalReportedDayForMonth( DateTime month,Box<Day> mDayBox)
     {
         DateTime startMonth = month.dayOfMonth().withMinimumValue().withTime(0, 0, 0, 0);
         DateTime endMonth = month.plusMonths(1).minusDays(1).withTime(23, 59, 0, 0);

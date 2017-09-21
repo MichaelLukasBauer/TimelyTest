@@ -11,6 +11,7 @@ import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,10 +44,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.opti4apps.timelytest.data.Day;
 import de.opti4apps.timelytest.data.PDFGenerator;
+import de.opti4apps.timelytest.data.WorkProfile;
 import de.opti4apps.timelytest.event.DatePickedEvent;
 import de.opti4apps.timelytest.shared.DurationPickerFragment;
 import de.opti4apps.timelytest.shared.MonthYearPickerFragment;
 import de.opti4apps.timelytest.shared.TimelyHelper;
+import io.objectbox.Box;
 
 
 /**
@@ -54,24 +57,6 @@ import de.opti4apps.timelytest.shared.TimelyHelper;
  */
 
 public class PdfGenerationFragment extends Fragment {
-
-    private static final String ARG_USER_ID = "userID";
-    private static final String ARG_YEAR = "year";
-    private static final String ARG_MONTH = "month";
-    private static final String FIRST_DAY_OF_MONTH = "1";
-    public static final String TAG = PdfGenerationFragment.class.getSimpleName();
-
-    private Calendar reportSelectedDate = null;
-
-//    @BindView(R.id.reportList)
-//    ListView list;
-
-    private File dir;
-    String[] permissions = new String[]{
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-    };
-    private ArrayList<String> filenames;
-    private ArrayList<File> filesList;
 
     @BindView(R.id.generatePdfMonthText)
     TextView mGeneratePdfText;
@@ -106,6 +91,28 @@ public class PdfGenerationFragment extends Fragment {
     @BindView(R.id.total_overtime_text)
     TextView mTotalOvertimeText;
 
+    private Box<Day> mDayBox;
+    private Box<WorkProfile> mWorkProfileBox;
+
+    private static final String ARG_USER_ID = "userID";
+    private static final String ARG_YEAR = "year";
+    private static final String ARG_MONTH = "month";
+    private static final String FIRST_DAY_OF_MONTH = "1";
+    public static final String TAG = PdfGenerationFragment.class.getSimpleName();
+
+    private Calendar reportSelectedDate = null;
+
+//    @BindView(R.id.reportList)
+//    ListView list;
+
+    private File dir;
+    String[] permissions = new String[]{
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    };
+    private ArrayList<String> filenames;
+    private ArrayList<File> filesList;
+
+
     public static PdfGenerationFragment newInstance(long userID) {
         PdfGenerationFragment fragment = new PdfGenerationFragment();
         Bundle args = new Bundle();
@@ -126,6 +133,8 @@ public class PdfGenerationFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
+        mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
         View view = inflater.inflate(R.layout.fragment_pdf_creation, container, false);
         ButterKnife.bind(this, view);
 
@@ -218,6 +227,14 @@ public class PdfGenerationFragment extends Fragment {
             }
         }
     }
+    @OnClick({R.id.SendPerMailButton})
+    public void SendReportPerMail(View v) {
+        generatePdfReport(v);
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMyyyy");
+        Long userID = getArguments().getLong(ARG_USER_ID);
+        DialogFragment newFragment = SendEmailFragment.newInstance(userID,sdf.format(reportSelectedDate.getTime()));
+        newFragment.show(getFragmentManager(), "startEmailDialogFragment");
+    }
 
     public boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
@@ -277,19 +294,21 @@ public class PdfGenerationFragment extends Fragment {
     {
         if (reportSelectedDate != null)
         {
-
+            Day mDay = new Day(Day.DAY_TYPE.WORKDAY, DateTime.now(), DateTime.now(), DateTime.now(), Duration.standardMinutes(0));
             int year = reportSelectedDate.get(Calendar.YEAR);
             int month = reportSelectedDate.get(Calendar.MONTH) + 1;
-            DateTime currentMonth = new DateTime(year,month,0,0,0);
-            mTotalReportedDayText.setText(TimelyHelper.getTotalReportedDayForMonth(currentMonth));
-            mTotalBusinessTripDayText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.BUSINESS_TRIP,currentMonth));
-            mTotalDayOffInLieuText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.DAY_OFF_IN_LIEU,currentMonth));
-            mTotalDocAppointmentDayText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.DOCTOR_APPOINTMENT,currentMonth));
-            mTotalFurtherEducationDayText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.FURTHER_EDUCATION,currentMonth));
-            mTotalIllnessDayText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.ILLNESS,currentMonth));
-            mTotalOtherDayText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.OTHER,currentMonth));
-            mTotalVacationDayText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.HOLIDAY,currentMonth));
-            mTotalWorkingDayText.setText(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.WORKDAY,currentMonth));
+            DateTime currentMonth = new DateTime(year,month,1,0,0);
+            mTotalReportedDayText.setText(String.valueOf(TimelyHelper.getTotalReportedDayForMonth(currentMonth,mDayBox)));
+            mTotalBusinessTripDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.BUSINESS_TRIP,currentMonth,mDayBox)));
+            mTotalDayOffInLieuText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.DAY_OFF_IN_LIEU,currentMonth,mDayBox)));
+            mTotalDocAppointmentDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.DOCTOR_APPOINTMENT,currentMonth,mDayBox)));
+            mTotalFurtherEducationDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.FURTHER_EDUCATION,currentMonth,mDayBox)));
+            mTotalIllnessDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.ILLNESS,currentMonth,mDayBox)));
+            mTotalOtherDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.OTHER,currentMonth,mDayBox)));
+            mTotalVacationDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.HOLIDAY,currentMonth,mDayBox)));
+            mTotalWorkingDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.WORKDAY,currentMonth,mDayBox)));
+            String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(Duration.millis(TimelyHelper.getTotalOvertimeForDay(mDay, TimelyHelper.getWorkProfileByMonth(currentMonth,mWorkProfileBox), mDayBox)).toPeriod(), Day.PERIOD_FORMATTER);
+            mTotalOvertimeText.setText(totalOvertime);
         }
 
     }

@@ -44,9 +44,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
-                android:layout_margin="@dimen/activity_horizontal_margin">
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -58,10 +58,9 @@
                         android:id="@+id/textView3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="100dp"
                         android:layout_weight="1"
-                        android:text="@string/total_reported_days"
-                        android:textAlignment="textStart"
-                        android:layout_marginLeft="25dp"/>
+                        android:text="@string/total_reported_days" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -75,7 +74,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="0" />
+                        android:text="0"
+                        android:textAlignment="center" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -83,9 +83,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
-                android:orientation="horizontal"
-                android:layout_margin="@dimen/activity_horizontal_margin">
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -97,11 +97,9 @@
                         android:id="@+id/textView23"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="100dp"
                         android:layout_weight="1"
-                        android:text="@string/total_working_days"
-                        android:textAlignment="textStart"
-                        android:layout_marginLeft="25dp"
-                        />
+                        android:text="@string/total_working_days" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -115,7 +113,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="0" />
+                        android:text="0"
+                        android:textAlignment="center" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -123,9 +122,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
-                android:layout_margin="@dimen/activity_horizontal_margin">
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -137,10 +136,10 @@
                         android:id="@+id/textView9"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="100dp"
                         android:layout_weight="1"
                         android:text="@string/total_days_on_vacation"
-                        android:textAlignment="textStart"
-                        android:layout_marginLeft="25dp"/>
+                         />
                 </LinearLayout>
 
                 <LinearLayout
@@ -154,7 +153,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="0" />
+                        android:text="0"
+                        android:textAlignment="center" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -162,9 +162,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
-                android:layout_margin="@dimen/activity_horizontal_margin">
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -176,9 +176,9 @@
                         android:id="@+id/textView10"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="100dp"
                         android:layout_weight="1"
-                        android:text="@string/total_doc_appointment"
-                        android:layout_marginLeft="25dp"/>
+                        android:text="@string/total_doc_appointment" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -192,7 +192,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="0" />
+                        android:text="0"
+                        android:textAlignment="center" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -200,9 +201,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
-                android:layout_margin="@dimen/activity_horizontal_margin">
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -214,7 +215,7 @@
                         android:id="@+id/textView11"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="25dp"
+                        android:layout_marginLeft="100dp"
                         android:layout_weight="1"
                         android:text="@string/total_illness_days" />
                 </LinearLayout>
@@ -230,7 +231,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="0" />
+                        android:text="0"
+                        android:textAlignment="center" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -238,9 +240,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
-                android:layout_margin="@dimen/activity_horizontal_margin">
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -252,9 +254,9 @@
                         android:id="@+id/textView13"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="100dp"
                         android:layout_weight="1"
-                        android:text="@string/total_days_off_in_lieu"
-                        android:layout_marginLeft="25dp"/>
+                        android:text="@string/total_days_off_in_lieu" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -268,7 +270,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="0" />
+                        android:text="0"
+                        android:textAlignment="center" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -276,9 +279,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
-                android:layout_margin="@dimen/activity_horizontal_margin">
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -290,9 +293,9 @@
                         android:id="@+id/textView15"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="100dp"
                         android:layout_weight="1"
-                        android:text="@string/total_days_further_education"
-                        android:layout_marginLeft="25dp"/>
+                        android:text="@string/total_days_further_education" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -306,7 +309,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="0" />
+                        android:text="0"
+                        android:textAlignment="center" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -314,9 +318,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
-                android:layout_margin="@dimen/activity_horizontal_margin">
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -328,9 +332,9 @@
                         android:id="@+id/textView17"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="100dp"
                         android:layout_weight="1"
-                        android:text="@string/total_days_business_trip"
-                        android:layout_marginLeft="25dp"/>
+                        android:text="@string/total_days_business_trip" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -344,7 +348,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="0" />
+                        android:text="0"
+                        android:textAlignment="center" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -352,9 +357,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
-                android:layout_margin="@dimen/activity_horizontal_margin">
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -366,9 +371,9 @@
                         android:id="@+id/textView19"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="100dp"
                         android:layout_weight="1"
-                        android:text="@string/total_days_others"
-                        android:layout_marginLeft="25dp"/>
+                        android:text="@string/total_days_others" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -382,7 +387,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="0" />
+                        android:text="0"
+                        android:textAlignment="center" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -390,9 +396,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
-                android:layout_margin="@dimen/activity_horizontal_margin">
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -404,9 +410,9 @@
                         android:id="@+id/textView21"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginLeft="100dp"
                         android:layout_weight="1"
-                        android:text="@string/total_overtime_hours"
-                        android:layout_marginLeft="25dp"/>
+                        android:text="@string/total_overtime_hours" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -420,22 +426,55 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="@string/_0min" />
+                        android:text="@string/_0min"
+                        android:textAlignment="center" />
                 </LinearLayout>
 
             </LinearLayout>
 
         </LinearLayout>
 
-        <Button
-            android:id="@+id/generatePdfButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/generate_report"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center_horizontal"
-            android:textColor="@color/colorTextWhite"
-            app:backgroundTint="@color/colorAccent"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1">
+
+                <Button
+                    android:id="@+id/generatePdfButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/generate_report"
+                    android:textColor="@color/colorTextWhite"
+                    app:backgroundTint="@color/colorAccent"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:layout_weight="1">
+
+                <Button
+                    android:id="@+id/SendPerMailButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:layout_weight="1"
+                    android:text="@string/send_per_mail"
+                    android:textColor="@color/colorTextWhite"
+                    app:backgroundTint="@color/colorAccent" />
+            </LinearLayout>
+        </LinearLayout>
 
         <!--<ListView-->
             <!--android:id="@+id/reportList"-->
