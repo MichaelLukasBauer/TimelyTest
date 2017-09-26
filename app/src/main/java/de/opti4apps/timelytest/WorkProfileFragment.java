@@ -269,6 +269,7 @@ public class WorkProfileFragment extends Fragment {
             String message = getResources().getString(res);
             Log.d(TAG, res + " " + message);
             Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+            updateUI();
         }
     }
 
