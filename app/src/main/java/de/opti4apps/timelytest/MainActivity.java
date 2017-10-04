@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -22,6 +23,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.opti4apps.timelytest.data.User;
 import de.opti4apps.timelytest.data.UserManager;
+import de.opti4apps.timelytest.data.WorkProfile;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
 import io.objectbox.Box;
 
@@ -38,6 +40,8 @@ public class MainActivity extends AppCompatActivity
 
     User currentUser;
     Box<User> usersBox;
+
+    private Box<WorkProfile> mWorkProfileBox;
 
 
     @BindView(R.id.toolbar)
@@ -90,6 +94,8 @@ public class MainActivity extends AppCompatActivity
         mUserNameTextView.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
         mUserEmailTextView = (TextView) mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_email);
         mUserEmailTextView.setText(currentUser.getEmail());
+
+        mWorkProfileBox = ((App) getApplication()).getBoxStore().boxFor(WorkProfile.class);
     }
 
     @Override
@@ -148,9 +154,15 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_capture_time) {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(0,currentUser.getId()), DayFragment.TAG);
-            transaction.addToBackStack(null);
-            transaction.commit();
+            if(mWorkProfileBox.count() > 0) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(0, currentUser.getId()), DayFragment.TAG);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+            else
+            {
+                showWPCreateMessage();
+            }
         } else if (id == R.id.nav_month_overview) {
             if(!mDayListFragment.isAdded()) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, mDayListFragment, DayListFragment.TAG);
@@ -170,9 +182,15 @@ public class MainActivity extends AppCompatActivity
         }
         else if (id == R.id.nav_time_sheet)
         {
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, PdfGenerationFragment.newInstance(currentUser.getId()), PdfGenerationFragment.TAG);
-            transaction.addToBackStack(null);
-            transaction.commit();
+            if(mWorkProfileBox.count() > 0) {
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, PdfGenerationFragment.newInstance(currentUser.getId()), PdfGenerationFragment.TAG);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
+             else
+                {
+                    showWPCreateMessage();
+                }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -205,8 +223,8 @@ public class MainActivity extends AppCompatActivity
         EventBus.getDefault().unregister(this);
     }
 
-//    private User getUserByEmail(String email) {
-//        User user = usersBox.query().equal(User_.email, email).build().findFirst();
-//        return user;
-//    }
+    private void showWPCreateMessage(){
+        String message = getResources().getString(R.string.no_working_profile);
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
 }
