@@ -2,8 +2,10 @@ package de.opti4apps.timelytest;
 
 import android.Manifest;
 import android.app.DatePickerDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
@@ -222,11 +224,25 @@ public class PdfGenerationFragment extends Fragment {
     @OnClick({R.id.generatePdfButton})
     public void generatePdfReport(View v) {
         if (isExternalStorageWritable()) {
-            if(checkPermissions()) {
+            if (checkPermissions()) {
                 generatePdf();
+                SimpleDateFormat sdf = new SimpleDateFormat("MMMyyyy");
+                String storagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getAbsolutePath() + "/UniTyLab/PDF Files";
+                String filename="UniTyLabEmployeesTimesheet_" + sdf.format(reportSelectedDate.getTime()) + ".pdf";
+                File filelocation = new File(storagePath, filename);;
+                Uri path = Uri.fromFile(filelocation);
+                Intent pdfOpenintent = new Intent(Intent.ACTION_VIEW);
+                pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                pdfOpenintent.setDataAndType(path, "application/pdf");
+                try {
+                    startActivity(pdfOpenintent);
+                } catch (ActivityNotFoundException e) {
+
+                }
             }
         }
     }
+
     @OnClick({R.id.SendPerMailButton})
     public void SendReportPerMail(View v) {
         generatePdfReport(v);
