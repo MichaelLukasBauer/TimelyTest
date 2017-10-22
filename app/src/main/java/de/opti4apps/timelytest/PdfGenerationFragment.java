@@ -229,23 +229,33 @@ public class PdfGenerationFragment extends Fragment {
                 SimpleDateFormat sdf = new SimpleDateFormat("MMMyyyy");
                 String storagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getAbsolutePath() + "/UniTyLab/PDF Files";
                 String filename="UniTyLabEmployeesTimesheet_" + sdf.format(reportSelectedDate.getTime()) + ".pdf";
-                File filelocation = new File(storagePath, filename);;
-                Uri path = Uri.fromFile(filelocation);
-                Intent pdfOpenintent = new Intent(Intent.ACTION_VIEW);
-                pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                pdfOpenintent.setDataAndType(path, "application/pdf");
-                try {
-                    startActivity(pdfOpenintent);
-                } catch (ActivityNotFoundException e) {
-
-                }
+                openPDFFileWithIntent(storagePath,filename);
             }
         }
     }
 
+    public void openPDFFileWithIntent(String fileLocation, String filename)
+    {
+        File filelocation = new File(fileLocation, filename);;
+        Uri path = Uri.fromFile(filelocation);
+        Intent pdfOpenintent = new Intent(Intent.ACTION_VIEW);
+        pdfOpenintent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        pdfOpenintent.setDataAndType(path, "application/pdf");
+        try {
+            startActivity(pdfOpenintent);
+        } catch (ActivityNotFoundException e) {
+
+        }
+    }
+
+
     @OnClick({R.id.SendPerMailButton})
     public void SendReportPerMail(View v) {
-        generatePdfReport(v);
+        if (isExternalStorageWritable()) {
+            if (checkPermissions()) {
+                generatePdf();
+            }
+        }
         SimpleDateFormat sdf = new SimpleDateFormat("MMMyyyy");
         Long userID = getArguments().getLong(ARG_USER_ID);
         DialogFragment newFragment = SendEmailFragment.newInstance(userID,sdf.format(reportSelectedDate.getTime()));

@@ -24,6 +24,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.opti4apps.timelytest.data.User;
 import de.opti4apps.timelytest.data.User_;
+import de.opti4apps.timelytest.shared.GMailSender;
 import io.objectbox.Box;
 import io.objectbox.query.Query;
 
@@ -103,25 +104,28 @@ public class SendEmailFragment extends DialogFragment {
 
     }
 
-    protected void sendEmail(String receiver) {
-        String storagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getAbsolutePath() + "/UniTyLab/PDF Files";
-        String filename="UniTyLabEmployeesTimesheet_" + getArguments().getString(ARG_MONTH_YEAR) + ".pdf";
-        File filelocation = new File(storagePath, filename);
-        Uri path = Uri.fromFile(filelocation);
-        Intent emailIntent = new Intent(Intent.ACTION_SEND);
-        // set the type to 'email'
-        emailIntent .setType("vnd.android.cursor.dir/email");
-        String to[] = {receiver};
-        emailIntent .putExtra(Intent.EXTRA_EMAIL, to);
-        // the attachment
-        emailIntent .putExtra(Intent.EXTRA_STREAM, path);
-        // the mail subject
-        emailIntent .putExtra(Intent.EXTRA_SUBJECT, "Employee Timesheet " +  getArguments().getString(ARG_MONTH_YEAR));
+    protected void sendEmail(final String receiver) {
+        final String  storagePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getAbsolutePath() + "/UniTyLab/PDF Files";
+        final String filename="UniTyLabEmployeesTimesheet_" + getArguments().getString(ARG_MONTH_YEAR) + ".pdf";
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
 
-        try {
-            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
-        } catch (android.content.ActivityNotFoundException ex) {
-            Toast.makeText(getActivity(), "There is no email client installed.", Toast.LENGTH_SHORT).show();
-        }
+
+//            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+                    GMailSender sender = new GMailSender("timely.unitylab@gmail.com","TimelyUnityLab");
+                    sender.addAttachment(storagePath +"/" + filename,filename);
+                    sender.sendMail(getArguments().getString(ARG_MONTH_YEAR), getArguments().getString(ARG_MONTH_YEAR), "timely.unitylab@gmail.com", receiver);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.d(TAG, "Email: " + "There is no email client installed.");
+                }
+            }
+
+        }).start();
+        Toast.makeText(getActivity(), "The Email has been sent ", Toast.LENGTH_SHORT).show();
+        getDialog().dismiss();
     }
 }
