@@ -333,7 +333,7 @@ public class PdfGenerationFragment extends Fragment {
             mTotalOtherDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.OTHER,currentMonth,mDayBox)));
             mTotalVacationDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.HOLIDAY,currentMonth,mDayBox)));
             mTotalWorkingDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.WORKDAY,currentMonth,mDayBox)));
-            String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(Duration.millis(TimelyHelper.getTotalOvertimeForDay(mDay, TimelyHelper.getWorkProfileByMonth(currentMonth,mWorkProfileBox), mDayBox)).toPeriod(), Day.PERIOD_FORMATTER);
+            String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(TimelyHelper.getMonthTotalOvertime(TimelyHelper.getWorkProfileByMonth(currentMonth,mWorkProfileBox), mDayBox).toPeriod(), Day.PERIOD_FORMATTER);
             mTotalOvertimeText.setText(totalOvertime);
         }
 

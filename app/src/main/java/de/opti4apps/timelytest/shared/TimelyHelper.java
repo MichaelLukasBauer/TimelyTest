@@ -78,6 +78,7 @@ public class TimelyHelper {
         long totalOvertime = 0;
 
         DateTime startMonth = wp.getStartDate().withTime(0, 0, 0, 0);
+
         DateTime tillCurrentDay =  mDay.getDay().minusDays(1).withTime(23, 59, 0, 0);
 
         mDayQuery = mDayBox.query().between(Day_.day, startMonth.toDate() , tillCurrentDay.toDate()).build();
