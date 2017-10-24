@@ -42,12 +42,11 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.jakewharton:butterknife:8.5.1'
     compile 'com.itextpdf:itextg:5.5.10'
+
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
-    compile files('libs/itextpdf-5.1.0.jar')
-    compile files('build/libs/activation.jar')
-    compile files('build/libs/additionnal.jar')
-    compile files('build/libs/mail.jar')
+
     compile files('libs/activation.jar')
     compile files('libs/additionnal.jar')
+    compile files('libs/mail.jar')
 }
