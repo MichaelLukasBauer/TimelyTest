@@ -142,7 +142,7 @@ Thumbs.db
 .mtj.tmp/
 
 # Package Files #
-*.jar
+#*.jar
 *.war
 *.ear
 
@@ -261,3 +261,5 @@ gradle-app.setting
 
 # End of https://www.gitignore.io/api/git,java,maven,gradle,android,intellij+iml,androidstudio
 0
+.idea/
+#app/libs/
