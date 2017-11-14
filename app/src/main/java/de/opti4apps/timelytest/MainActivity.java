@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_capture_time) {
             if(mWorkProfileBox.count() > 0) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(0, currentUser.getId()), DayFragment.TAG);
-                transaction.addToBackStack(null);
+//                transaction.addToBackStack(null);
                 transaction.commit();
             }
             else
@@ -166,13 +166,13 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_month_overview) {
             if(!mDayListFragment.isAdded()) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, mDayListFragment, DayListFragment.TAG);
-                transaction.addToBackStack(null);
+//                transaction.addToBackStack(null);
                 transaction.commit();
             }
         } else if (id == R.id.nav_work_profile) {
             //we need to get the current user ID and use it to create the working profile instance
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, WorkProfileFragment.newInstance(currentUser.getId()), WorkProfileFragment.TAG);
-            transaction.addToBackStack(null);
+//            transaction.addToBackStack(null);
             transaction.commit();
         }
         else if (id == R.id.nav_signout) {
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity
         {
             if(mWorkProfileBox.count() > 0) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, PdfGenerationFragment.newInstance(currentUser.getId()), PdfGenerationFragment.TAG);
-                transaction.addToBackStack(null);
+//                transaction.addToBackStack(null);
                 transaction.commit();
             }
              else
