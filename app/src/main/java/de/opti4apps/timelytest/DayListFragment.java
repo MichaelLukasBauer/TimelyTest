@@ -40,6 +40,7 @@ import butterknife.OnItemSelected;
 import de.opti4apps.timelytest.data.Day;
 import de.opti4apps.timelytest.data.Day_;
 import de.opti4apps.timelytest.data.WorkProfile;
+import de.opti4apps.timelytest.data.WorkProfile_;
 import de.opti4apps.timelytest.event.DayDatasetChangedEvent;
 import de.opti4apps.timelytest.event.DayMultibleSelectionEvent;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
