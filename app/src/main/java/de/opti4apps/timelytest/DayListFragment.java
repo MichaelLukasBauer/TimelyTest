@@ -53,6 +53,7 @@ import io.objectbox.query.Query;
 public class DayListFragment extends Fragment {
 
     public static final String TAG = DayListFragment.class.getSimpleName();
+    private static final String ARG_USER_ID = "userID";
     private final List<Day> mDayList = new ArrayList<>();
     private final String[] mMonthArray = new String[12];
     private final String[] mYearArray = new String[35];
@@ -73,7 +74,7 @@ public class DayListFragment extends Fragment {
     private ActionModeCallback mActionModeCallback = new ActionModeCallback();
     private int mCurrentMonthArrayPosition = -1;
     private int mCurrentYearArrayPosition = -1;
-
+    long userID;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -86,14 +87,21 @@ public class DayListFragment extends Fragment {
     public static DayListFragment newInstance() {
         return new DayListFragment();
     }
+    public static DayListFragment newInstance(long userID) {
+        DayListFragment dayListfragment = new DayListFragment();
+        Bundle args = new Bundle();
+        args.putLong(ARG_USER_ID, userID);
+        dayListfragment.setArguments(args);
+        return dayListfragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
-
-        mDayQuery = mDayBox.query().orderDesc(Day_.day).build();
+        userID = getArguments().getLong(ARG_USER_ID);
+        mDayQuery = mDayBox.query().equal(Day_.userID,userID).orderDesc(Day_.day).build();
         EventBus.getDefault().register(this);
 
         mDayList.addAll(mDayQuery.find());
@@ -163,7 +171,7 @@ public class DayListFragment extends Fragment {
 
     @OnClick(R.id.fab)
     public void onFABClicked() {
-        mWorkProfileQuery = mWorkProfileBox.query().build();
+        mWorkProfileQuery = mWorkProfileBox.query().equal(WorkProfile_.userID,userID).build();
         List<WorkProfile> allWP = mWorkProfileQuery.find();
         if(allWP.size()== 0)
         {
@@ -197,7 +205,7 @@ public class DayListFragment extends Fragment {
         DateTime dateTime = DateTime.parse(dateString, formatter);
         Date min = dateTime.withDayOfMonth(1).toDate();
         Date max = dateTime.withDayOfMonth(1).plusMonths(1).minusDays(1).toDate();
-        mDayQuery = mDayBox.query().between(Day_.day, min, max).orderDesc(Day_.day).build();
+        mDayQuery = mDayBox.query().equal(Day_.userID,userID).between(Day_.day, min, max).orderDesc(Day_.day).build();
         EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
     }
 

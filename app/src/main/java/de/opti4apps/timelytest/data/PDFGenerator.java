@@ -183,11 +183,11 @@ public class PDFGenerator {
         mDayBox = ((App) c.getApplication()).getBoxStore().boxFor(Day.class);
         startDate = reportDate.getTime();
         endDate = reportEndDate.getTime();
-        mDayQuery = mDayBox.query().between(Day_.day, startDate, endDate).orderDesc(Day_.day).build();
+        mDayQuery = mDayBox.query().between(Day_.day, startDate, endDate).equal(Day_.userID, currentUser.getId()).orderDesc(Day_.day).build();
         mDayList.addAll(mDayQuery.find());
 
         Box<WorkProfile> mWorkProfileBox = ((App) c.getApplication()).getBoxStore().boxFor(WorkProfile.class);
-        Query<WorkProfile> mWorkProfileQuery =  mWorkProfileBox.query().between(WorkProfile_.startDate, startDate, endDate).orderDesc(WorkProfile_.startDate).build();
+        Query<WorkProfile> mWorkProfileQuery =  mWorkProfileBox.query().between(WorkProfile_.startDate, startDate, endDate).equal(WorkProfile_.userID, currentUser.getId()).orderDesc(WorkProfile_.startDate).build();
         mCurrentWorkProfile = mWorkProfileQuery.findFirst();
     }
 
@@ -246,7 +246,7 @@ public class PDFGenerator {
                     //BEMERKUNGEN
                     bemerkungen = getDayTypeRepostString(thisDay);
                     //UEBERTRAG
-                    Period totalDayOvertime = Duration.millis(TimelyHelper.getTotalOvertimeForDay(thisDay, mCurrentWorkProfile, mDayBox)).toPeriod();
+                    Period totalDayOvertime = Duration.millis(TimelyHelper.getTotalOvertimeForDay(thisDay, mCurrentWorkProfile, mDayBox,currentUser.getId())).toPeriod();
                     uebertrag = TimelyHelper.negativeTimePeriodFormatter(totalDayOvertime, hoursMinutesFormatter);
 
                     if(thisDay.getType().compareTo(Day.DAY_TYPE.HOLIDAY) != 0 && thisDay.getType().compareTo(Day.DAY_TYPE.DAY_OFF_IN_LIEU) != 0 &&
@@ -302,7 +302,7 @@ public class PDFGenerator {
         footerCell1.setHorizontalAlignment(Element.ALIGN_LEFT);
         firstTable.addCell(footerCell1);
 
-        Period monthOvertime =  TimelyHelper.getMonthTotalOvertime(mCurrentWorkProfile, mDayBox).toPeriod();
+        Period monthOvertime =  TimelyHelper.getMonthTotalOvertime(mCurrentWorkProfile, mDayBox,currentUser.getId()).toPeriod();
         String monthOvertimeStr = TimelyHelper.negativeTimePeriodFormatter(monthOvertime, hoursMinutesFormatter);
         PdfPCell footerCell2 = getCell(monthOvertimeStr, 1, 1, bold);
         footerCell2.setBorder(Rectangle.BOTTOM| Rectangle.RIGHT);

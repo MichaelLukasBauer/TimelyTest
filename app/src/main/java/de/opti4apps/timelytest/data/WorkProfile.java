@@ -60,7 +60,7 @@ public class WorkProfile {
         this.wedWorkHours = wp.getWedWorkHours();
         this.thursWorkHours = wp.getThursWorkHours();
         this.friWorkHours = wp.getFriWorkHours();
-        this.id = wp.getStartDate().withTimeAtStartOfDay().getMillis();
+        this.id = wp.getStartDate().withTimeAtStartOfDay().getMillis() + wp.getUserID();
         this.startDate = wp.getStartDate();
         this.endDate = wp.getEndDate();
         this.previousOvertime = wp.getPreviousOvertime();
@@ -76,7 +76,7 @@ public class WorkProfile {
         this.thursWorkHours = thursWorkHours;
         this.friWorkHours = friWorkHours;
         DateTime day = new DateTime().dayOfMonth().withMinimumValue();
-        this.id = day.withTimeAtStartOfDay().getMillis();
+        this.id = day.withTimeAtStartOfDay().getMillis() + userID;
         this.startDate = day;
         this.endDate = day.plusMonths(1).minusDays(1);
         this.previousOvertime = previousOvertime;

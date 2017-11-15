@@ -73,19 +73,21 @@ public class MainActivity extends AppCompatActivity
         mDayListFragment = (DayListFragment) getSupportFragmentManager().findFragmentByTag(DayListFragment.TAG);
         mDayFragment = (DayFragment) getSupportFragmentManager().findFragmentByTag(DayFragment.TAG);
 
+        Intent intent = getIntent();
+        String currentUserEmail = intent.getStringExtra("userEmail");
+        usersBox = ((App) getApplication()).getBoxStore().boxFor(User.class);
+
+        currentUser = UserManager.getUserByEmail(usersBox, currentUserEmail);
+
         if (mDayListFragment == null) {
-            mDayListFragment = DayListFragment.newInstance();
+            mDayListFragment = DayListFragment.newInstance(currentUser.getId());
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, mDayListFragment, DayListFragment.TAG);
             transaction.addToBackStack(null);
             transaction.commit();
         }
 
-        Intent intent = getIntent();
 
-        String currentUserEmail = intent.getStringExtra("userEmail");
-        usersBox = ((App) getApplication()).getBoxStore().boxFor(User.class);
 
-        currentUser = UserManager.getUserByEmail(usersBox, currentUserEmail);
 
         //TotalExtraHoursBox = ((App) getApplication()).getBoxStore().boxFor(TotalExtraHours.class);
 

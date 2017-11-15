@@ -90,7 +90,7 @@ public class DayFragment extends Fragment {
     private Box<WorkProfile> mWorkProfileBox;
     private Query<Day> mDayQuery;
     private Query<WorkProfile> mWorkProfileQuery;
-
+    long userID;
     private ActionMode mActionMode;
     private ActionModeCallback mActionModeCallback = new ActionModeCallback();
 
@@ -118,7 +118,7 @@ public class DayFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
+        userID = getArguments().getLong(ARG_USER_ID);
         mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
 
@@ -127,7 +127,7 @@ public class DayFragment extends Fragment {
 
             if(dayID == 0)
             {
-                mDayQuery = mDayBox.query().equal (Day_.day, DateTime.now().toDate()).build();
+                mDayQuery = mDayBox.query().equal (Day_.day, DateTime.now().toDate()).equal(Day_.userID, userID).build();
                 List<Day> days = mDayQuery.find();
 
 
@@ -137,7 +137,7 @@ public class DayFragment extends Fragment {
                 }
                 else
                 {
-                    mDay = new Day(Day.DAY_TYPE.WORKDAY, DateTime.now(), DateTime.now(), DateTime.now(), Duration.standardMinutes(0));
+                    mDay = new Day(userID,Day.DAY_TYPE.WORKDAY, DateTime.now(), DateTime.now(), DateTime.now(), Duration.standardMinutes(0));
                     mDay.setToDefaultDay();
                 }
             }
@@ -153,7 +153,7 @@ public class DayFragment extends Fragment {
     }
 
     private void getTheCurrentWorkingProfile() {
-        mWorkProfile = TimelyHelper.getValidWorkingProfileByDay(mDay,mWorkProfileBox, mDayBox);
+        mWorkProfile = TimelyHelper.getValidWorkingProfileByDay(mDay,mWorkProfileBox, mDayBox,userID);
 
         if (mWorkProfile == null) {
             Toast.makeText(getActivity(), getResources().getString(R.string.error_finding_wp), Toast.LENGTH_LONG).show();
@@ -206,7 +206,7 @@ public class DayFragment extends Fragment {
 
     @OnClick(R.id.dateText)
     public void showDatePickerDialog(View v) {
-        DialogFragment newFragment = DatePickerFragment.newInstance(mDay.getDay().getDayOfMonth(),mDay.getDay().getMonthOfYear()-1,mDay.getDay().getYear());
+        DialogFragment newFragment = DatePickerFragment.newInstance(mDay.getDay().getDayOfMonth(),mDay.getDay().getMonthOfYear()-1,mDay.getDay().getYear(),userID);
         newFragment.show(getFragmentManager(), "datePicker");
     }
 
@@ -286,7 +286,7 @@ public class DayFragment extends Fragment {
 
     @Subscribe
     public void onDatePicked(DatePickedEvent event) {
-        Day newDay = new Day(Day.DAY_TYPE.WORKDAY, new DateTime(event.year, event.month + 1, event.day, 0, 0), mDay.getStart(), mDay.getEnd(), mDay.getPause());
+        Day newDay = new Day(userID,Day.DAY_TYPE.WORKDAY, new DateTime(event.year, event.month + 1, event.day, 0, 0), mDay.getStart(), mDay.getEnd(), mDay.getPause());
         Query<Day> newQuery = mDayBox.query().equal(Day_.id, newDay.getId()).build();
         Day dayFromData = newQuery.findUnique();
         if (dayFromData != null) {
@@ -406,7 +406,7 @@ public class DayFragment extends Fragment {
     }
 
     private void setTotalOvertime(boolean error) {
-        String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(Duration.millis(TimelyHelper.getTotalOvertimeForDay(mDay, mWorkProfile, mDayBox)).toPeriod(), Day.PERIOD_FORMATTER);
+        String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(Duration.millis(TimelyHelper.getTotalOvertimeForDay(mDay, mWorkProfile, mDayBox,userID)).toPeriod(), Day.PERIOD_FORMATTER);
         mTotalOvertime.setText(totalOvertime);
         setTextColor(mTotalOvertime, error);
     }

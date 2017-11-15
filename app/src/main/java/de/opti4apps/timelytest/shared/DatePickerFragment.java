@@ -22,22 +22,23 @@ import io.objectbox.Box;
 
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
-
+    private static final String ARG_USER_ID = "userID";
     private static final String ARG_DAY = "day";
     private static final String ARG_MONTH = "month";
     private static final String ARG_YEAR = "year";
     private int  day;
     private int month = 0;
     private int year = 0;
-
+    long userID;
     private Box<WorkProfile> mWorkProfileBox;
 
-    public static DatePickerFragment newInstance(int day,int month, int year) {
+    public static DatePickerFragment newInstance(int day,int month, int year,long userID) {
         DatePickerFragment fragment = new DatePickerFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_DAY, day);
         args.putInt(ARG_MONTH, month);
         args.putInt(ARG_YEAR, year);
+        args.putLong(ARG_USER_ID, userID);
         fragment.setArguments(args);
         return fragment;
     }
@@ -49,7 +50,7 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
             day = getArguments().getInt(ARG_DAY);
             month = getArguments().getInt(ARG_MONTH);
             year = getArguments().getInt(ARG_YEAR);
-
+            userID = getArguments().getLong(ARG_USER_ID);
         }
         else
         {
@@ -58,12 +59,13 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
             year = c.get(Calendar.YEAR);
             month = c.get(Calendar.MONTH);
             day = c.get(Calendar.DAY_OF_MONTH);
+            userID = 0;
         }
 
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
 
-        WorkProfile maxWorkProfile = TimelyHelper.getMaxWorkingProfile(mWorkProfileBox);
-        WorkProfile minWorkProfile = TimelyHelper.getMinWorkingProfile(mWorkProfileBox);
+        WorkProfile maxWorkProfile = TimelyHelper.getMaxWorkingProfile(mWorkProfileBox,userID);
+        WorkProfile minWorkProfile = TimelyHelper.getMinWorkingProfile(mWorkProfileBox,userID);
 
 //        maxWorkProfile = new WorkProfile(145236, 123, maxWorkProfile.getStartDate().plusMonths(1), maxWorkProfile.getEndDate().plusMonths(1),
 //                Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0),
