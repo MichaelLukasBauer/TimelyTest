@@ -11,6 +11,8 @@ import io.objectbox.BoxStore;
 
 public class App extends Application {
     private static final String TAG = App.class.getSimpleName();
+
+
     Box<User> usersBox;
     private BoxStore mBoxStore;
 
@@ -21,6 +23,8 @@ public class App extends Application {
 
         usersBox = getBoxStore().boxFor(User.class);
         addDefaultUsers();
+
+
     }
 
 
@@ -42,4 +46,6 @@ public class App extends Application {
             usersBox.put(user);
         }
     }
+
+
 }
