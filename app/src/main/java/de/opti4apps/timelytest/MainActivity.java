@@ -32,19 +32,7 @@ import de.opti4apps.timelytest.data.User;
 import de.opti4apps.timelytest.data.UserManager;
 import de.opti4apps.timelytest.data.WorkProfile;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
-import de.opti4apps.tracker.appInfo.AppInfoTracker;
-import de.opti4apps.tracker.bluetooth.BluetoothTracker;
-import de.opti4apps.tracker.cellInfo.CellInfoTracker;
-import de.opti4apps.tracker.deviceInfo.DeviceInfoTracker;
-import de.opti4apps.tracker.deviceOrientation.DeviceOrientationTracker;
-import de.opti4apps.tracker.interaction.InteractionTracker;
-import de.opti4apps.tracker.interaction.InteractionWithLogTracker;
-import de.opti4apps.tracker.location.LocationTracker;
-import de.opti4apps.tracker.motion.AccelerometerTracker;
-import de.opti4apps.tracker.motion.GyroscopeTracker;
-import de.opti4apps.tracker.motion.MagneticFieldTracker;
-import de.opti4apps.tracker.networkInfo.NetworkInfoTracker;
-import de.opti4apps.tracker.wifi.WifiTracker;
+import de.opti4apps.tracker.stepCounter.StepCounterTracker;
 import de.opti4apps.trackerclient.CommonConfig;
 import de.opti4apps.trackerclient.TrackingService;
 import io.objectbox.Box;
@@ -289,25 +277,36 @@ public class MainActivity extends AppCompatActivity
 
         Intent intent = new Intent(this, TrackingService.class);
         intent.putExtra(CommonConfig.SENSOR_LIST, new String[]{
-                WifiTracker.name,
-                InteractionWithLogTracker.name,
-                InteractionTracker.name,
-                DeviceInfoTracker.name,
-                DeviceOrientationTracker.name,
-                AppInfoTracker.name,
+                //WifiTracker.name,
+                //LightTracker.name,
+                //SignalStrengthTracker.name,
+                //ScreenTracker.name,
+                //GestureTracker.name,
+                //PressureTracker.name,
+                //ProximityTracker.name,
+                StepCounterTracker.name,
+                //UncaughtExceptionTracker.name,
+                //InteractionWithLogTracker.name,
+                //InteractionTracker.name,
+                //DeviceInfoTracker.name,
+                //DeviceOrientationTracker.name,
+                //AppInfoTracker.name,
                 //BatteryTracker.name,
-                BluetoothTracker.name,
-                NetworkInfoTracker.name,
-                LocationTracker.name,
-                CellInfoTracker.name,
-                GyroscopeTracker.name,
-                MagneticFieldTracker.name,
-                AccelerometerTracker.name,
+                //BluetoothTracker.name,
+                //NetworkInfoTracker.name,
+                //LocationTracker.name,
+                //CellInfoTracker.name,
+                //GyroscopeTracker.name,
+                //MagneticFieldTracker.name,
+                //AccelerometerTracker.name,
         });
-        intent.putExtra(CommonConfig.UPLOAD_URL, "http://10.0.2.2:8080/events/process/");
-        intent.putExtra(CommonConfig.STORAGE_MODE, "database");
-        intent.putExtra(CommonConfig.UPLOAD_MODE, "periodically");
+        intent.putExtra(CommonConfig.UPLOAD_URL, "https://hookbin.com/bin/EzgA3lDW/");
+        //intent.putExtra(CommonConfig.UPLOAD_URL, "http://10.0.2.2:8080/events/process/");
+        intent.putExtra(CommonConfig.STORAGE_MODE, CommonConfig.STORAGE_MODE_DATABASE);
+        intent.putExtra(CommonConfig.UPLOAD_MODE, CommonConfig.UPLOAD_MODE_PERIODICALLY);
+        intent.putExtra(CommonConfig.UPLOAD_COLLECTION, CommonConfig.UPLOAD_COLLECTION_DEFAULT);
         intent.putExtra(CommonConfig.UPLOAD_INTERVAL, 10l);
         this.startService(intent);
     }
+
 }
