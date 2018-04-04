@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -43,6 +44,8 @@ import de.opti4apps.timelytest.data.WorkProfile;
 import de.opti4apps.timelytest.event.DayDatasetChangedEvent;
 import de.opti4apps.timelytest.event.DayMultibleSelectionEvent;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
+import de.opti4apps.timelytest.shared.TrackerHelper;
+import de.opti4apps.tracker.gesture.GestureTracker;
 import io.objectbox.Box;
 import io.objectbox.query.Query;
 
@@ -53,6 +56,7 @@ import io.objectbox.query.Query;
 public class DayListFragment extends Fragment {
 
     public static final String TAG = DayListFragment.class.getSimpleName();
+    private TrackerHelper tracker;
     private final List<Day> mDayList = new ArrayList<>();
     private final String[] mMonthArray = new String[12];
     private final String[] mYearArray = new String[35];
@@ -90,6 +94,8 @@ public class DayListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        tracker = new TrackerHelper(TAG,getContext());
+
         mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
 
@@ -101,6 +107,20 @@ public class DayListFragment extends Fragment {
         setRetainInstance(true);
         initArrays();
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        //EventBus.getDefault().register(this);
+        tracker.onStartTrack();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        //EventBus.getDefault().unregister(this);
+        tracker.onStopTrack();
     }
 
     private void initArrays() {
@@ -122,6 +142,13 @@ public class DayListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_day_list, container, false);
         ButterKnife.bind(this, view);
+
+        view.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                GestureTracker.trackGesture(getContext(),event,(ViewGroup) v);
+                return true;
+            }
+        });
 
         Context context = view.getContext();
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
@@ -163,6 +190,7 @@ public class DayListFragment extends Fragment {
 
     @OnClick(R.id.fab)
     public void onFABClicked() {
+        tracker.interactionTrack(getActivity().findViewById(R.id.fab), tracker.getInteractionClicID());
         mWorkProfileQuery = mWorkProfileBox.query().build();
         List<WorkProfile> allWP = mWorkProfileQuery.find();
         if(allWP.size()== 0)
@@ -180,12 +208,14 @@ public class DayListFragment extends Fragment {
 
     @OnItemSelected(R.id.month_spinner)
     public void onMonthSpinnerItemSelected(Spinner spinner, int position) {
+        tracker.interactionTrack(getActivity().findViewById(R.id.month_spinner), tracker.getInteractionClicID());
         mCurrentMonthArrayPosition = position;
         spinnerItemSelected();
     }
 
     @OnItemSelected(R.id.year_spinner)
     public void onYearSpinnerItemSelected(Spinner spinner, int position) {
+        tracker.interactionTrack(getActivity().findViewById(R.id.year_spinner), tracker.getInteractionClicID());
         mCurrentYearArrayPosition = position;
         spinnerItemSelected();
     }
@@ -199,6 +229,32 @@ public class DayListFragment extends Fragment {
         Date max = dateTime.withDayOfMonth(1).plusMonths(1).minusDays(1).toDate();
         mDayQuery = mDayBox.query().between(Day_.day, min, max).orderDesc(Day_.day).build();
         EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
+    }
+
+    @OnClick ({R.id.imageDate,R.id.imageLogin,R.id.imageLogout,R.id.imagePause,R.id.imageTime})
+    public void clickUnEditableLabelsImages(View v) {
+        int mSelectedText;
+        mSelectedText = v.getId();
+        if (mSelectedText == R.id.imageDate)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.imageDate), tracker.getInteractionClicID());
+        }
+        else if (mSelectedText == R.id.imageLogin)
+        {
+            tracker.interactionTrack( getActivity().findViewById(R.id.imageLogin), tracker.getInteractionClicID());
+        }
+        else if (mSelectedText == R.id.imageLogout)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.imageLogout), tracker.getInteractionClicID());
+        }
+        else if (mSelectedText == R.id.imagePause)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.imagePause), tracker.getInteractionClicID());
+        }
+        else if (mSelectedText == R.id.imageTime)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.imageTime), tracker.getInteractionClicID());
+        }
     }
 
     @Subscribe
@@ -255,6 +311,7 @@ public class DayListFragment extends Fragment {
             switch (item.getItemId()) {
 
                 case R.id.delete:
+                    tracker.interactionTrack(getActivity().findViewById(R.id.delete), tracker.getInteractionActionID());
                     mDayBox.remove(((MyDayRecyclerViewAdapter) mRecyclerView.getAdapter()).getSelection().keySet());
                     clearSelection();
                     EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));

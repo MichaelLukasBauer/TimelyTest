@@ -17,6 +17,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -51,6 +52,8 @@ import de.opti4apps.timelytest.event.DatePickedEvent;
 import de.opti4apps.timelytest.shared.DurationPickerFragment;
 import de.opti4apps.timelytest.shared.MonthYearPickerFragment;
 import de.opti4apps.timelytest.shared.TimelyHelper;
+import de.opti4apps.timelytest.shared.TrackerHelper;
+import de.opti4apps.tracker.gesture.GestureTracker;
 import io.objectbox.Box;
 
 
@@ -103,7 +106,7 @@ public class PdfGenerationFragment extends Fragment {
     public static final String TAG = PdfGenerationFragment.class.getSimpleName();
 
     private Calendar reportSelectedDate = null;
-
+    private TrackerHelper tracker;
 //    @BindView(R.id.reportList)
 //    ListView list;
 
@@ -135,10 +138,18 @@ public class PdfGenerationFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        tracker = new TrackerHelper(TAG,getContext());
         mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
         View view = inflater.inflate(R.layout.fragment_pdf_creation, container, false);
         ButterKnife.bind(this, view);
+
+        view.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                GestureTracker.trackGesture(getContext(),event,(ViewGroup) v);
+                return true;
+            }
+        });
 
         reportSelectedDate = Calendar.getInstance();
         String currentMonthYearStr = reportSelectedDate.get(Calendar.YEAR) +"."+ (reportSelectedDate.get(Calendar.MONTH)+1) + "." + FIRST_DAY_OF_MONTH;
@@ -185,6 +196,7 @@ public class PdfGenerationFragment extends Fragment {
 
     @OnClick({R.id.generatePdfMonthText})
     public void selectReportDate(View v) {
+        tracker.interactionTrack(getActivity().findViewById(R.id.generatePdfMonthText), tracker.getInteractionClicID());
         String currentDateStr = mGeneratePdfText.getText().toString();
 //        try {
 //            Date selectedMonthYear = new SimpleDateFormat("MMM yyyy").parse(currentDateStr);
@@ -223,6 +235,7 @@ public class PdfGenerationFragment extends Fragment {
 
     @OnClick({R.id.generatePdfButton})
     public void generatePdfReport(View v) {
+        tracker.interactionTrack(getActivity().findViewById(R.id.generatePdfButton), tracker.getInteractionClicID());
         if (isExternalStorageWritable()) {
             if (checkPermissions()) {
                 generatePdf();
@@ -251,6 +264,7 @@ public class PdfGenerationFragment extends Fragment {
 
     @OnClick({R.id.SendPerMailButton})
     public void SendReportPerMail(View v) {
+        tracker.interactionTrack(getActivity().findViewById(R.id.SendPerMailButton), tracker.getInteractionClicID());
         if (isExternalStorageWritable()) {
             if (checkPermissions()) {
                 generatePdf();
@@ -316,27 +330,117 @@ public class PdfGenerationFragment extends Fragment {
         }
     }
 
-    public void updateSummary()
-    {
-        if (reportSelectedDate != null)
-        {
+    public void updateSummary() {
+        if (reportSelectedDate != null) {
             Day mDay = new Day(Day.DAY_TYPE.WORKDAY, DateTime.now(), DateTime.now(), DateTime.now(), Duration.standardMinutes(0));
             int year = reportSelectedDate.get(Calendar.YEAR);
             int month = reportSelectedDate.get(Calendar.MONTH) + 1;
-            DateTime currentMonth = new DateTime(year,month,1,0,0);
-            mTotalReportedDayText.setText(String.valueOf(TimelyHelper.getTotalReportedDayForMonth(currentMonth,mDayBox)));
-            mTotalBusinessTripDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.BUSINESS_TRIP,currentMonth,mDayBox)));
-            mTotalDayOffInLieuText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.DAY_OFF_IN_LIEU,currentMonth,mDayBox)));
-            mTotalDocAppointmentDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.DOCTOR_APPOINTMENT,currentMonth,mDayBox)));
-            mTotalFurtherEducationDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.FURTHER_EDUCATION,currentMonth,mDayBox)));
-            mTotalIllnessDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.ILLNESS,currentMonth,mDayBox)));
-            mTotalOtherDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.OTHER,currentMonth,mDayBox)));
-            mTotalVacationDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.HOLIDAY,currentMonth,mDayBox)));
-            mTotalWorkingDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.WORKDAY,currentMonth,mDayBox)));
-            String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(TimelyHelper.getMonthTotalOvertime(TimelyHelper.getWorkProfileByMonth(currentMonth,mWorkProfileBox), mDayBox).toPeriod(), Day.PERIOD_FORMATTER);
+            DateTime currentMonth = new DateTime(year, month, 1, 0, 0);
+            mTotalReportedDayText.setText(String.valueOf(TimelyHelper.getTotalReportedDayForMonth(currentMonth, mDayBox)));
+            mTotalBusinessTripDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.BUSINESS_TRIP, currentMonth, mDayBox)));
+            mTotalDayOffInLieuText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.DAY_OFF_IN_LIEU, currentMonth, mDayBox)));
+            mTotalDocAppointmentDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.DOCTOR_APPOINTMENT, currentMonth, mDayBox)));
+            mTotalFurtherEducationDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.FURTHER_EDUCATION, currentMonth, mDayBox)));
+            mTotalIllnessDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.ILLNESS, currentMonth, mDayBox)));
+            mTotalOtherDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.OTHER, currentMonth, mDayBox)));
+            mTotalVacationDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.HOLIDAY, currentMonth, mDayBox)));
+            mTotalWorkingDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.WORKDAY, currentMonth, mDayBox)));
+            String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(TimelyHelper.getMonthTotalOvertime(TimelyHelper.getWorkProfileByMonth(currentMonth, mWorkProfileBox), mDayBox).toPeriod(), Day.PERIOD_FORMATTER);
             mTotalOvertimeText.setText(totalOvertime);
         }
-
+    }
+        @OnClick({R.id.dateImageView, R.id.total_reported_days_label,R.id.total_reported_days_text, R.id.total_working_days_label,R.id.total_working_days_text,
+                R.id.Total_days_on_vacation_label,R.id.Total_days_on_vacation_text,R.id.Total_doc_appointments_label,R.id.Total_doc_appointments_text,
+                R.id.total_days_illness_label,R.id.total_days_illness_text,R.id.total_days_off_in_lieu_label,R.id.total_days_off_in_lieu_text,
+                R.id.total_days_further_education_label,R.id.total_days_further_education_text,R.id.total_days_business_trip_label,
+                R.id.total_days_business_trip_text,R.id.total_days_others_label,R.id.total_days_others_text,
+                R.id.total_overtime_label,R.id.total_overtime_text})
+        public void clickUnEditableLabelsImages(View v) {
+        int mSelectedText = v.getId();
+        if (mSelectedText == R.id.dateImageView)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.dateImageView), tracker.getInteractionClicID());
+        }
+        else if (mSelectedText == R.id.total_reported_days_label)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_reported_days_label), tracker.getInteractionClicID());
+        }
+        else if (mSelectedText == R.id.total_reported_days_text)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_reported_days_text), tracker.getInteractionClicID());
+        }
+        else if (mSelectedText == R.id.total_working_days_label)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_working_days_label), tracker.getInteractionClicID());
+        }
+        else if (mSelectedText == R.id.total_working_days_text)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_working_days_text), tracker.getInteractionClicID());
+        }
+        else if (mSelectedText == R.id.Total_days_on_vacation_label)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.Total_days_on_vacation_label), tracker.getInteractionClicID());
+        }
+        else if ( mSelectedText == R.id.Total_days_on_vacation_text)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.Total_days_on_vacation_text), tracker.getInteractionClicID());
+        }
+        else if ( mSelectedText == R.id.Total_doc_appointments_label)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.Total_doc_appointments_label), tracker.getInteractionClicID());
+        }
+        else if ( mSelectedText == R.id.Total_doc_appointments_text)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.Total_doc_appointments_text), tracker.getInteractionClicID());
+        }
+        else if ( mSelectedText == R.id.total_days_illness_label)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_illness_label), tracker.getInteractionClicID());
+        }
+        else if ( mSelectedText == R.id.total_days_illness_text)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_illness_text), tracker.getInteractionClicID());
+        }
+        else if ( mSelectedText == R.id.total_days_off_in_lieu_label)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_off_in_lieu_label), tracker.getInteractionClicID());
+        }
+        else if ( mSelectedText == R.id.total_days_off_in_lieu_text)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_off_in_lieu_text), tracker.getInteractionClicID());
+        }
+        else if ( mSelectedText == R.id.total_days_further_education_label)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_further_education_label), tracker.getInteractionClicID());
+        }
+        else if ( mSelectedText == R.id.total_days_further_education_text)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_further_education_text), tracker.getInteractionClicID());
+        }
+        else if ( mSelectedText == R.id.total_days_business_trip_label)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_business_trip_label), tracker.getInteractionClicID());
+        }
+        else if ( mSelectedText == R.id.total_days_business_trip_text)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_business_trip_text), tracker.getInteractionClicID());
+        }
+        else if ( mSelectedText == R.id.total_days_others_label)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_others_label), tracker.getInteractionClicID());
+        }
+        else if ( mSelectedText == R.id.total_days_others_text)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_others_text), tracker.getInteractionClicID());
+        }
+        else if ( mSelectedText == R.id.total_overtime_label)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_overtime_label), tracker.getInteractionClicID());
+        }
+        else if ( mSelectedText == R.id.total_overtime_text)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_overtime_text), tracker.getInteractionClicID());
+        }
     }
 
 }

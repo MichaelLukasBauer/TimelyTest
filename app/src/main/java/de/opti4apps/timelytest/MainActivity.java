@@ -17,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +34,14 @@ import de.opti4apps.timelytest.data.User;
 import de.opti4apps.timelytest.data.UserManager;
 import de.opti4apps.timelytest.data.WorkProfile;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
+import de.opti4apps.tracker.cellInfo.CellInfoTracker;
+import de.opti4apps.tracker.exception.UncaughtExceptionTracker;
+import de.opti4apps.tracker.gesture.GestureTracker;
+import de.opti4apps.tracker.interaction.InteractionTracker;
+import de.opti4apps.tracker.interaction.InteractionWithLogTracker;
+import de.opti4apps.tracker.location.LocationTracker;
+import de.opti4apps.tracker.pressure.PressureTracker;
+import de.opti4apps.tracker.screen.ScreenTracker;
 import de.opti4apps.tracker.stepCounter.StepCounterTracker;
 import de.opti4apps.trackerclient.CommonConfig;
 import de.opti4apps.trackerclient.TrackingService;
@@ -280,27 +290,28 @@ public class MainActivity extends AppCompatActivity
                 //WifiTracker.name,
                 //LightTracker.name,
                 //SignalStrengthTracker.name,
-                //ScreenTracker.name,
-                //GestureTracker.name,
-                //PressureTracker.name,
+                ScreenTracker.name,
+                GestureTracker.name,
+                PressureTracker.name,
                 //ProximityTracker.name,
                 StepCounterTracker.name,
-                //UncaughtExceptionTracker.name,
-                //InteractionWithLogTracker.name,
-                //InteractionTracker.name,
+                UncaughtExceptionTracker.name,
+                InteractionWithLogTracker.name,
+                InteractionTracker.name,
                 //DeviceInfoTracker.name,
                 //DeviceOrientationTracker.name,
                 //AppInfoTracker.name,
                 //BatteryTracker.name,
                 //BluetoothTracker.name,
                 //NetworkInfoTracker.name,
-                //LocationTracker.name,
-                //CellInfoTracker.name,
+                LocationTracker.name,
+                CellInfoTracker.name,
                 //GyroscopeTracker.name,
                 //MagneticFieldTracker.name,
                 //AccelerometerTracker.name,
         });
-        intent.putExtra(CommonConfig.UPLOAD_URL, "https://hookbin.com/bin/EzgA3lDW/");
+        //intent.putExtra(CommonConfig.UPLOAD_URL, "https://hookbin.com/bin/EzgA3lDW/");
+        intent.putExtra(CommonConfig.UPLOAD_URL, "http://10.70.28.101:8383/");
         //intent.putExtra(CommonConfig.UPLOAD_URL, "http://10.0.2.2:8080/events/process/");
         intent.putExtra(CommonConfig.STORAGE_MODE, CommonConfig.STORAGE_MODE_DATABASE);
         intent.putExtra(CommonConfig.UPLOAD_MODE, CommonConfig.UPLOAD_MODE_PERIODICALLY);
@@ -309,4 +320,9 @@ public class MainActivity extends AppCompatActivity
         this.startService(intent);
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        GestureTracker.trackGesture(this,event,(ViewGroup)findViewById(android.R.id.content));
+        return true;
+    }
 }

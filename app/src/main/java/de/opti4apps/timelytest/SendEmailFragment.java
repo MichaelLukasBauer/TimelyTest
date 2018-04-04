@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -25,6 +26,8 @@ import butterknife.OnClick;
 import de.opti4apps.timelytest.data.User;
 import de.opti4apps.timelytest.data.User_;
 import de.opti4apps.timelytest.shared.GMailSender;
+import de.opti4apps.timelytest.shared.TrackerHelper;
+import de.opti4apps.tracker.gesture.GestureTracker;
 import io.objectbox.Box;
 import io.objectbox.query.Query;
 
@@ -36,6 +39,7 @@ public class SendEmailFragment extends DialogFragment {
     public static final String TAG = SendEmailFragment.class.getSimpleName();
     private static final String ARG_USER_ID = "userID";
     private static final String ARG_MONTH_YEAR = "monthYear";
+    private TrackerHelper tracker;
 
     @BindView(R.id.emailEditText)
     EditText mEmail;
@@ -65,6 +69,7 @@ public class SendEmailFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         usersBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(User.class);
+        tracker = new TrackerHelper(TAG,getContext());
 
         int style = DialogFragment.STYLE_NORMAL, theme = android.R.style.Theme_Holo_Light_Dialog;
         setStyle(style, theme);
@@ -77,6 +82,13 @@ public class SendEmailFragment extends DialogFragment {
         View view = inflater.inflate(R.layout.fragent_mail_send, container, false);
 
         ButterKnife.bind(this, view);
+        view.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                GestureTracker.trackGesture(getContext(),event,(ViewGroup) v);
+                return true;
+            }
+        });
+
         getDialog().setTitle("Send report per Email");
         Long userID = getArguments().getLong(ARG_USER_ID);
         mUserQuery = usersBox.query().equal(User_.id, userID).build();
@@ -90,16 +102,19 @@ public class SendEmailFragment extends DialogFragment {
     public void onStart() {
         super.onStart();
        // EventBus.getDefault().register(this);
+        tracker.onStartTrack();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         //EventBus.getDefault().unregister(this);
+        tracker.onStopTrack();
     }
 
     @OnClick({R.id.sendReportButton})
     public void SendReport(View v) {
+        tracker.interactionTrack(getActivity().findViewById(R.id.sendReportButton), tracker.getInteractionClicID());
         sendEmail(mEmail.getText().toString());
 
     }
@@ -126,6 +141,20 @@ public class SendEmailFragment extends DialogFragment {
 
         }).start();
         Toast.makeText(getActivity(), "The Email has been sent ", Toast.LENGTH_SHORT).show();
+        tracker.interactionTrack(getActivity().findViewById(R.id.sendReportButton), tracker.getInteractionEventID());
         getDialog().dismiss();
+    }
+
+
+    @OnClick({R.id.emailEditText,R.id.emailTextLabel})
+    public void clickUnEditableLabelsImages(View v) {
+        int mSelectedText = v.getId();
+        if (mSelectedText == R.id.emailEditText) {
+            tracker.interactionTrack(getActivity().findViewById(R.id.emailEditText), tracker.getInteractionClicID());
+        }
+        else if(mSelectedText == R.id.emailTextLabel)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.emailTextLabel), tracker.getInteractionClicID());
+        }
     }
 }

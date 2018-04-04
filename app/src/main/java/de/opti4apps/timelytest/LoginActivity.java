@@ -10,8 +10,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -23,6 +25,7 @@ import java.util.regex.Pattern;
 import de.opti4apps.timelytest.data.User;
 import de.opti4apps.timelytest.data.UserManager;
 import de.opti4apps.timelytest.data.User_;
+import de.opti4apps.tracker.gesture.GestureTracker;
 import io.objectbox.Box;
 
 /**
@@ -169,6 +172,12 @@ public class LoginActivity extends AppCompatActivity {
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        GestureTracker.trackGesture(this,event,(ViewGroup)findViewById(android.R.id.content));
+        return true;
     }
 }
 
