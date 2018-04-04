@@ -104,7 +104,7 @@ public class PdfGenerationFragment extends Fragment {
     private static final String ARG_MONTH = "month";
     private static final String FIRST_DAY_OF_MONTH = "1";
     public static final String TAG = PdfGenerationFragment.class.getSimpleName();
-
+    long userID ;
     private Calendar reportSelectedDate = null;
     private TrackerHelper tracker;
 //    @BindView(R.id.reportList)
@@ -143,6 +143,7 @@ public class PdfGenerationFragment extends Fragment {
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
         View view = inflater.inflate(R.layout.fragment_pdf_creation, container, false);
         ButterKnife.bind(this, view);
+        userID = getArguments().getLong(ARG_USER_ID);
 
         view.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
@@ -330,22 +331,24 @@ public class PdfGenerationFragment extends Fragment {
         }
     }
 
-    public void updateSummary() {
-        if (reportSelectedDate != null) {
-            Day mDay = new Day(Day.DAY_TYPE.WORKDAY, DateTime.now(), DateTime.now(), DateTime.now(), Duration.standardMinutes(0));
+    public void updateSummary()
+    {
+        if (reportSelectedDate != null)
+        {
+            Day mDay = new Day(userID,Day.DAY_TYPE.WORKDAY, DateTime.now(), DateTime.now(), DateTime.now(), Duration.standardMinutes(0));
             int year = reportSelectedDate.get(Calendar.YEAR);
             int month = reportSelectedDate.get(Calendar.MONTH) + 1;
-            DateTime currentMonth = new DateTime(year, month, 1, 0, 0);
-            mTotalReportedDayText.setText(String.valueOf(TimelyHelper.getTotalReportedDayForMonth(currentMonth, mDayBox)));
-            mTotalBusinessTripDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.BUSINESS_TRIP, currentMonth, mDayBox)));
-            mTotalDayOffInLieuText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.DAY_OFF_IN_LIEU, currentMonth, mDayBox)));
-            mTotalDocAppointmentDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.DOCTOR_APPOINTMENT, currentMonth, mDayBox)));
-            mTotalFurtherEducationDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.FURTHER_EDUCATION, currentMonth, mDayBox)));
-            mTotalIllnessDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.ILLNESS, currentMonth, mDayBox)));
-            mTotalOtherDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.OTHER, currentMonth, mDayBox)));
-            mTotalVacationDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.HOLIDAY, currentMonth, mDayBox)));
-            mTotalWorkingDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.WORKDAY, currentMonth, mDayBox)));
-            String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(TimelyHelper.getMonthTotalOvertime(TimelyHelper.getWorkProfileByMonth(currentMonth, mWorkProfileBox), mDayBox).toPeriod(), Day.PERIOD_FORMATTER);
+            DateTime currentMonth = new DateTime(year,month,1,0,0);
+            mTotalReportedDayText.setText(String.valueOf(TimelyHelper.getTotalReportedDayForMonth(currentMonth,mDayBox,userID)));
+            mTotalBusinessTripDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.BUSINESS_TRIP,currentMonth,mDayBox,userID)));
+            mTotalDayOffInLieuText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.DAY_OFF_IN_LIEU,currentMonth,mDayBox,userID)));
+            mTotalDocAppointmentDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.DOCTOR_APPOINTMENT,currentMonth,mDayBox,userID)));
+            mTotalFurtherEducationDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.FURTHER_EDUCATION,currentMonth,mDayBox,userID)));
+            mTotalIllnessDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.ILLNESS,currentMonth,mDayBox,userID)));
+            mTotalOtherDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.OTHER,currentMonth,mDayBox,userID)));
+            mTotalVacationDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.HOLIDAY,currentMonth,mDayBox,userID)));
+            mTotalWorkingDayText.setText(String.valueOf(TimelyHelper.getTotalDayForDayType(Day.DAY_TYPE.WORKDAY,currentMonth,mDayBox,userID)));
+            String totalOvertime = TimelyHelper.negativeTimePeriodFormatter(TimelyHelper.getMonthTotalOvertime(TimelyHelper.getWorkProfileByMonth(currentMonth,mWorkProfileBox,userID), mDayBox,userID).toPeriod(), Day.PERIOD_FORMATTER);
             mTotalOvertimeText.setText(totalOvertime);
         }
     }

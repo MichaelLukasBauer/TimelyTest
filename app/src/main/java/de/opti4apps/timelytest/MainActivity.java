@@ -92,19 +92,21 @@ public class MainActivity extends AppCompatActivity
         mDayListFragment = (DayListFragment) getSupportFragmentManager().findFragmentByTag(DayListFragment.TAG);
         mDayFragment = (DayFragment) getSupportFragmentManager().findFragmentByTag(DayFragment.TAG);
 
-        if (mDayListFragment == null) {
-            mDayListFragment = DayListFragment.newInstance();
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, mDayListFragment, DayListFragment.TAG);
-            transaction.addToBackStack(null);
-            transaction.commit();
-        }
-
         Intent intent = getIntent();
-
         String currentUserEmail = intent.getStringExtra("userEmail");
         usersBox = ((App) getApplication()).getBoxStore().boxFor(User.class);
 
         currentUser = UserManager.getUserByEmail(usersBox, currentUserEmail);
+
+        if (mDayListFragment == null) {
+            mDayListFragment = DayListFragment.newInstance(currentUser.getId());
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, mDayListFragment, DayListFragment.TAG);
+//            transaction.addToBackStack(null);
+            transaction.commit();
+        }
+
+
+
 
         //TotalExtraHoursBox = ((App) getApplication()).getBoxStore().boxFor(TotalExtraHours.class);
 
@@ -176,7 +178,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_capture_time) {
             if (mWorkProfileBox.count() > 0) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(0, currentUser.getId()), DayFragment.TAG);
-                transaction.addToBackStack(null);
+ //               transaction.addToBackStack(null);
                 transaction.commit();
             } else {
                 showWPCreateMessage();
@@ -184,13 +186,13 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_month_overview) {
             if (!mDayListFragment.isAdded()) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, mDayListFragment, DayListFragment.TAG);
-                transaction.addToBackStack(null);
+ //               transaction.addToBackStack(null);
                 transaction.commit();
             }
         } else if (id == R.id.nav_work_profile) {
             //we need to get the current user ID and use it to create the working profile instance
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, WorkProfileFragment.newInstance(currentUser.getId()), WorkProfileFragment.TAG);
-            transaction.addToBackStack(null);
+ //           transaction.addToBackStack(null);
             transaction.commit();
         } else if (id == R.id.nav_signout) {
             UserManager.changeUserSignedInStatus(currentUser, usersBox);
@@ -199,7 +201,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_time_sheet) {
             if (mWorkProfileBox.count() > 0) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, PdfGenerationFragment.newInstance(currentUser.getId()), PdfGenerationFragment.TAG);
-                transaction.addToBackStack(null);
+//                transaction.addToBackStack(null);
                 transaction.commit();
             } else {
                 showWPCreateMessage();

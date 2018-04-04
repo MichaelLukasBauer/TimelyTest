@@ -36,6 +36,7 @@ public class Day {
             .toFormatter();
     @Id(assignable = true)
     private long id;
+    private long userID;
     @Convert(converter = DayTypeConverter.class, dbType = Integer.class)
     private DAY_TYPE type;
     @Index
@@ -51,19 +52,21 @@ public class Day {
     private Duration extraHours;
 
     @Keep
-    public Day(DAY_TYPE type, DateTime day, DateTime start, DateTime end, Duration pause) {
+    public Day(long userID,DAY_TYPE type, DateTime day, DateTime start, DateTime end, Duration pause) {
+        this.userID = userID;
         this.type = type;
         this.day = day;
         this.start = start;
         this.end = end;
         this.pause = pause;
         this.extraHours = Duration.ZERO;
-        this.id = day.withTimeAtStartOfDay().getMillis();
+        this.id = day.withTimeAtStartOfDay().getMillis() + userID;
     }
 
-    @Generated(hash = 1714423002)
-    public Day(long id, DAY_TYPE type, DateTime day, DateTime start, DateTime end, Duration pause, Duration extraHours) {
+    @Generated(hash = 278087938)
+    public Day(long id, long userID, DAY_TYPE type, DateTime day, DateTime start, DateTime end, Duration pause, Duration extraHours) {
         this.id = id;
+        this.userID = userID;
         this.type = type;
         this.day = day;
         this.start = start;
@@ -122,6 +125,10 @@ public class Day {
 
     public long getId() {
         return id;
+    }
+
+    public long getUserID() {
+        return userID;
     }
 
     public void setId(long id) {
@@ -260,6 +267,10 @@ public class Day {
         }
         else
             return Duration.standardMinutes(0);
+    }
+
+    public void setUserID(long userID) {
+        this.userID = userID;
     }
 
     public enum DAY_TYPE {

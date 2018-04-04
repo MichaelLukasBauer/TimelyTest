@@ -127,7 +127,7 @@ public class WorkProfileFragment extends Fragment {
             userID = getArguments().getLong(ARG_USER_ID);
             DateTime currentMonth = new DateTime().dayOfMonth().withMinimumValue();
             mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
-            mWorkProfileBoxed = TimelyHelper.getValidWorkingProfile(currentMonth, mWorkProfileBox, mDayBox);
+            mWorkProfileBoxed = TimelyHelper.getValidWorkingProfile(currentMonth, mWorkProfileBox, mDayBox,userID);
             if(mWorkProfileBoxed == null) {
                     mWorkProfile = new WorkProfile(userID, Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0), Duration.standardMinutes(0));
                 }
@@ -416,7 +416,8 @@ public class WorkProfileFragment extends Fragment {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            getActivity().onBackPressed();
+            //getActivity().onBackPressed();
+            mActionMode = null;
         }
     }
 }
