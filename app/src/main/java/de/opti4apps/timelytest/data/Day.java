@@ -12,6 +12,7 @@ import org.joda.time.format.PeriodFormatterBuilder;
 import java.util.Calendar;
 
 import de.opti4apps.timelytest.R;
+import de.opti4apps.timelytest.shared.TrackerHelper;
 import io.objectbox.annotation.Convert;
 import io.objectbox.annotation.Entity;
 import io.objectbox.annotation.Generated;
@@ -50,7 +51,6 @@ public class Day {
     private Duration pause;
     @Convert(converter = DurationConverter.class, dbType = Long.class)
     private Duration extraHours;
-
     @Keep
     public Day(long userID,DAY_TYPE type, DateTime day, DateTime start, DateTime end, Duration pause) {
         this.userID = userID;

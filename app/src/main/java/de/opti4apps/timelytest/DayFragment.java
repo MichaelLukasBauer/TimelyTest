@@ -265,6 +265,10 @@ public class DayFragment extends Fragment {
         //updateDay();
         if(mDay.getType().compareTo(Day.DAY_TYPE.HOLIDAY) == 0 || mDay.getType().compareTo(Day.DAY_TYPE.DAY_OFF_IN_LIEU) == 0 ||
                 mDay.getType().compareTo(Day.DAY_TYPE.OTHER) == 0 || mDay.getType().compareTo(Day.DAY_TYPE.ILLNESS) == 0){
+            if(mDay.getType().compareTo(Day.DAY_TYPE.ILLNESS) == 0 || mDay.getType().compareTo(Day.DAY_TYPE.BUSINESS_TRIP) == 0)
+            {
+                tracker.setUserScenarioEntryPoint(getActivity().findViewById(R.id.dayTypeSpinner),mDay.getType().name());
+            }
             mStart.setEnabled(false);
             mEnd.setEnabled(false);
             mPause.setEnabled(false);
@@ -518,6 +522,7 @@ public class DayFragment extends Fragment {
             switch (item.getItemId()) {
                 case R.id.save:
                     tracker.interactionTrack(getActivity().findViewById(R.id.save), tracker.getInteractionClicID());
+                    tracker.setUserScenarioExitPoint(getActivity().findViewById(R.id.save));
                     saveDayInfo();
                     return true;
                 default:

@@ -115,6 +115,7 @@ public class SendEmailFragment extends DialogFragment {
     @OnClick({R.id.sendReportButton})
     public void SendReport(View v) {
         tracker.interactionTrack(getActivity().findViewById(R.id.sendReportButton), tracker.getInteractionClicID());
+        tracker.setUserScenarioExitPoint(getActivity().findViewById(R.id.sendReportButton));
         sendEmail(mEmail.getText().toString());
 
     }

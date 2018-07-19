@@ -38,6 +38,32 @@ public class TrackerHelper {
         InteractionTracker.track(context,InteractionTracker.ActionTypes.CLOSE,payload);
     }
 
+    public void setUserScenarioEntryPoint(Object v, String value)
+    {
+        if (value.isEmpty())
+        {
+            if (v instanceof  View) {
+                value = getViewID((View)v);
+            }
+            else if (v instanceof MenuItem) {
+                value = (String) ((MenuItem)v).getTitle();
+            }
+        }
+
+        payload.clear();
+        payload.put("ActivityName",activityName);
+        payload.put("StartUserCase", value);
+        InteractionTracker.track(context,InteractionTracker.ActionTypes.EVENT,payload);
+    }
+
+    public void setUserScenarioExitPoint(View v)
+    {
+        payload.clear();
+        payload.put("ActivityName",activityName);
+        payload.put("EndUserCase", getViewID(v));
+        InteractionTracker.track(context,InteractionTracker.ActionTypes.EVENT,payload);
+    }
+
     private String getViewType(View v)
     {
         String viewType = v.getClass().getName().substring(v.getClass().getName().indexOf(VIEW_TYPE_INDICATOR)+VIEW_TYPE_INDICATOR.length());

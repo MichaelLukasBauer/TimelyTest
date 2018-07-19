@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:127443039650948533",
-      "lastPropertyId": "8:8442835653054340737",
+      "lastPropertyId": "9:3265844766045015547",
       "name": "Day",
       "properties": [
         {
@@ -132,7 +132,8 @@
   "retiredIndexUids": [],
   "retiredPropertyUids": [
     7507507035923055534,
-    3835860655907302677
+    3835860655907302677,
+    3265844766045015547
   ],
   "version": 1
 }

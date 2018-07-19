@@ -201,6 +201,7 @@ public class DayListFragment extends Fragment {
     public void onFABClicked() {
         mWorkProfileQuery = mWorkProfileBox.query().equal(WorkProfile_.userID,userID).build();
         tracker.interactionTrack(getActivity().findViewById(R.id.fab), tracker.getInteractionClicID());
+        tracker.setUserScenarioEntryPoint(getActivity().findViewById(R.id.fab),"");
         mWorkProfileQuery = mWorkProfileBox.query().build();
         List<WorkProfile> allWP = mWorkProfileQuery.find();
         if(allWP.size()== 0)
@@ -326,6 +327,7 @@ public class DayListFragment extends Fragment {
 
                 case R.id.delete:
                     tracker.interactionTrack(getActivity().findViewById(R.id.delete), tracker.getInteractionActionID());
+                    tracker.setUserScenarioExitPoint(getActivity().findViewById(R.id.delete));
                     mDayBox.remove(((MyDayRecyclerViewAdapter) mRecyclerView.getAdapter()).getSelection().keySet());
                     clearSelection();
                     EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
