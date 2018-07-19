@@ -241,7 +241,7 @@ public class DayListFragment extends Fragment {
         EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
     }
 
-    @OnClick ({R.id.imageDate,R.id.imageLogin,R.id.imageLogout,R.id.imagePause,R.id.imageTime})
+    @OnClick ({R.id.imageDate,R.id.imageLogin,R.id.imageLogout,R.id.imagePause,R.id.imageTime,R.id.list})
     public void clickUnEditableLabelsImages(View v) {
         int mSelectedText;
         mSelectedText = v.getId();
@@ -264,6 +264,10 @@ public class DayListFragment extends Fragment {
         else if (mSelectedText == R.id.imageTime)
         {
             tracker.interactionTrack(getActivity().findViewById(R.id.imageTime), tracker.getInteractionClicID());
+        }
+        else if (mSelectedText == R.id.list)
+        {
+            tracker.interactionTrack(getActivity().findViewById(R.id.list), tracker.getInteractionClicID());
         }
     }
 

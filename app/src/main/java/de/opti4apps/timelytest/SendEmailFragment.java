@@ -101,7 +101,7 @@ public class SendEmailFragment extends DialogFragment {
     @Override
     public void onStart() {
         super.onStart();
-       // EventBus.getDefault().register(this);
+        // EventBus.getDefault().register(this);
         tracker.onStartTrack();
     }
 

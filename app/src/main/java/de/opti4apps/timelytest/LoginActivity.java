@@ -22,9 +22,13 @@ import android.widget.TextView;
 
 import java.util.regex.Pattern;
 
+import butterknife.BindView;
+import butterknife.OnClick;
+import butterknife.OnTextChanged;
 import de.opti4apps.timelytest.data.User;
 import de.opti4apps.timelytest.data.UserManager;
 import de.opti4apps.timelytest.data.User_;
+import de.opti4apps.timelytest.shared.TrackerHelper;
 import de.opti4apps.tracker.gesture.GestureTracker;
 import io.objectbox.Box;
 
@@ -33,19 +37,26 @@ import io.objectbox.Box;
  */
 public class LoginActivity extends AppCompatActivity {
 
-    private AutoCompleteTextView mEmailView;
-    private EditText mPasswordView;
+    public static final String TAG = LoginActivity.class.getSimpleName();
+    @BindView(R.id.email)
+    AutoCompleteTextView mEmailView;
+    @BindView(R.id.password)
+    EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
-
+    @BindView(R.id.email_sign_in_button)
+    Button sendButton;
     private Box<User> usersBox;
     private User currentUser;
+
+    private TrackerHelper tracker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        tracker = new TrackerHelper(TAG,this);
+        tracker.onStartTrack();
         usersBox = ((App) getApplication()).getBoxStore().boxFor(User.class);
         if (UserManager.checkIsUserSignedIn(usersBox)) {
             currentUser = UserManager.getSignedInUser(usersBox);
@@ -54,7 +65,6 @@ public class LoginActivity extends AppCompatActivity {
             LoginActivity.this.startActivity(intent);
         } else {
             mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-
             mPasswordView = (EditText) findViewById(R.id.password);
             mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 @Override
@@ -121,6 +131,7 @@ public class LoginActivity extends AppCompatActivity {
                 UserManager.changeUserSignedInStatus(currentUser,usersBox);
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 intent.putExtra("userEmail", email);
+                tracker.onStopTrack();
                 LoginActivity.this.startActivity(intent);
             } else {
                 showProgress(false);
@@ -171,6 +182,24 @@ public class LoginActivity extends AppCompatActivity {
             // and hide the relevant UI components.
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    @OnClick({R.id.email,R.id.password,R.id.email_sign_in_button})
+    public void clickElements(View v) {
+        int mSelectedText;
+        mSelectedText = v.getId();
+        if (mSelectedText == R.id.email)
+        {
+            tracker.interactionTrack(this.findViewById(R.id.email), tracker.getInteractionClicID());
+        }
+        else if (mSelectedText == R.id.password)
+        {
+            tracker.interactionTrack(this.findViewById(R.id.password), tracker.getInteractionClicID());
+        }
+        else if (mSelectedText == R.id.email_sign_in_button)
+        {
+            tracker.interactionTrack(this.findViewById(R.id.email_sign_in_button), tracker.getInteractionClicID());
         }
     }
 
