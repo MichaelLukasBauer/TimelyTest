@@ -6,6 +6,8 @@ import android.support.v4.app.DialogFragment;
 
 import org.greenrobot.eventbus.EventBus;
 
+import butterknife.OnClick;
+import de.opti4apps.timelytest.R;
 import de.opti4apps.timelytest.event.DurationPickedEvent;
 import mobi.upod.timedurationpicker.TimeDurationPicker;
 import mobi.upod.timedurationpicker.TimeDurationPickerDialog;
@@ -44,5 +46,6 @@ public class DurationPickerFragment extends DialogFragment implements TimeDurati
     public void onDurationSet(TimeDurationPicker view, long duration) {
         EventBus.getDefault().post(new DurationPickedEvent(duration));
     }
+
 
 }

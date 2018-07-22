@@ -102,20 +102,19 @@ public class SendEmailFragment extends DialogFragment {
     public void onStart() {
         super.onStart();
         // EventBus.getDefault().register(this);
-        tracker.onStartTrack();
+        tracker.onStartTrack(false,false,"");
     }
 
     @Override
     public void onStop() {
         super.onStop();
         //EventBus.getDefault().unregister(this);
-        tracker.onStopTrack();
+        tracker.onStopTrack(false,false,"");
     }
 
     @OnClick({R.id.sendReportButton})
     public void SendReport(View v) {
-        tracker.interactionTrack(getActivity().findViewById(R.id.sendReportButton), tracker.getInteractionClicID());
-        tracker.setUserScenarioExitPoint(getActivity().findViewById(R.id.sendReportButton));
+        tracker.interactionTrack(getActivity().findViewById(R.id.sendReportButton), tracker.getInteractionClicID(),false,false,"");
         sendEmail(mEmail.getText().toString());
 
     }
@@ -142,7 +141,7 @@ public class SendEmailFragment extends DialogFragment {
 
         }).start();
         Toast.makeText(getActivity(), "The Email has been sent ", Toast.LENGTH_SHORT).show();
-        tracker.interactionTrack(getActivity().findViewById(R.id.sendReportButton), tracker.getInteractionEventID());
+        tracker.interactionTrack(getActivity().findViewById(R.id.sendReportButton), tracker.getInteractionEventID(),false,true,"");
         getDialog().dismiss();
     }
 
@@ -151,11 +150,11 @@ public class SendEmailFragment extends DialogFragment {
     public void clickUnEditableLabelsImages(View v) {
         int mSelectedText = v.getId();
         if (mSelectedText == R.id.emailEditText) {
-            tracker.interactionTrack(getActivity().findViewById(R.id.emailEditText), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.emailEditText), tracker.getInteractionClicID(),false,false,"");
         }
         else if(mSelectedText == R.id.emailTextLabel)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.emailTextLabel), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.emailTextLabel), tracker.getInteractionClicID(),false,false,"");
         }
     }
 }

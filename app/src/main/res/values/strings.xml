@@ -74,4 +74,5 @@
     <string name="send_per_mail">Send report per mail</string>
     <string name="send">Send</string>
     <string name="prompt_email_2">Email:</string>
+    <string name="no_days">You need to create at least one day</string>
 </resources>

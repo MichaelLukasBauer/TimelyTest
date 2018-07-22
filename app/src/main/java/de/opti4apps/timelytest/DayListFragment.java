@@ -62,7 +62,7 @@ public class DayListFragment extends Fragment {
     private final List<Day> mDayList = new ArrayList<>();
     private final String[] mMonthArray = new String[12];
     private final String[] mYearArray = new String[35];
-    @BindView(R.id.list)
+    @BindView(R.id.listOfdays)
     RecyclerView mRecyclerView;
     @BindView(R.id.fab)
     FloatingActionButton mFloatingActionButton;
@@ -122,14 +122,14 @@ public class DayListFragment extends Fragment {
     public void onStart() {
         super.onStart();
         //EventBus.getDefault().register(this);
-        tracker.onStartTrack();
+        tracker.onStartTrack(false,false,"");
     }
 
     @Override
     public void onStop() {
         super.onStop();
         //EventBus.getDefault().unregister(this);
-        tracker.onStopTrack();
+        tracker.onStopTrack(false,false,"");
     }
 
     private void initArrays() {
@@ -200,8 +200,7 @@ public class DayListFragment extends Fragment {
     @OnClick(R.id.fab)
     public void onFABClicked() {
         mWorkProfileQuery = mWorkProfileBox.query().equal(WorkProfile_.userID,userID).build();
-        tracker.interactionTrack(getActivity().findViewById(R.id.fab), tracker.getInteractionClicID());
-        tracker.setUserScenarioEntryPoint(getActivity().findViewById(R.id.fab),"");
+        tracker.interactionTrack(getActivity().findViewById(R.id.fab), tracker.getInteractionClicID(),true,false,"");
         mWorkProfileQuery = mWorkProfileBox.query().build();
         List<WorkProfile> allWP = mWorkProfileQuery.find();
         if(allWP.size()== 0)
@@ -219,14 +218,14 @@ public class DayListFragment extends Fragment {
 
     @OnItemSelected(R.id.month_spinner)
     public void onMonthSpinnerItemSelected(Spinner spinner, int position) {
-        tracker.interactionTrack(getActivity().findViewById(R.id.month_spinner), tracker.getInteractionClicID());
+        tracker.interactionTrack(getActivity().findViewById(R.id.month_spinner), tracker.getInteractionClicID(),false,false,"");
         mCurrentMonthArrayPosition = position;
         spinnerItemSelected();
     }
 
     @OnItemSelected(R.id.year_spinner)
     public void onYearSpinnerItemSelected(Spinner spinner, int position) {
-        tracker.interactionTrack(getActivity().findViewById(R.id.year_spinner), tracker.getInteractionClicID());
+        tracker.interactionTrack(getActivity().findViewById(R.id.year_spinner), tracker.getInteractionClicID(),false,false,"");
         mCurrentYearArrayPosition = position;
         spinnerItemSelected();
     }
@@ -242,40 +241,39 @@ public class DayListFragment extends Fragment {
         EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
     }
 
-    @OnClick ({R.id.imageDate,R.id.imageLogin,R.id.imageLogout,R.id.imagePause,R.id.imageTime,R.id.list})
+    @OnClick ({R.id.imageDate,R.id.imageLogin,R.id.imageLogout,R.id.imagePause,R.id.imageTime})
     public void clickUnEditableLabelsImages(View v) {
         int mSelectedText;
         mSelectedText = v.getId();
         if (mSelectedText == R.id.imageDate)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.imageDate), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.imageDate), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.imageLogin)
         {
-            tracker.interactionTrack( getActivity().findViewById(R.id.imageLogin), tracker.getInteractionClicID());
+            tracker.interactionTrack( getActivity().findViewById(R.id.imageLogin), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.imageLogout)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.imageLogout), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.imageLogout), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.imagePause)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.imagePause), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.imagePause), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.imageTime)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.imageTime), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.imageTime), tracker.getInteractionClicID(),false,false,"");
         }
-        else if (mSelectedText == R.id.list)
-        {
-            tracker.interactionTrack(getActivity().findViewById(R.id.list), tracker.getInteractionClicID());
-        }
+
+
     }
 
     @Subscribe
     public void onDayDataSetChanged(DayDatasetChangedEvent event) {
         mDayList.clear();
         mDayList.addAll(mDayQuery.find());
+        tracker.interactionTrack(mRecyclerView, tracker.getInteractionClicID(),true,false,"");
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 
@@ -326,8 +324,7 @@ public class DayListFragment extends Fragment {
             switch (item.getItemId()) {
 
                 case R.id.delete:
-                    tracker.interactionTrack(getActivity().findViewById(R.id.delete), tracker.getInteractionActionID());
-                    tracker.setUserScenarioExitPoint(getActivity().findViewById(R.id.delete));
+                    tracker.interactionTrack(getActivity().findViewById(R.id.delete), tracker.getInteractionActionID(),false,true,"");
                     mDayBox.remove(((MyDayRecyclerViewAdapter) mRecyclerView.getAdapter()).getSelection().keySet());
                     clearSelection();
                     EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));

@@ -197,24 +197,24 @@ public class DayFragment extends Fragment {
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        tracker.onStartTrack();
+        tracker.onStartTrack(false,false,"");
     }
 
     @Override
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
-        tracker.onStopTrack();
+        tracker.onStopTrack(false,false,"");
     }
 
     @OnClick({R.id.startTimeText, R.id.endTimeText})
     public void showTimePickerDialog(View v) {
         if (v.getId() == R.id.startTimeText) {
-            tracker.interactionTrack(getActivity().findViewById(R.id.startTimeText), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.startTimeText), tracker.getInteractionClicID(),false,false,"");
             DialogFragment newFragment = TimePickerFragment.newInstance("start",mDay.getStart().getMinuteOfHour(),mDay.getStart().getHourOfDay());
             newFragment.show(getFragmentManager(), "startTimePicker");
         } else if (v.getId() == R.id.endTimeText) {
-            tracker.interactionTrack(getActivity().findViewById(R.id.endTimeText), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.endTimeText), tracker.getInteractionClicID(),false,false,"");
             DialogFragment newFragment = TimePickerFragment.newInstance("end",mDay.getEnd().getMinuteOfHour(),mDay.getEnd().getHourOfDay());
             newFragment.show(getFragmentManager(), "endTimePicker");
         }
@@ -222,14 +222,14 @@ public class DayFragment extends Fragment {
 
     @OnClick(R.id.dateText)
     public void showDatePickerDialog(View v) {
-        tracker.interactionTrack(getActivity().findViewById(R.id.dateText), tracker.getInteractionClicID());
+        tracker.interactionTrack(getActivity().findViewById(R.id.dateText), tracker.getInteractionClicID(),false,false,"");
         DialogFragment newFragment = DatePickerFragment.newInstance(mDay.getDay().getDayOfMonth(),mDay.getDay().getMonthOfYear()-1,mDay.getDay().getYear(),userID);
         newFragment.show(getFragmentManager(), "datePicker");
     }
 
     @OnClick(R.id.pauseDurationText)
     public void showDurationPickerDialog(View v) {
-        tracker.interactionTrack(getActivity().findViewById(R.id.pauseDurationText), tracker.getInteractionClicID());
+        tracker.interactionTrack(getActivity().findViewById(R.id.pauseDurationText), tracker.getInteractionClicID(),false,false, "");
         DialogFragment newFragment = DurationPickerFragment.newInstance(mDay.getPause().getMillis());
         newFragment.show(getFragmentManager(), "durationPicker");
     }
@@ -265,14 +265,9 @@ public class DayFragment extends Fragment {
         //updateDay();
         if(mDay.getType().compareTo(Day.DAY_TYPE.HOLIDAY) == 0 || mDay.getType().compareTo(Day.DAY_TYPE.DAY_OFF_IN_LIEU) == 0 ||
                 mDay.getType().compareTo(Day.DAY_TYPE.OTHER) == 0 || mDay.getType().compareTo(Day.DAY_TYPE.ILLNESS) == 0){
-            if(mDay.getType().compareTo(Day.DAY_TYPE.ILLNESS) == 0 || mDay.getType().compareTo(Day.DAY_TYPE.BUSINESS_TRIP) == 0)
-            {
-                tracker.setUserScenarioEntryPoint(getActivity().findViewById(R.id.dayTypeSpinner),mDay.getType().name());
-            }
             mStart.setEnabled(false);
             mEnd.setEnabled(false);
             mPause.setEnabled(false);
-            mDay.isValid();
         }
         else{
             mStart.setEnabled(true);
@@ -288,7 +283,7 @@ public class DayFragment extends Fragment {
         }
 
         EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
-        tracker.interactionTrack(getActivity().findViewById(R.id.dayTypeSpinner), tracker.getInteractionClicID());
+        tracker.interactionTrack(getActivity().findViewById(R.id.dayTypeSpinner), tracker.getInteractionClicID(),false,false,mDay.getType().name());
     }
 
     @Subscribe
@@ -298,11 +293,11 @@ public class DayFragment extends Fragment {
         switch (event.type) {
             case "start":
                 mDay.setStart(time);
-                tracker.interactionTrack(getActivity().findViewById(R.id.startTimeText), tracker.getInteractionEventID());
+                tracker.interactionTrack(getActivity().findViewById(R.id.startTimeText), tracker.getInteractionEventID(),false,false,"");
                 break;
             case "end":
                 mDay.setEnd(time);
-                tracker.interactionTrack(getActivity().findViewById(R.id.endTimeText), tracker.getInteractionEventID());
+                tracker.interactionTrack(getActivity().findViewById(R.id.endTimeText), tracker.getInteractionEventID(),false,false,"");
                 break;
         }
         mDay.computeTheExtraHours(mWorkProfile);
@@ -331,6 +326,7 @@ public class DayFragment extends Fragment {
     public void onDurationPicked(DurationPickedEvent event) {
         mDay.setPause(Duration.millis(event.duration));
         EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
+        tracker.interactionTrack("", tracker.getInteractionClicID(),false,false, String.valueOf(mDay.getPause().getMillis()));
         //updateDay();
     }
 
@@ -455,47 +451,47 @@ public class DayFragment extends Fragment {
         int mSelectedText = v.getId();
         if (mSelectedText == R.id.dateImageView)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.dateImageView), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.dateImageView), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.dayTypeImageView)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.dayTypeImageView), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.dayTypeImageView), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.startTimeImageView)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.startTimeImageView), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.startTimeImageView), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.pauseDurationImageView)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.pauseDurationImageView), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.pauseDurationImageView), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.endTimeImageView)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.endTimeImageView), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.endTimeImageView), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.workingHoursimageView)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.workingHoursimageView), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.workingHoursimageView), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.dayOvertimetextViewNE)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.dayOvertimetextViewNE), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.dayOvertimetextViewNE), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.totalOvertimeTextViewNE)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.totalOvertimeTextViewNE), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.totalOvertimeTextViewNE), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.workingHourstext)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.workingHourstext), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.workingHourstext), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.dayOvertime)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.dayOvertime), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.dayOvertime), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.totalOvertime)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.totalOvertime), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.totalOvertime), tracker.getInteractionClicID(),false,false,"");
         }
     }
 
@@ -521,8 +517,7 @@ public class DayFragment extends Fragment {
         public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.save:
-                    tracker.interactionTrack(getActivity().findViewById(R.id.save), tracker.getInteractionClicID());
-                    tracker.setUserScenarioExitPoint(getActivity().findViewById(R.id.save));
+                    tracker.interactionTrack(getActivity().findViewById(R.id.save), tracker.getInteractionClicID(),false,true,mDay.getType().name());
                     saveDayInfo();
                     return true;
                 default:

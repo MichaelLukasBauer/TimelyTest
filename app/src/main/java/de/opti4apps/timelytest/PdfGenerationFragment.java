@@ -171,12 +171,14 @@ public class PdfGenerationFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        tracker.onStartTrack(false,false,"");
         EventBus.getDefault().register(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        tracker.onStopTrack(false,false,"");
         EventBus.getDefault().unregister(this);
     }
 
@@ -197,7 +199,7 @@ public class PdfGenerationFragment extends Fragment {
 
     @OnClick({R.id.generatePdfMonthText})
     public void selectReportDate(View v) {
-        tracker.interactionTrack(getActivity().findViewById(R.id.generatePdfMonthText), tracker.getInteractionClicID());
+        tracker.interactionTrack(getActivity().findViewById(R.id.generatePdfMonthText), tracker.getInteractionClicID(),false,false,"");
         String currentDateStr = mGeneratePdfText.getText().toString();
 //        try {
 //            Date selectedMonthYear = new SimpleDateFormat("MMM yyyy").parse(currentDateStr);
@@ -236,7 +238,7 @@ public class PdfGenerationFragment extends Fragment {
 
     @OnClick({R.id.generatePdfButton})
     public void generatePdfReport(View v) {
-        tracker.interactionTrack(getActivity().findViewById(R.id.generatePdfButton), tracker.getInteractionClicID());
+        tracker.interactionTrack(getActivity().findViewById(R.id.generatePdfButton), tracker.getInteractionClicID(),false,true,"");
         if (isExternalStorageWritable()) {
             if (checkPermissions()) {
                 generatePdf();
@@ -265,7 +267,7 @@ public class PdfGenerationFragment extends Fragment {
 
     @OnClick({R.id.SendPerMailButton})
     public void SendReportPerMail(View v) {
-        tracker.interactionTrack(getActivity().findViewById(R.id.SendPerMailButton), tracker.getInteractionClicID());
+        tracker.interactionTrack(getActivity().findViewById(R.id.SendPerMailButton), tracker.getInteractionClicID(),false,false,"");
         if (isExternalStorageWritable()) {
             if (checkPermissions()) {
                 generatePdf();
@@ -362,87 +364,87 @@ public class PdfGenerationFragment extends Fragment {
         int mSelectedText = v.getId();
         if (mSelectedText == R.id.dateImageView)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.dateImageView), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.dateImageView), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.total_reported_days_label)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_reported_days_label), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_reported_days_label), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.total_reported_days_text)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_reported_days_text), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_reported_days_text), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.total_working_days_label)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_working_days_label), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_working_days_label), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.total_working_days_text)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_working_days_text), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_working_days_text), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.Total_days_on_vacation_label)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.Total_days_on_vacation_label), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.Total_days_on_vacation_label), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.Total_days_on_vacation_text)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.Total_days_on_vacation_text), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.Total_days_on_vacation_text), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.Total_doc_appointments_label)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.Total_doc_appointments_label), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.Total_doc_appointments_label), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.Total_doc_appointments_text)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.Total_doc_appointments_text), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.Total_doc_appointments_text), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.total_days_illness_label)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_illness_label), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_illness_label), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.total_days_illness_text)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_illness_text), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_illness_text), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.total_days_off_in_lieu_label)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_off_in_lieu_label), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_off_in_lieu_label), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.total_days_off_in_lieu_text)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_off_in_lieu_text), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_off_in_lieu_text), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.total_days_further_education_label)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_further_education_label), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_further_education_label), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.total_days_further_education_text)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_further_education_text), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_further_education_text), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.total_days_business_trip_label)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_business_trip_label), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_business_trip_label), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.total_days_business_trip_text)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_business_trip_text), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_business_trip_text), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.total_days_others_label)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_others_label), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_others_label), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.total_days_others_text)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_others_text), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_days_others_text), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.total_overtime_label)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_overtime_label), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_overtime_label), tracker.getInteractionClicID(),false,false,"");
         }
         else if ( mSelectedText == R.id.total_overtime_text)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.total_overtime_text), tracker.getInteractionClicID());
+            tracker.interactionTrack(getActivity().findViewById(R.id.total_overtime_text), tracker.getInteractionClicID(),false,false,"");
         }
     }
 

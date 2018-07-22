@@ -24,44 +24,45 @@ public class TrackerHelper {
         this.context = context;
     }
 
-    public void onStartTrack()
+    private void handlePayload(boolean isStartUserCase,boolean isEndUsercase, String value)
+    {
+        if(isStartUserCase)
+        {
+            payload.put("StartUserCase", String.valueOf(1));
+        }
+        else
+        {
+            payload.put("StartUserCase", String.valueOf(0));
+        }
+
+        if(isEndUsercase)
+        {
+            payload.put("EndUserCase", String.valueOf(1));
+        }
+        else
+        {
+            payload.put("EndUserCase", String.valueOf(0));
+        }
+        if (!value.isEmpty())
+        {
+            payload.put("Extra", value);
+        }
+    }
+
+    public void onStartTrack(boolean isStartUserCase,boolean isEndUsercase, String value)
     {
         payload.clear();
         payload.put("ActivityName",activityName);
+        handlePayload(isStartUserCase,isEndUsercase,value);
         InteractionTracker.track(context,InteractionTracker.ActionTypes.OPEN,payload);
     }
 
-    public void onStopTrack()
+    public void onStopTrack(boolean isStartUserCase,boolean isEndUsercase, String value)
     {
         payload.clear();
         payload.put("ActivityName",activityName);
+        handlePayload(isStartUserCase,isEndUsercase,value);
         InteractionTracker.track(context,InteractionTracker.ActionTypes.CLOSE,payload);
-    }
-
-    public void setUserScenarioEntryPoint(Object v, String value)
-    {
-        if (value.isEmpty())
-        {
-            if (v instanceof  View) {
-                value = getViewID((View)v);
-            }
-            else if (v instanceof MenuItem) {
-                value = (String) ((MenuItem)v).getTitle();
-            }
-        }
-
-        payload.clear();
-        payload.put("ActivityName",activityName);
-        payload.put("StartUserCase", value);
-        InteractionTracker.track(context,InteractionTracker.ActionTypes.EVENT,payload);
-    }
-
-    public void setUserScenarioExitPoint(View v)
-    {
-        payload.clear();
-        payload.put("ActivityName",activityName);
-        payload.put("EndUserCase", getViewID(v));
-        InteractionTracker.track(context,InteractionTracker.ActionTypes.EVENT,payload);
     }
 
     private String getViewType(View v)
@@ -74,7 +75,8 @@ public class TrackerHelper {
         String  viewID = v.toString().substring(v.toString().indexOf(VIEW_ID_INDICATOR)+VIEW_ID_INDICATOR.length(),v.toString().length()-1);
         return viewID;
     }
-    private void setPayload(Object v)
+
+    private void setPayload(Object v,boolean isStartUserCase,boolean isEndUsercase, String value)
     {
         payload.clear();
         payload.put("ActivityName", activityName);
@@ -85,9 +87,12 @@ public class TrackerHelper {
         else if (v instanceof MenuItem)
         {
             payload.put("MenuName", (String) ((MenuItem)v).getTitle());
-            payload.put("Type", "MenuItem");
+            payload.put("MenuType", "MenuItem");
         }
+
+        handlePayload(isStartUserCase,isEndUsercase,value);
     }
+
     public int getInteractionActionID()
     {
         return 0;
@@ -137,9 +142,9 @@ public class TrackerHelper {
         return 11;
     }
 
-    public void interactionTrack(Object v,int interactionID)
+    public void interactionTrack(Object v,int interactionID,boolean isStartUserCase,boolean isEndUsercase,String value)
     {
-        setPayload(v);
+        setPayload(v,isStartUserCase,isEndUsercase,value);
 
         switch(interactionID)
         {

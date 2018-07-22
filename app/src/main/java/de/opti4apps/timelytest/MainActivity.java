@@ -33,6 +33,7 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import de.opti4apps.timelytest.data.Day;
 import de.opti4apps.timelytest.data.User;
 import de.opti4apps.timelytest.data.UserManager;
 import de.opti4apps.timelytest.data.WorkProfile;
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity
     TextView mUserEmailTextView;
     ImageView mUserIcon;
     private Box<WorkProfile> mWorkProfileBox;
+    private Box<Day> mDayBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,7 +138,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                tracker.interactionTrack(mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_name), tracker.getInteractionClicID());
+                tracker.interactionTrack(mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_name), tracker.getInteractionClicID(),false,false,"");
             }
         });
         mUserNameTextView.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
@@ -147,7 +149,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                tracker.interactionTrack(mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_email), tracker.getInteractionClicID());
+                tracker.interactionTrack(mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_email), tracker.getInteractionClicID(),false,false,"");
             }
         });
         mUserEmailTextView.setText(currentUser.getEmail());
@@ -158,10 +160,11 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                tracker.interactionTrack(mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_icon), tracker.getInteractionClicID());
+                tracker.interactionTrack(mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_icon), tracker.getInteractionClicID(),false,false,"");
             }
         });
         mWorkProfileBox = ((App) getApplication()).getBoxStore().boxFor(WorkProfile.class);
+        mDayBox = ((App) getApplication()).getBoxStore().boxFor(Day.class);
     }
 
 
@@ -169,7 +172,7 @@ public class MainActivity extends AppCompatActivity
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        tracker.onStartTrack();
+        tracker.onStartTrack(false,false,"");
     }
 
     @Override
@@ -222,8 +225,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_capture_time) {
-            tracker.interactionTrack(item, tracker.getInteractionClicID());
-            tracker.setUserScenarioEntryPoint(item,"");
+            tracker.interactionTrack(item, tracker.getInteractionClicID(),true,false,"");
             if (mWorkProfileBox.count() > 0) {
 
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(0, currentUser.getId()), DayFragment.TAG);
@@ -233,35 +235,38 @@ public class MainActivity extends AppCompatActivity
                 showWPCreateMessage();
             }
         } else if (id == R.id.nav_month_overview) {
-            tracker.interactionTrack(item , tracker.getInteractionClicID());
-            tracker.setUserScenarioEntryPoint(item,"");
+            tracker.interactionTrack(item , tracker.getInteractionClicID(),false,false,"");
             if (!mDayListFragment.isAdded()) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, mDayListFragment, DayListFragment.TAG);
                 //               transaction.addToBackStack(null);
                 transaction.commit();
             }
         } else if (id == R.id.nav_work_profile) {
-            tracker.interactionTrack(item, tracker.getInteractionClicID());
-            tracker.setUserScenarioEntryPoint(item,"");
+            tracker.interactionTrack(item, tracker.getInteractionClicID(),true,false,"");
             //we need to get the current user ID and use it to create the working profile instance
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, WorkProfileFragment.newInstance(currentUser.getId()), WorkProfileFragment.TAG);
             //           transaction.addToBackStack(null);
             transaction.commit();
         } else if (id == R.id.nav_signout) {
-            tracker.interactionTrack(item, tracker.getInteractionClicID());
-            tracker.setUserScenarioEntryPoint(item,"");
+            tracker.interactionTrack(item, tracker.getInteractionClicID(),false,false,"");
             UserManager.changeUserSignedInStatus(currentUser, usersBox);
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             MainActivity.this.startActivity(intent);
         } else if (id == R.id.nav_time_sheet) {
-            tracker.interactionTrack(item, tracker.getInteractionClicID());
-            tracker.setUserScenarioEntryPoint(item,"");
-            if (mWorkProfileBox.count() > 0) {
+            tracker.interactionTrack(item, tracker.getInteractionClicID(),true,false,"");
+            if (mWorkProfileBox.count() > 0 && mDayBox.count() > 0) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, PdfGenerationFragment.newInstance(currentUser.getId()), PdfGenerationFragment.TAG);
 //                transaction.addToBackStack(null);
                 transaction.commit();
             } else {
-                showWPCreateMessage();
+                if (mWorkProfileBox.count() == 0)
+                {
+                    showWPCreateMessage();
+                }else
+                {
+                    showDayreateMessage();
+                }
+
             }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -292,7 +297,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onStop() {
         super.onStop();
-        tracker.onStopTrack();
+        tracker.onStopTrack(false,false,"");
         EventBus.getDefault().unregister(this);
     }
 
@@ -301,6 +306,10 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
+    private void showDayreateMessage() {
+        String message = getResources().getString(R.string.no_days);
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
     private void checkAndRequestPermissions() {
         if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
                 && (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)) == PackageManager.PERMISSION_GRANTED
@@ -347,18 +356,18 @@ public class MainActivity extends AppCompatActivity
 
         Intent intent = new Intent(this, TrackingService.class);
         intent.putExtra(CommonConfig.SENSOR_LIST, new String[]{
-                WifiTracker.name,
+//                WifiTracker.name,
 //                LightTracker.name,
 //                SignalStrengthTracker.name,
 //                ScreenTracker.name,
-//                GestureTracker.name,
+                GestureTracker.name,
 //                PressureTracker.name,
 //                ProximityTracker.name,
 //                StepCounterTracker.name,
 //                UncaughtExceptionTracker.name,
 //                InteractionWithLogTracker.name,
                 InteractionTracker.name,
-//                DeviceInfoTracker.name,
+                DeviceInfoTracker.name,
 //                DeviceOrientationTracker.name,
 //                AppInfoTracker.name,
 //                BatteryTracker.name,
@@ -369,10 +378,11 @@ public class MainActivity extends AppCompatActivity
 //                GyroscopeTracker.name,
 //                MagneticFieldTracker.name,
 //                AccelerometerTracker.name,
+
         });
         //intent.putExtra(CommonConfig.UPLOAD_URL, "https://hookbin.com/bin/EzgA3lDW/");
-        intent.putExtra(CommonConfig.UPLOAD_URL, "http://141.7.159.95:8383/");
-        //intent.putExtra(CommonConfig.UPLOAD_URL, "http://172.20.10.6:8383/");
+        //intent.putExtra(CommonConfig.UPLOAD_URL, "http://141.7.10.70:80/");
+        intent.putExtra(CommonConfig.UPLOAD_URL, "http://10.70.28.234:8383/");
         //intent.putExtra(CommonConfig.UPLOAD_URL, "http://10.0.2.2:8080/events/process/");
         intent.putExtra(CommonConfig.STORAGE_MODE, CommonConfig.STORAGE_MODE_DATABASE);
         intent.putExtra(CommonConfig.UPLOAD_MODE, CommonConfig.UPLOAD_MODE_PERIODICALLY);

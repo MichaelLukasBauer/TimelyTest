@@ -108,7 +108,7 @@
 
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/list"
+        android:id="@+id/listOfdays"
         android:name="de.opti4apps.timelytest.DayFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -132,8 +132,8 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="@color/colorAccent"
-        app:layout_constraintBottom_toBottomOf="@id/list"
-        app:layout_constraintEnd_toEndOf="@id/list"
+        app:layout_constraintBottom_toBottomOf="@id/listOfdays"
+        app:layout_constraintEnd_toEndOf="@id/listOfdays"
         app:srcCompat="@drawable/ic_plus" />
 
 </android.support.constraint.ConstraintLayout>

@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         tracker = new TrackerHelper(TAG,this);
-        tracker.onStartTrack();
+        tracker.onStartTrack(true,false,"");
         usersBox = ((App) getApplication()).getBoxStore().boxFor(User.class);
         if (UserManager.checkIsUserSignedIn(usersBox)) {
             currentUser = UserManager.getSignedInUser(usersBox);
@@ -131,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
                 UserManager.changeUserSignedInStatus(currentUser,usersBox);
                 Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                 intent.putExtra("userEmail", email);
-                tracker.onStopTrack();
+                tracker.onStopTrack(false,false,"");
                 LoginActivity.this.startActivity(intent);
             } else {
                 showProgress(false);
@@ -191,15 +191,15 @@ public class LoginActivity extends AppCompatActivity {
         mSelectedText = v.getId();
         if (mSelectedText == R.id.email)
         {
-            tracker.interactionTrack(this.findViewById(R.id.email), tracker.getInteractionClicID());
+            tracker.interactionTrack(this.findViewById(R.id.email), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.password)
         {
-            tracker.interactionTrack(this.findViewById(R.id.password), tracker.getInteractionClicID());
+            tracker.interactionTrack(this.findViewById(R.id.password), tracker.getInteractionClicID(),false,false,"");
         }
         else if (mSelectedText == R.id.email_sign_in_button)
         {
-            tracker.interactionTrack(this.findViewById(R.id.email_sign_in_button), tracker.getInteractionClicID());
+            tracker.interactionTrack(this.findViewById(R.id.email_sign_in_button), tracker.getInteractionClicID(),false,true,"");
         }
     }
 
