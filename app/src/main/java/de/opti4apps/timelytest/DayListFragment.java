@@ -273,7 +273,6 @@ public class DayListFragment extends Fragment {
     public void onDayDataSetChanged(DayDatasetChangedEvent event) {
         mDayList.clear();
         mDayList.addAll(mDayQuery.find());
-        tracker.interactionTrack(mRecyclerView, tracker.getInteractionClicID(),true,false,"");
         mRecyclerView.getAdapter().notifyDataSetChanged();
     }
 

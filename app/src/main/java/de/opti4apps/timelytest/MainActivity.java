@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity
         if (isFinishing()) {
             // we will not need this fragment anymore, this may also be a good place to signal
             // to the retained fragment object to perform its own cleanup.
-            getSupportFragmentManager().beginTransaction().remove(mDayListFragment).commit();
+            //getSupportFragmentManager().beginTransaction().remove(mDayListFragment).commit();
         }
     }
 
@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity
             if (mWorkProfileBox.count() > 0) {
 
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(0, currentUser.getId()), DayFragment.TAG);
-                //               transaction.addToBackStack(null);
+                transaction.addToBackStack(null);
                 transaction.commit();
             } else {
                 showWPCreateMessage();
@@ -238,14 +238,14 @@ public class MainActivity extends AppCompatActivity
             tracker.interactionTrack(item , tracker.getInteractionClicID(),false,false,"");
             if (!mDayListFragment.isAdded()) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, mDayListFragment, DayListFragment.TAG);
-                //               transaction.addToBackStack(null);
+                //transaction.addToBackStack(null);
                 transaction.commit();
             }
         } else if (id == R.id.nav_work_profile) {
             tracker.interactionTrack(item, tracker.getInteractionClicID(),true,false,"");
             //we need to get the current user ID and use it to create the working profile instance
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, WorkProfileFragment.newInstance(currentUser.getId()), WorkProfileFragment.TAG);
-            //           transaction.addToBackStack(null);
+            transaction.addToBackStack(null);
             transaction.commit();
         } else if (id == R.id.nav_signout) {
             tracker.interactionTrack(item, tracker.getInteractionClicID(),false,false,"");
@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity
             tracker.interactionTrack(item, tracker.getInteractionClicID(),true,false,"");
             if (mWorkProfileBox.count() > 0 && mDayBox.count() > 0) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, PdfGenerationFragment.newInstance(currentUser.getId()), PdfGenerationFragment.TAG);
-//                transaction.addToBackStack(null);
+                //transaction.addToBackStack(null);
                 transaction.commit();
             } else {
                 if (mWorkProfileBox.count() == 0)
@@ -278,6 +278,7 @@ public class MainActivity extends AppCompatActivity
     public void onDaySelected(DaySelectedEvent event) {
         Log.d(TAG, "onDaySelected: received DaySelectedEvent with id of day = " + event.dayID);
         mDayListFragment = (DayListFragment) getSupportFragmentManager().findFragmentByTag(DayListFragment.TAG);
+        tracker.interactionTrack(findViewById(R.id.listOfdays), tracker.getInteractionClicID(),true,false,"");
         if (mDayFragment == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(event.dayID, currentUser.getId()), DayFragment.TAG);
             transaction.addToBackStack(null);

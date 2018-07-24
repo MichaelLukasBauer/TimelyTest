@@ -416,8 +416,8 @@ public class WorkProfileFragment extends Fragment {
 
         @Override
         public void onDestroyActionMode(ActionMode mode) {
-            //getActivity().onBackPressed();
-            mActionMode = null;
+           getActivity().onBackPressed();
+            //mActionMode = null;
         }
     }
 }
