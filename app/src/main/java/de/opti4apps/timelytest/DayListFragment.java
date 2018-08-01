@@ -45,6 +45,7 @@ import de.opti4apps.timelytest.data.WorkProfile_;
 import de.opti4apps.timelytest.event.DayDatasetChangedEvent;
 import de.opti4apps.timelytest.event.DayMultibleSelectionEvent;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
+import de.opti4apps.timelytest.shared.TimelyHelper;
 import de.opti4apps.timelytest.shared.TrackerHelper;
 import de.opti4apps.tracker.gesture.GestureTracker;
 import io.objectbox.Box;
@@ -203,7 +204,7 @@ public class DayListFragment extends Fragment {
         tracker.interactionTrack(getActivity().findViewById(R.id.fab), tracker.getInteractionClicID(),true,false,"");
         mWorkProfileQuery = mWorkProfileBox.query().build();
         List<WorkProfile> allWP = mWorkProfileQuery.find();
-        if(allWP.size()== 0)
+        if(allWP.size()== 0 || TimelyHelper.getWorkProfileByMonth(DateTime.now(),mWorkProfileBox,userID) == null  )
         {
             String message = getResources().getString(R.string.no_working_profile);
             Log.d(TAG,  message);
@@ -236,7 +237,8 @@ public class DayListFragment extends Fragment {
         DateTimeFormatter formatter = DateTimeFormat.forPattern("MMMyyyy");
         DateTime dateTime = DateTime.parse(dateString, formatter);
         Date min = dateTime.withDayOfMonth(1).toDate();
-        Date max = dateTime.withDayOfMonth(1).plusMonths(1).minusDays(1).toDate();
+        Date max = dateTime.withDayOfMonth(1).plusMonths(1).toDate();
+        //Date max = dateTime.withDayOfMonth(1).plusMonths(1).minusDays(1).toDate();
         mDayQuery = mDayBox.query().equal(Day_.userID,userID).between(Day_.day, min, max).orderDesc(Day_.day).build();
         EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
     }

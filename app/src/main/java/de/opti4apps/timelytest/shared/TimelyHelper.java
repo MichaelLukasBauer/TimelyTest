@@ -79,11 +79,12 @@ public class TimelyHelper {
 
         DateTime startMonth = wp.getStartDate().withTime(0, 0, 0, 0);
 
-        DateTime tillCurrentDay =  mDay.getDay().minusDays(1).withTime(23, 59, 0, 0);
+        //DateTime tillCurrentDay =  mDay.getDay().minusDays(1).withTime(23, 59, 0, 0);
+        DateTime tillCurrentDay =  mDay.getDay().withTime(23, 59, 0, 0);
 
         mDayQuery = mDayBox.query().between(Day_.day, startMonth.toDate() , tillCurrentDay.toDate()).equal(Day_.userID, userID).build();
         List<Day> allDay = mDayQuery.find();
-        allDay.add(mDay);
+        //allDay.add(mDay);
         for (Day d: allDay)
         {
             if(d.getType().compareTo(Day.DAY_TYPE.DAY_OFF_IN_LIEU) == 0){
@@ -102,14 +103,22 @@ public class TimelyHelper {
     public static Duration getMonthTotalOvertime(WorkProfile wp, Box<Day> mDayBox,Long userID){
         long totalOvertime = 0;
 
-        DateTime startMonth = wp.getStartDate().withTime(0, 0, 0, 0);
-        DateTime endMonth =  wp.getEndDate().minusDays(1).withTime(23, 59, 0, 0);
+        if (wp != null)
+        {
+            DateTime startMonth = wp.getStartDate().withTime(0, 0, 0, 0);
+            //DateTime endMonth =  wp.getEndDate().minusDays(1).withTime(23, 59, 0, 0);
+            DateTime endMonth =  wp.getEndDate().withTime(23, 59, 0, 0);
 
-        mDayQuery = mDayBox.query().between(Day_.day, startMonth.toDate() , endMonth.toDate()).equal(Day_.userID, userID).orderDesc(Day_.day).build();
+            mDayQuery = mDayBox.query().between(Day_.day, startMonth.toDate() , endMonth.toDate()).equal(Day_.userID, userID).orderDesc(Day_.day).build();
 
-        Day lastDayOfMonth = mDayQuery.findFirst();
+            Day lastDayOfMonth = mDayQuery.findFirst();
 
-        totalOvertime = getTotalOvertimeForDay(lastDayOfMonth, wp, mDayBox,userID);
+            if (lastDayOfMonth !=  null)
+            {
+                totalOvertime = getTotalOvertimeForDay(lastDayOfMonth, wp, mDayBox,userID);
+            }
+        }
+
         return Duration.millis(totalOvertime);
     }
 

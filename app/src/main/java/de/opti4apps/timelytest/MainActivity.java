@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +39,7 @@ import de.opti4apps.timelytest.data.User;
 import de.opti4apps.timelytest.data.UserManager;
 import de.opti4apps.timelytest.data.WorkProfile;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
+import de.opti4apps.timelytest.shared.TimelyHelper;
 import de.opti4apps.timelytest.shared.TrackerHelper;
 import de.opti4apps.tracker.appInfo.AppInfoTracker;
 import de.opti4apps.tracker.battery.BatteryTracker;
@@ -71,7 +73,7 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int REQUEST_PERMISSION = 0;
-
+    private Intent intent ;
     DayListFragment mDayListFragment;
     DayFragment mDayFragment;
     private TrackerHelper tracker;
@@ -226,7 +228,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_capture_time) {
             tracker.interactionTrack(item, tracker.getInteractionClicID(),true,false,"");
-            if (mWorkProfileBox.count() > 0) {
+            if (TimelyHelper.getWorkProfileByMonth(DateTime.now(),mWorkProfileBox,currentUser.getId()) != null) {
 
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(0, currentUser.getId()), DayFragment.TAG);
                 transaction.addToBackStack(null);
@@ -254,19 +256,12 @@ public class MainActivity extends AppCompatActivity
             MainActivity.this.startActivity(intent);
         } else if (id == R.id.nav_time_sheet) {
             tracker.interactionTrack(item, tracker.getInteractionClicID(),true,false,"");
-            if (mWorkProfileBox.count() > 0 && mDayBox.count() > 0) {
+            if ( mDayBox.count() > 0) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, PdfGenerationFragment.newInstance(currentUser.getId()), PdfGenerationFragment.TAG);
-                //transaction.addToBackStack(null);
+                //transaction.addToBackStack(null); TimelyHelper.getTotalReportedDayForMonth(DateTime.now(),mDayBox,currentUser.getId())
                 transaction.commit();
             } else {
-                if (mWorkProfileBox.count() == 0)
-                {
-                    showWPCreateMessage();
-                }else
-                {
-                    showDayreateMessage();
-                }
-
+                showDayreateMessage();
             }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -302,6 +297,11 @@ public class MainActivity extends AppCompatActivity
         EventBus.getDefault().unregister(this);
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        this.stopService(intent);
+    }
     private void showWPCreateMessage() {
         String message = getResources().getString(R.string.no_working_profile);
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
@@ -346,7 +346,8 @@ public class MainActivity extends AppCompatActivity
                         granted = grantResults[i] == PackageManager.PERMISSION_GRANTED;
                         if (!granted) return;
                     }
-                    if (granted) startTracking();
+                    if (granted) startTracking()
+                         ;
 
                 }
             }
@@ -354,8 +355,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startTracking() {
-
-        Intent intent = new Intent(this, TrackingService.class);
+        intent = new Intent(this, TrackingService.class);
         intent.putExtra(CommonConfig.SENSOR_LIST, new String[]{
 //                WifiTracker.name,
 //                LightTracker.name,
