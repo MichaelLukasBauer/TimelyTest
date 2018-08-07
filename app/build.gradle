@@ -28,7 +28,7 @@ objectbox {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':trackerclient-131-http-release')
+    compile project(':trackerclient-142-http-release')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
@@ -44,7 +44,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.jakewharton:butterknife:8.5.1'
     compile 'com.itextpdf:itextg:5.5.10'
-
+    compile 'com.google.android.gms:play-services-ads:6.5.87'
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'com.squareup.retrofit2:converter-jackson:2.2.0'
     compile 'io.reactivex.rxjava2:rxjava:2.1.1'
