@@ -18,50 +18,66 @@ public class TrackerHelper {
     private static final String VIEW_ID_INDICATOR = "id/";
     private Context context;
 
+    public static final String SIGN_IN = "SIGN_IN";
+    public static final String WORk_PROFILE = "WORK_PROFILE";
+    public static final String DAY_TRACKING = "DAY_TRACKING";
+    public static final String DELETE_DAY = "DELETE_DAY";
+    public static final String CHANGE_EXISTING_DAY = "CHANGE_EXISTING_DAY";
+    public static final String MONTH_OVERVIEW = "MONTH_OVERVIEW";
+    public static final String SEND_GENERATE_REPORT = "SEND_GENERATE_REPORT";
+    public static final String SEND_REPORT = "SEND_REPORT";
+    public static final String GENERATE_REPORT = "GENERATE_REPORT";
+
     public TrackerHelper(String activityName,Context context)
     {
         this.activityName = activityName;
         this.context = context;
     }
 
-    private void handlePayload(boolean isStartUserCase,boolean isEndUsercase, String value)
+    private void handlePayload(String userStory,boolean isStartUserStory,boolean isEndUserStory, String extraValue)
     {
-        if(isStartUserCase)
+        if (!userStory.isEmpty())
         {
-            payload.put("StartUserCase", String.valueOf(1));
+            payload.put("User_Story", userStory);
+        }
+        if(isStartUserStory)
+        {
+            payload.put("StartUserStory", String.valueOf(1));
         }
         else
         {
-            payload.put("StartUserCase", String.valueOf(0));
+            payload.put("StartUserStory", String.valueOf(0));
         }
 
-        if(isEndUsercase)
+        if(isEndUserStory)
         {
-            payload.put("EndUserCase", String.valueOf(1));
+            payload.put("EndUserStory", String.valueOf(1));
         }
         else
         {
-            payload.put("EndUserCase", String.valueOf(0));
+            payload.put("EndUserStory", String.valueOf(0));
         }
-        if (!value.isEmpty())
+        if (!extraValue.isEmpty())
         {
-            payload.put("Extra", value);
+            payload.put("Extra", extraValue);
         }
     }
 
-    public void onStartTrack(boolean isStartUserCase,boolean isEndUsercase, String value)
+    //public void  addUser
+
+    public void onStartTrack(String userStory,boolean isStartUserStory,boolean isEndUserStory, String extraValue)
     {
         payload.clear();
         payload.put("ActivityName",activityName);
-        handlePayload(isStartUserCase,isEndUsercase,value);
+        handlePayload(userStory,isStartUserStory,isEndUserStory,extraValue);
         InteractionTracker.track(context,InteractionTracker.ActionTypes.OPEN,payload);
     }
 
-    public void onStopTrack(boolean isStartUserCase,boolean isEndUsercase, String value)
+    public void onStopTrack(String userStory,boolean isStartUserStory,boolean isEndUserStory, String extraValue)
     {
         payload.clear();
         payload.put("ActivityName",activityName);
-        handlePayload(isStartUserCase,isEndUsercase,value);
+        handlePayload(userStory,isStartUserStory,isEndUserStory,extraValue);
         InteractionTracker.track(context,InteractionTracker.ActionTypes.CLOSE,payload);
     }
 
@@ -76,7 +92,7 @@ public class TrackerHelper {
         return viewID;
     }
 
-    private void setPayload(Object v,boolean isStartUserCase,boolean isEndUsercase, String value)
+    private void setPayload(Object v,String userStory, boolean isStartUserStory,boolean isEndUserStory, String extraValue)
     {
         payload.clear();
         payload.put("ActivityName", activityName);
@@ -90,7 +106,7 @@ public class TrackerHelper {
             payload.put("MenuType", "MenuItem");
         }
 
-        handlePayload(isStartUserCase,isEndUsercase,value);
+        handlePayload(userStory,isStartUserStory,isEndUserStory,extraValue);
     }
 
     public int getInteractionActionID()
@@ -142,9 +158,9 @@ public class TrackerHelper {
         return 11;
     }
 
-    public void interactionTrack(Object v,int interactionID,boolean isStartUserCase,boolean isEndUsercase,String value)
+    public void interactionTrack(Object v,int interactionID,String userStory,boolean isStartUserStory,boolean isEndUserStory,String extraValue)
     {
-        setPayload(v,isStartUserCase,isEndUsercase,value);
+        setPayload(v,userStory,isStartUserStory,isEndUserStory,extraValue);
 
         switch(interactionID)
         {
