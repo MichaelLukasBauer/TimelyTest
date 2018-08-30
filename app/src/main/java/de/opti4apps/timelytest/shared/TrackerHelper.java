@@ -20,7 +20,7 @@ public class TrackerHelper {
 
     public static final String SIGN_IN = "SIGN_IN";
     public static final String WORk_PROFILE = "WORK_PROFILE";
-    public static final String DAY_TRACKING = "DAY_TRACKING";
+    public static final String CREATE_DAY = "CREATE_DAY";
     public static final String DELETE_DAY = "DELETE_DAY";
     public static final String CHANGE_EXISTING_DAY = "CHANGE_EXISTING_DAY";
     public static final String MONTH_OVERVIEW = "MONTH_OVERVIEW";
@@ -34,11 +34,15 @@ public class TrackerHelper {
         this.context = context;
     }
 
-    private void handlePayload(String userStory,boolean isStartUserStory,boolean isEndUserStory, String extraValue)
+    private void handlePayload(String StartUserStoryName,String EndUserStoryName,boolean isStartUserStory,boolean isEndUserStory, String extraValue)
     {
-        if (!userStory.isEmpty())
+        if (!StartUserStoryName.isEmpty())
         {
-            payload.put("User_Story", userStory);
+            payload.put("StartUserStoryName", StartUserStoryName);
+        }
+        if (!EndUserStoryName.isEmpty())
+        {
+            payload.put("EndUserStoryName", EndUserStoryName);
         }
         if(isStartUserStory)
         {
@@ -65,19 +69,19 @@ public class TrackerHelper {
 
     //public void  addUser
 
-    public void onStartTrack(String userStory,boolean isStartUserStory,boolean isEndUserStory, String extraValue)
+    public void onStartTrack(String StartUserStoryName,String EndUserStoryName,boolean isStartUserStory,boolean isEndUserStory, String extraValue)
     {
         payload.clear();
         payload.put("ActivityName",activityName);
-        handlePayload(userStory,isStartUserStory,isEndUserStory,extraValue);
+        handlePayload(StartUserStoryName,EndUserStoryName,isStartUserStory,isEndUserStory,extraValue);
         InteractionTracker.track(context,InteractionTracker.ActionTypes.OPEN,payload);
     }
 
-    public void onStopTrack(String userStory,boolean isStartUserStory,boolean isEndUserStory, String extraValue)
+    public void onStopTrack(String StartUserStoryName,String EndUserStoryName,boolean isStartUserStory,boolean isEndUserStory, String extraValue)
     {
         payload.clear();
         payload.put("ActivityName",activityName);
-        handlePayload(userStory,isStartUserStory,isEndUserStory,extraValue);
+        handlePayload(StartUserStoryName,EndUserStoryName,isStartUserStory,isEndUserStory,extraValue);
         InteractionTracker.track(context,InteractionTracker.ActionTypes.CLOSE,payload);
     }
 
@@ -92,7 +96,7 @@ public class TrackerHelper {
         return viewID;
     }
 
-    private void setPayload(Object v,String userStory, boolean isStartUserStory,boolean isEndUserStory, String extraValue)
+    private void setPayload(Object v,String StartUserStoryName,String EndUserStoryName, boolean isStartUserStory,boolean isEndUserStory, String extraValue)
     {
         payload.clear();
         payload.put("ActivityName", activityName);
@@ -106,7 +110,7 @@ public class TrackerHelper {
             payload.put("MenuType", "MenuItem");
         }
 
-        handlePayload(userStory,isStartUserStory,isEndUserStory,extraValue);
+        handlePayload(StartUserStoryName,EndUserStoryName,isStartUserStory,isEndUserStory,extraValue);
     }
 
     public int getInteractionActionID()
@@ -158,9 +162,9 @@ public class TrackerHelper {
         return 11;
     }
 
-    public void interactionTrack(Object v,int interactionID,String userStory,boolean isStartUserStory,boolean isEndUserStory,String extraValue)
+    public void interactionTrack(Object v,int interactionID,String StartUserStoryName,String EndUserStoryName,boolean isStartUserStory,boolean isEndUserStory,String extraValue)
     {
-        setPayload(v,userStory,isStartUserStory,isEndUserStory,extraValue);
+        setPayload(v,StartUserStoryName,EndUserStoryName,isStartUserStory,isEndUserStory,extraValue);
 
         switch(interactionID)
         {

@@ -1,6 +1,7 @@
 package de.opti4apps.timelytest;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -37,7 +38,9 @@ import java.util.Map;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.OnItemClick;
 import butterknife.OnItemSelected;
+import butterknife.OnTouch;
 import de.opti4apps.timelytest.data.Day;
 import de.opti4apps.timelytest.data.Day_;
 import de.opti4apps.timelytest.data.WorkProfile;
@@ -45,6 +48,7 @@ import de.opti4apps.timelytest.data.WorkProfile_;
 import de.opti4apps.timelytest.event.DayDatasetChangedEvent;
 import de.opti4apps.timelytest.event.DayMultibleSelectionEvent;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
+import de.opti4apps.timelytest.event.RecyclerItemClickListener;
 import de.opti4apps.timelytest.shared.TimelyHelper;
 import de.opti4apps.timelytest.shared.TrackerHelper;
 import de.opti4apps.tracker.gesture.GestureTracker;
@@ -123,14 +127,14 @@ public class DayListFragment extends Fragment {
     public void onStart() {
         super.onStart();
         //EventBus.getDefault().register(this);
-        tracker.onStartTrack(TrackerHelper.DELETE_DAY,true,true,"");
+        tracker.onStartTrack(TrackerHelper.DELETE_DAY,TrackerHelper.MONTH_OVERVIEW,true,true,"");
     }
 
     @Override
     public void onStop() {
         super.onStop();
         //EventBus.getDefault().unregister(this);
-        tracker.onStopTrack("",false,false,"");
+        tracker.onStopTrack("","",false,false,"");
     }
 
     private void initArrays() {
@@ -165,6 +169,14 @@ public class DayListFragment extends Fragment {
         mRecyclerView.setAdapter(new MyDayRecyclerViewAdapter(mDayList));
         mRecyclerView.setHasFixedSize(true);
 
+        mRecyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this.getContext(), new RecyclerItemClickListener.OnItemClickListener() {
+            @Override
+            public void onItemClick(View view, int position) {
+
+            }
+
+        }));
+
         ArrayAdapter<String> monthAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, mMonthArray);
         monthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mMonthSpinner.setAdapter(monthAdapter);
@@ -198,10 +210,11 @@ public class DayListFragment extends Fragment {
         super.onPrepareOptionsMenu(menu);
     }
 
+
     @OnClick(R.id.fab)
     public void onFABClicked() {
         mWorkProfileQuery = mWorkProfileBox.query().equal(WorkProfile_.userID,userID).build();
-        tracker.interactionTrack(getActivity().findViewById(R.id.fab), tracker.getInteractionClicID(),TrackerHelper.DAY_TRACKING,true,false,"");
+        tracker.interactionTrack(getActivity().findViewById(R.id.fab), tracker.getInteractionClicID(),TrackerHelper.CREATE_DAY,"",true,false,"");
         mWorkProfileQuery = mWorkProfileBox.query().build();
         List<WorkProfile> allWP = mWorkProfileQuery.find();
         if(allWP.size()== 0 || TimelyHelper.getWorkProfileByMonth(DateTime.now(),mWorkProfileBox,userID) == null  )
@@ -219,14 +232,14 @@ public class DayListFragment extends Fragment {
 
     @OnItemSelected(R.id.month_spinner)
     public void onMonthSpinnerItemSelected(Spinner spinner, int position) {
-        tracker.interactionTrack(getActivity().findViewById(R.id.month_spinner), tracker.getInteractionClicID(),"",false,false,"");
+        tracker.interactionTrack(getActivity().findViewById(R.id.month_spinner), tracker.getInteractionClicID(),"","",false,false,"");
         mCurrentMonthArrayPosition = position;
         spinnerItemSelected();
     }
 
     @OnItemSelected(R.id.year_spinner)
     public void onYearSpinnerItemSelected(Spinner spinner, int position) {
-        tracker.interactionTrack(getActivity().findViewById(R.id.year_spinner), tracker.getInteractionClicID(),"",false,false,"");
+        tracker.interactionTrack(getActivity().findViewById(R.id.year_spinner), tracker.getInteractionClicID(),"","",false,false,"");
         mCurrentYearArrayPosition = position;
         spinnerItemSelected();
     }
@@ -249,23 +262,23 @@ public class DayListFragment extends Fragment {
         mSelectedText = v.getId();
         if (mSelectedText == R.id.imageDate)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.imageDate), tracker.getInteractionClicID(),"",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.imageDate), tracker.getInteractionClicID(),"","",false,false,"");
         }
         else if (mSelectedText == R.id.imageLogin)
         {
-            tracker.interactionTrack( getActivity().findViewById(R.id.imageLogin), tracker.getInteractionClicID(),"",false,false,"");
+            tracker.interactionTrack( getActivity().findViewById(R.id.imageLogin), tracker.getInteractionClicID(),"","",false,false,"");
         }
         else if (mSelectedText == R.id.imageLogout)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.imageLogout), tracker.getInteractionClicID(),"",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.imageLogout), tracker.getInteractionClicID(),"","",false,false,"");
         }
         else if (mSelectedText == R.id.imagePause)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.imagePause), tracker.getInteractionClicID(),"",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.imagePause), tracker.getInteractionClicID(),"","",false,false,"");
         }
         else if (mSelectedText == R.id.imageTime)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.imageTime), tracker.getInteractionClicID(),"",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.imageTime), tracker.getInteractionClicID(),"","",false,false,"");
         }
 
 
@@ -273,6 +286,7 @@ public class DayListFragment extends Fragment {
 
     @Subscribe
     public void onDayDataSetChanged(DayDatasetChangedEvent event) {
+        //tracker.interactionTrack(getActivity().findViewById(R.id.listOfdays), tracker.getInteractionClicID(),TrackerHelper.CHANGE_EXISTING_DAY,true,false,"");
         mDayList.clear();
         mDayList.addAll(mDayQuery.find());
         mRecyclerView.getAdapter().notifyDataSetChanged();
@@ -325,7 +339,7 @@ public class DayListFragment extends Fragment {
             switch (item.getItemId()) {
 
                 case R.id.delete:
-                    tracker.interactionTrack(getActivity().findViewById(R.id.delete), tracker.getInteractionActionID(),TrackerHelper.DELETE_DAY,false,true,"");
+                    tracker.interactionTrack(getActivity().findViewById(R.id.delete), tracker.getInteractionActionID(),"",TrackerHelper.DELETE_DAY,false,true,"");
                     mDayBox.remove(((MyDayRecyclerViewAdapter) mRecyclerView.getAdapter()).getSelection().keySet());
                     clearSelection();
                     EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));

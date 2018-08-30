@@ -41,28 +41,9 @@ import de.opti4apps.timelytest.data.WorkProfile;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
 import de.opti4apps.timelytest.shared.TimelyHelper;
 import de.opti4apps.timelytest.shared.TrackerHelper;
-import de.opti4apps.tracker.appInfo.AppInfoTracker;
-import de.opti4apps.tracker.battery.BatteryTracker;
-import de.opti4apps.tracker.bluetooth.BluetoothTracker;
-import de.opti4apps.tracker.cellInfo.CellInfoTracker;
 import de.opti4apps.tracker.deviceInfo.DeviceInfoTracker;
-import de.opti4apps.tracker.deviceOrientation.DeviceOrientationTracker;
-import de.opti4apps.tracker.exception.UncaughtExceptionTracker;
 import de.opti4apps.tracker.gesture.GestureTracker;
 import de.opti4apps.tracker.interaction.InteractionTracker;
-import de.opti4apps.tracker.interaction.InteractionWithLogTracker;
-import de.opti4apps.tracker.light.LightTracker;
-import de.opti4apps.tracker.location.LocationTracker;
-import de.opti4apps.tracker.motion.AccelerometerTracker;
-import de.opti4apps.tracker.motion.GyroscopeTracker;
-import de.opti4apps.tracker.motion.MagneticFieldTracker;
-import de.opti4apps.tracker.networkInfo.NetworkInfoTracker;
-import de.opti4apps.tracker.pressure.PressureTracker;
-import de.opti4apps.tracker.proximity.ProximityTracker;
-import de.opti4apps.tracker.screen.ScreenTracker;
-import de.opti4apps.tracker.signalStrength.SignalStrengthTracker;
-import de.opti4apps.tracker.stepCounter.StepCounterTracker;
-import de.opti4apps.tracker.wifi.WifiTracker;
 import de.opti4apps.trackerclient.CommonConfig;
 import de.opti4apps.trackerclient.TrackingService;
 import io.objectbox.Box;
@@ -140,7 +121,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                tracker.interactionTrack(mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_name), tracker.getInteractionClicID(),"",false,false,"");
+                tracker.interactionTrack(mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_name), tracker.getInteractionClicID(),"","",false,false,"");
             }
         });
         mUserNameTextView.setText(currentUser.getFirstName() + " " + currentUser.getLastName());
@@ -151,7 +132,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                tracker.interactionTrack(mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_email), tracker.getInteractionClicID(),"",false,false,"");
+                tracker.interactionTrack(mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_email), tracker.getInteractionClicID(),"","",false,false,"");
             }
         });
         mUserEmailTextView.setText(currentUser.getEmail());
@@ -162,7 +143,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                tracker.interactionTrack(mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_icon), tracker.getInteractionClicID(),"",false,false,"");
+                tracker.interactionTrack(mNavigationView.getHeaderView(0).findViewById(R.id.tv_user_icon), tracker.getInteractionClicID(),"","",false,false,"");
             }
         });
         mWorkProfileBox = ((App) getApplication()).getBoxStore().boxFor(WorkProfile.class);
@@ -174,7 +155,7 @@ public class MainActivity extends AppCompatActivity
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        tracker.onStartTrack("",false,false,"");
+        tracker.onStartTrack("","",false,false,"");
     }
 
     @Override
@@ -239,7 +220,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_capture_time) {
-            tracker.interactionTrack(item, tracker.getInteractionClicID(),TrackerHelper.DAY_TRACKING,true,false,"");
+            tracker.interactionTrack(item, tracker.getInteractionClicID(),TrackerHelper.CREATE_DAY,"",true,false,"");
             if (TimelyHelper.getWorkProfileByMonth(DateTime.now(),mWorkProfileBox,currentUser.getId()) != null) {
 
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(0, currentUser.getId()), DayFragment.TAG);
@@ -249,25 +230,25 @@ public class MainActivity extends AppCompatActivity
                 showWPCreateMessage();
             }
         } else if (id == R.id.nav_month_overview) {
-            tracker.interactionTrack(item , tracker.getInteractionClicID(),TrackerHelper.MONTH_OVERVIEW,true,false,"");
+            tracker.interactionTrack(item , tracker.getInteractionClicID(),TrackerHelper.MONTH_OVERVIEW,"",true,false,"");
             if (!mDayListFragment.isAdded()) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, mDayListFragment, DayListFragment.TAG);
                 //transaction.addToBackStack(null);
                 transaction.commit();
             }
         } else if (id == R.id.nav_work_profile) {
-            tracker.interactionTrack(item, tracker.getInteractionClicID(),TrackerHelper.WORk_PROFILE,true,false,"");
+            tracker.interactionTrack(item, tracker.getInteractionClicID(),TrackerHelper.WORk_PROFILE,"",true,false,"");
             //we need to get the current user ID and use it to create the working profile instance
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, WorkProfileFragment.newInstance(currentUser.getId()), WorkProfileFragment.TAG);
             transaction.addToBackStack(null);
             transaction.commit();
         } else if (id == R.id.nav_signout) {
-            tracker.interactionTrack(item, tracker.getInteractionClicID(),"",false,false,"");
+            tracker.interactionTrack(item, tracker.getInteractionClicID(),"","",false,false,"");
             UserManager.changeUserSignedInStatus(currentUser, usersBox);
             Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             MainActivity.this.startActivity(intent);
         } else if (id == R.id.nav_time_sheet) {
-            tracker.interactionTrack(item, tracker.getInteractionClicID(),TrackerHelper.SEND_GENERATE_REPORT,true,false,"");
+            tracker.interactionTrack(item, tracker.getInteractionClicID(),TrackerHelper.SEND_GENERATE_REPORT,"",true,false,"");
             if ( mDayBox.count() > 0) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, PdfGenerationFragment.newInstance(currentUser.getId()), PdfGenerationFragment.TAG);
                 //transaction.addToBackStack(null); TimelyHelper.getTotalReportedDayForMonth(DateTime.now(),mDayBox,currentUser.getId())
@@ -281,11 +262,11 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+
     @Subscribe
     public void onDaySelected(DaySelectedEvent event) {
         Log.d(TAG, "onDaySelected: received DaySelectedEvent with id of day = " + event.dayID);
         mDayListFragment = (DayListFragment) getSupportFragmentManager().findFragmentByTag(DayListFragment.TAG);
-        tracker.interactionTrack(findViewById(R.id.listOfdays), tracker.getInteractionClicID(),TrackerHelper.CHANGE_EXISTING_DAY,true,false,"");
         if (mDayFragment == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, DayFragment.newInstance(event.dayID, currentUser.getId()), DayFragment.TAG);
             transaction.addToBackStack(null);
@@ -305,7 +286,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onStop() {
         super.onStop();
-        tracker.onStopTrack("",false,false,"");
+        tracker.onStopTrack("","",false,false,"");
         EventBus.getDefault().unregister(this);
     }
 
