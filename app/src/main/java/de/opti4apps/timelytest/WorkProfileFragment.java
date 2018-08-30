@@ -167,7 +167,7 @@ public class WorkProfileFragment extends Fragment {
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        tracker.onStartTrack("","",true,false,"");
+        tracker.onStartTrack("","",false,false,"");
     }
 
     @Override
