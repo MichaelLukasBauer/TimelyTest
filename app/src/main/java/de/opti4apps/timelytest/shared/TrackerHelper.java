@@ -19,14 +19,30 @@ public class TrackerHelper {
     private Context context;
 
     public static final String SIGN_IN = "SIGN_IN";
+
     public static final String WORk_PROFILE = "WORK_PROFILE";
+    public static final String WORk_PROFILE_GUID = "760ad982-e0fd-244c-090a-a8fb7f60b572";
+
     public static final String CREATE_DAY = "CREATE_DAY";
+    public static final String CREATE_DAY_GUID = "af9044da-957c-97a2-6142-fe98ba2cc36d";
+
     public static final String DELETE_DAY = "DELETE_DAY";
+
     public static final String CHANGE_EXISTING_DAY = "CHANGE_EXISTING_DAY";
+    public static final String CHANGE_EXISTING_DAY_GUID = "09af8a21-67a8-d958-0fb6-c39a17dc0854";
+
     public static final String MONTH_OVERVIEW = "MONTH_OVERVIEW";
+    public static final String MONTH_OVERVIEW_GUID = "fba0167a-65ba-a064-7ce1-2776b572d2d0";
+
     public static final String SEND_GENERATE_REPORT = "SEND_GENERATE_REPORT";
+    public static final String SEND_GENERATE_REPORT_GUID = "bf3d4a60-f363-6838-a5ca-6d68187f5a19";
+
     public static final String SEND_REPORT = "SEND_REPORT";
+
     public static final String GENERATE_REPORT = "GENERATE_REPORT";
+
+    public static final String NUMBER_INPUT = "NUMBER_INPUT";
+    public static final String NUMBER_INPUT_GUID = "d7e4cafb-fc62-fc52-b420-a065031f15b2";
 
     public TrackerHelper(String activityName,Context context)
     {
@@ -34,32 +50,23 @@ public class TrackerHelper {
         this.context = context;
     }
 
-    private void handlePayload(String StartUserStoryName,String EndUserStoryName,boolean isStartUserStory,boolean isEndUserStory, String extraValue)
+    private void handlePayload(String StartUserStoryName,String EndUserStoryName, String extraValue)
     {
         if (!StartUserStoryName.isEmpty())
         {
+            if(!getGUIValuefromUserStory(StartUserStoryName).isEmpty())
+            {
+                payload.put("GUID", getGUIValuefromUserStory(StartUserStoryName));
+            }
             payload.put("StartUserStoryName", StartUserStoryName);
         }
         if (!EndUserStoryName.isEmpty())
         {
+            if(!getGUIValuefromUserStory(EndUserStoryName).isEmpty())
+            {
+                payload.put("GUID", getGUIValuefromUserStory(EndUserStoryName));
+            }
             payload.put("EndUserStoryName", EndUserStoryName);
-        }
-        if(isStartUserStory)
-        {
-            payload.put("StartUserStory", String.valueOf(1));
-        }
-        else
-        {
-            payload.put("StartUserStory", String.valueOf(0));
-        }
-
-        if(isEndUserStory)
-        {
-            payload.put("EndUserStory", String.valueOf(1));
-        }
-        else
-        {
-            payload.put("EndUserStory", String.valueOf(0));
         }
         if (!extraValue.isEmpty())
         {
@@ -69,19 +76,19 @@ public class TrackerHelper {
 
     //public void  addUser
 
-    public void onStartTrack(String StartUserStoryName,String EndUserStoryName,boolean isStartUserStory,boolean isEndUserStory, String extraValue)
+    public void onStartTrack(String StartUserStoryName,String EndUserStoryName, String extraValue)
     {
         payload.clear();
         payload.put("ActivityName",activityName);
-        handlePayload(StartUserStoryName,EndUserStoryName,isStartUserStory,isEndUserStory,extraValue);
+        handlePayload(StartUserStoryName,EndUserStoryName,extraValue);
         InteractionTracker.track(context,InteractionTracker.ActionTypes.OPEN,payload);
     }
 
-    public void onStopTrack(String StartUserStoryName,String EndUserStoryName,boolean isStartUserStory,boolean isEndUserStory, String extraValue)
+    public void onStopTrack(String StartUserStoryName,String EndUserStoryName, String extraValue)
     {
         payload.clear();
         payload.put("ActivityName",activityName);
-        handlePayload(StartUserStoryName,EndUserStoryName,isStartUserStory,isEndUserStory,extraValue);
+        handlePayload(StartUserStoryName,EndUserStoryName,extraValue);
         InteractionTracker.track(context,InteractionTracker.ActionTypes.CLOSE,payload);
     }
 
@@ -96,21 +103,22 @@ public class TrackerHelper {
         return viewID;
     }
 
-    private void setPayload(Object v,String StartUserStoryName,String EndUserStoryName, boolean isStartUserStory,boolean isEndUserStory, String extraValue)
+    private void setPayload(Object v,String StartUserStoryName,String EndUserStoryName,String extraValue)
     {
         payload.clear();
         payload.put("ActivityName", activityName);
+
         if (v instanceof  View) {
             payload.put("ViewID", getViewID((View)v));
             payload.put("ViewType", getViewType((View)v));
         }
-        else if (v instanceof MenuItem)
+         else if (v instanceof MenuItem)
         {
             payload.put("MenuName", (String) ((MenuItem)v).getTitle());
             payload.put("MenuType", "MenuItem");
-        }
+         }
 
-        handlePayload(StartUserStoryName,EndUserStoryName,isStartUserStory,isEndUserStory,extraValue);
+        handlePayload(StartUserStoryName,EndUserStoryName,extraValue);
     }
 
     public int getInteractionActionID()
@@ -162,9 +170,9 @@ public class TrackerHelper {
         return 11;
     }
 
-    public void interactionTrack(Object v,int interactionID,String StartUserStoryName,String EndUserStoryName,boolean isStartUserStory,boolean isEndUserStory,String extraValue)
+    public void interactionTrack(Object v,int interactionID,String StartUserStoryName,String EndUserStoryName,String extraValue)
     {
-        setPayload(v,StartUserStoryName,EndUserStoryName,isStartUserStory,isEndUserStory,extraValue);
+        setPayload(v,StartUserStoryName,EndUserStoryName,extraValue);
 
         switch(interactionID)
         {
@@ -206,5 +214,35 @@ public class TrackerHelper {
                 break;
         }
 
+    }
+
+    private String getGUIValuefromUserStory(String UserStoryName)
+    {
+        String GUID_value = "";
+        if (UserStoryName == WORk_PROFILE)
+        {
+            GUID_value = WORk_PROFILE_GUID;
+        }
+        else if (UserStoryName == NUMBER_INPUT )
+        {
+            GUID_value = NUMBER_INPUT_GUID;
+        }
+        else if (UserStoryName == MONTH_OVERVIEW )
+        {
+            GUID_value = MONTH_OVERVIEW_GUID;
+        }
+        else if (UserStoryName == CHANGE_EXISTING_DAY )
+        {
+            GUID_value = CHANGE_EXISTING_DAY_GUID;
+        }
+        else if (UserStoryName == CREATE_DAY )
+        {
+            GUID_value = CREATE_DAY_GUID;
+        }
+        else if (UserStoryName == SEND_GENERATE_REPORT || UserStoryName == SEND_REPORT || UserStoryName == GENERATE_REPORT )
+        {
+            GUID_value = SEND_GENERATE_REPORT_GUID;
+        }
+        return GUID_value;
     }
 }

@@ -167,52 +167,53 @@ public class WorkProfileFragment extends Fragment {
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register(this);
-        tracker.onStartTrack("","",false,false,"");
+        tracker.onStartTrack("","","");
     }
 
     @Override
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister(this);
-        tracker.onStopTrack("","",false,false,"");
+        tracker.onStopTrack("","","");
     }
 
     @OnClick({R.id.monTimeText, R.id.tuesTimeText,R.id.wedTimeText, R.id.thursTimeText,R.id.friTimeText, R.id.previousMonthOvertimeText})
     public void showTimePickerDialog(View v) {
         mSelectedText = v.getId();
+        tracker.interactionTrack("", tracker.getInteractionClicID(),TrackerHelper.NUMBER_INPUT,"","");
         if (mSelectedText == R.id.monTimeText)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.monTimeText), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.monTimeText), tracker.getInteractionClicID(),"","","");
             DurationPickerFragment newFragment = DurationPickerFragment.newInstance(mWorkProfile.getMonWorkHours().getMillis());
             newFragment.show(getFragmentManager(), "durationMon");
         }
         else if (mSelectedText == R.id.tuesTimeText)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.tuesTimeText), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.tuesTimeText), tracker.getInteractionClicID(),"","","");
             DurationPickerFragment newFragment = DurationPickerFragment.newInstance(mWorkProfile.getTuesWorkHours().getMillis());
             newFragment.show(getFragmentManager(), "durationTue");
         }
         else if (mSelectedText == R.id.wedTimeText)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.wedTimeText), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.wedTimeText), tracker.getInteractionClicID(),"","","");
             DurationPickerFragment newFragment = DurationPickerFragment.newInstance(mWorkProfile.getWedWorkHours().getMillis());
             newFragment.show(getFragmentManager(), "durationWed");
         }
         else if (mSelectedText == R.id.thursTimeText)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.thursTimeText), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.thursTimeText), tracker.getInteractionClicID(),"","","");
             DurationPickerFragment newFragment = DurationPickerFragment.newInstance(mWorkProfile.getThursWorkHours().getMillis());
             newFragment.show(getFragmentManager(), "durationThu");
         }
         else if (mSelectedText == R.id.friTimeText)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.friTimeText), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.friTimeText), tracker.getInteractionClicID(),"","","");
             DurationPickerFragment newFragment = DurationPickerFragment.newInstance(mWorkProfile.getFriWorkHours().getMillis());
             newFragment.show(getFragmentManager(), "durationFri");
         }
         else if (mSelectedText == R.id.previousMonthOvertimeText)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.previousMonthOvertimeText), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.previousMonthOvertimeText), tracker.getInteractionClicID(),"","","");
             DurationPickerFragment newFragment = DurationPickerFragment.newInstance(mWorkProfile.getPreviousOvertime().getMillis());
             newFragment.show(getFragmentManager(), "durationPrevOvertime");
         }
@@ -224,39 +225,39 @@ public class WorkProfileFragment extends Fragment {
         mSelectedText = v.getId();
         if (mSelectedText == R.id.monTimeLabel)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.monTimeLabel), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.monTimeLabel), tracker.getInteractionClicID(),"","","");
         }
         else if (mSelectedText == R.id.tuesTimeLabel)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.tuesTimeLabel), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.tuesTimeLabel), tracker.getInteractionClicID(),"","","");
         }
         else if (mSelectedText == R.id.wedTimeLabel)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.wedTimeLabel), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.wedTimeLabel), tracker.getInteractionClicID(),"","","");
         }
         else if (mSelectedText == R.id.thursTimeLabel)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.thursTimeLabel), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.thursTimeLabel), tracker.getInteractionClicID(),"","","");
         }
         else if (mSelectedText == R.id.friTimeLabel)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.friTimeLabel), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.friTimeLabel), tracker.getInteractionClicID(),"","","");
         }
         else if (mSelectedText == R.id.previousMonthOvertimeLabel)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.previousMonthOvertimeLabel), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.previousMonthOvertimeLabel), tracker.getInteractionClicID(),"","","");
         }
         else if ( mSelectedText == R.id.totalWorkingHours)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.totalWorkingHours), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.totalWorkingHours), tracker.getInteractionClicID(),"","","");
         }
         else if ( mSelectedText == R.id.imageWatch)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.imageWatch), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.imageWatch), tracker.getInteractionClicID(),"","","");
         }
         else if ( mSelectedText == R.id.titleViewText)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.titleViewText), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.titleViewText), tracker.getInteractionClicID(),"","","");
         }
     }
 
@@ -277,30 +278,31 @@ public class WorkProfileFragment extends Fragment {
 
     @Subscribe
     public void onDurationPickedEvent(DurationPickedEvent event) {
+        tracker.interactionTrack("", tracker.getInteractionClicID(),"",TrackerHelper.NUMBER_INPUT,"");
         switch (mSelectedText) {
             case R.id.monTimeText:
                 mWorkProfile.setMonWorkHours(Duration.millis(event.duration));
-                tracker.interactionTrack(getActivity().findViewById(R.id.monTimeText), tracker.getInteractionEventID(),"","",false,false,"");
+                tracker.interactionTrack(getActivity().findViewById(R.id.monTimeText), tracker.getInteractionEventID(),"","","");
                 break;
             case R.id.tuesTimeText:
                 mWorkProfile.setTuesWorkHours(Duration.millis(event.duration));
-                tracker.interactionTrack(getActivity().findViewById(R.id.tuesTimeText), tracker.getInteractionEventID(),"","",false,false,"");
+                tracker.interactionTrack(getActivity().findViewById(R.id.tuesTimeText), tracker.getInteractionEventID(),"","","");
                 break;
             case R.id.wedTimeText:
                 mWorkProfile.setWedWorkHours(Duration.millis(event.duration));
-                tracker.interactionTrack(getActivity().findViewById(R.id.wedTimeText), tracker.getInteractionEventID(),"","",false,false,"");
+                tracker.interactionTrack(getActivity().findViewById(R.id.wedTimeText), tracker.getInteractionEventID(),"","","");
                 break;
             case R.id.thursTimeText:
                 mWorkProfile.setThursWorkHours(Duration.millis(event.duration));
-                tracker.interactionTrack(getActivity().findViewById(R.id.thursTimeText), tracker.getInteractionEventID(),"","",false,false,"");
+                tracker.interactionTrack(getActivity().findViewById(R.id.thursTimeText), tracker.getInteractionEventID(),"","","");
                 break;
             case R.id.friTimeText:
                 mWorkProfile.setFriWorkHours(Duration.millis(event.duration));
-                tracker.interactionTrack(getActivity().findViewById(R.id.friTimeText), tracker.getInteractionEventID(),"","",false,false,"");
+                tracker.interactionTrack(getActivity().findViewById(R.id.friTimeText), tracker.getInteractionEventID(),"","","");
                 break;
             case R.id.previousMonthOvertimeText:
                 mWorkProfile.setPreviousOvertime(Duration.millis(event.duration));
-                tracker.interactionTrack(getActivity().findViewById(R.id.previousMonthOvertimeText), tracker.getInteractionEventID(),"","",false,false,"");
+                tracker.interactionTrack(getActivity().findViewById(R.id.previousMonthOvertimeText), tracker.getInteractionEventID(),"","","");
                 break;
             }
         updateUI();
@@ -406,7 +408,7 @@ public class WorkProfileFragment extends Fragment {
             switch (item.getItemId()) {
                 case R.id.save:
                    // Toast.makeText(getActivity(), "SAVE", Toast.LENGTH_LONG).show();
-                    tracker.interactionTrack(getActivity().findViewById(R.id.save), tracker.getInteractionClicID(),"",TrackerHelper.WORk_PROFILE,false,true,"");
+                    tracker.interactionTrack(getActivity().findViewById(R.id.save), tracker.getInteractionClicID(),"",TrackerHelper.WORk_PROFILE,"");
                     updateWorkingWeekhours();
                     return true;
                 default:

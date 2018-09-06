@@ -127,14 +127,15 @@ public class DayListFragment extends Fragment {
     public void onStart() {
         super.onStart();
         //EventBus.getDefault().register(this);
-        tracker.onStartTrack(TrackerHelper.DELETE_DAY,TrackerHelper.MONTH_OVERVIEW,true,true,"");
+        tracker.onStartTrack("",TrackerHelper.MONTH_OVERVIEW,"");
+        tracker.onStartTrack(TrackerHelper.DELETE_DAY,"","");
     }
 
     @Override
     public void onStop() {
         super.onStop();
         //EventBus.getDefault().unregister(this);
-        tracker.onStopTrack("","",false,false,"");
+        tracker.onStopTrack("","","");
     }
 
     private void initArrays() {
@@ -214,7 +215,7 @@ public class DayListFragment extends Fragment {
     @OnClick(R.id.fab)
     public void onFABClicked() {
         mWorkProfileQuery = mWorkProfileBox.query().equal(WorkProfile_.userID,userID).build();
-        tracker.interactionTrack(getActivity().findViewById(R.id.fab), tracker.getInteractionClicID(),TrackerHelper.CREATE_DAY,"",true,false,"");
+        tracker.interactionTrack(getActivity().findViewById(R.id.fab), tracker.getInteractionClicID(),TrackerHelper.CREATE_DAY,"","");
         mWorkProfileQuery = mWorkProfileBox.query().build();
         List<WorkProfile> allWP = mWorkProfileQuery.find();
         if(allWP.size()== 0 || TimelyHelper.getWorkProfileByMonth(DateTime.now(),mWorkProfileBox,userID) == null  )
@@ -232,14 +233,14 @@ public class DayListFragment extends Fragment {
 
     @OnItemSelected(R.id.month_spinner)
     public void onMonthSpinnerItemSelected(Spinner spinner, int position) {
-        tracker.interactionTrack(getActivity().findViewById(R.id.month_spinner), tracker.getInteractionClicID(),"","",false,false,"");
+        tracker.interactionTrack(getActivity().findViewById(R.id.month_spinner), tracker.getInteractionClicID(),"","","");
         mCurrentMonthArrayPosition = position;
         spinnerItemSelected();
     }
 
     @OnItemSelected(R.id.year_spinner)
     public void onYearSpinnerItemSelected(Spinner spinner, int position) {
-        tracker.interactionTrack(getActivity().findViewById(R.id.year_spinner), tracker.getInteractionClicID(),"","",false,false,"");
+        tracker.interactionTrack(getActivity().findViewById(R.id.year_spinner), tracker.getInteractionClicID(),"","","");
         mCurrentYearArrayPosition = position;
         spinnerItemSelected();
     }
@@ -262,23 +263,23 @@ public class DayListFragment extends Fragment {
         mSelectedText = v.getId();
         if (mSelectedText == R.id.imageDate)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.imageDate), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.imageDate), tracker.getInteractionClicID(),"","","");
         }
         else if (mSelectedText == R.id.imageLogin)
         {
-            tracker.interactionTrack( getActivity().findViewById(R.id.imageLogin), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack( getActivity().findViewById(R.id.imageLogin), tracker.getInteractionClicID(),"","","");
         }
         else if (mSelectedText == R.id.imageLogout)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.imageLogout), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.imageLogout), tracker.getInteractionClicID(),"","","");
         }
         else if (mSelectedText == R.id.imagePause)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.imagePause), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.imagePause), tracker.getInteractionClicID(),"","","");
         }
         else if (mSelectedText == R.id.imageTime)
         {
-            tracker.interactionTrack(getActivity().findViewById(R.id.imageTime), tracker.getInteractionClicID(),"","",false,false,"");
+            tracker.interactionTrack(getActivity().findViewById(R.id.imageTime), tracker.getInteractionClicID(),"","","");
         }
 
 
@@ -339,7 +340,7 @@ public class DayListFragment extends Fragment {
             switch (item.getItemId()) {
 
                 case R.id.delete:
-                    tracker.interactionTrack(getActivity().findViewById(R.id.delete), tracker.getInteractionActionID(),"",TrackerHelper.DELETE_DAY,false,true,"");
+                    tracker.interactionTrack(getActivity().findViewById(R.id.delete), tracker.getInteractionActionID(),"",TrackerHelper.DELETE_DAY,"");
                     mDayBox.remove(((MyDayRecyclerViewAdapter) mRecyclerView.getAdapter()).getSelection().keySet());
                     clearSelection();
                     EventBus.getDefault().post(new DayDatasetChangedEvent(TAG));
