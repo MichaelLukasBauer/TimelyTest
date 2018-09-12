@@ -41,9 +41,11 @@ import de.opti4apps.timelytest.data.WorkProfile;
 import de.opti4apps.timelytest.event.DaySelectedEvent;
 import de.opti4apps.timelytest.shared.TimelyHelper;
 import de.opti4apps.timelytest.shared.TrackerHelper;
+import de.opti4apps.tracker.appInfo.AppInfoTracker;
 import de.opti4apps.tracker.deviceInfo.DeviceInfoTracker;
 import de.opti4apps.tracker.gesture.GestureTracker;
 import de.opti4apps.tracker.interaction.InteractionTracker;
+import de.opti4apps.tracker.screen.ScreenTracker;
 import de.opti4apps.trackerclient.CommonConfig;
 import de.opti4apps.trackerclient.TrackingService;
 import io.objectbox.Box;
@@ -353,7 +355,7 @@ public class MainActivity extends AppCompatActivity
 //                WifiTracker.name,
 //                LightTracker.name,
 //                SignalStrengthTracker.name,
-//                ScreenTracker.name,
+                ScreenTracker.name,
                 GestureTracker.name,
 //                PressureTracker.name,
 //                ProximityTracker.name,
@@ -363,7 +365,7 @@ public class MainActivity extends AppCompatActivity
                 InteractionTracker.name,
                 DeviceInfoTracker.name,
 //                DeviceOrientationTracker.name,
-//                AppInfoTracker.name,
+                AppInfoTracker.name,
 //                BatteryTracker.name,
 //                BluetoothTracker.name,
 //                NetworkInfoTracker.name,
@@ -375,9 +377,9 @@ public class MainActivity extends AppCompatActivity
 
         });
         //intent.putExtra(CommonConfig.UPLOAD_URL, "https://hookbin.com/bin/EzgA3lDW/");
-        //intent.putExtra(CommonConfig.UPLOAD_URL, "http://141.7.10.70:80/");
+        intent.putExtra(CommonConfig.UPLOAD_URL, "http://141.7.10.70:80/");
         //intent.putExtra(CommonConfig.UPLOAD_URL, "http://172.20.10.6:8383/");
-        intent.putExtra(CommonConfig.UPLOAD_URL, "http://10.70.28.234:8383/");
+        //intent.putExtra(CommonConfig.UPLOAD_URL, "http://10.70.28.234:8383/");
         //intent.putExtra(CommonConfig.UPLOAD_URL, "http://10.0.2.2:8080/events/process/");
         intent.putExtra(CommonConfig.STORAGE_MODE, CommonConfig.STORAGE_MODE_DATABASE);
         intent.putExtra(CommonConfig.UPLOAD_MODE, CommonConfig.UPLOAD_MODE_PERIODICALLY);
