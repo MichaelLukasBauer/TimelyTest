@@ -44,6 +44,9 @@ public class App extends Application {
 
             user = new User(0, "michael.bauer@hs-heilbronn.de", "test123", false, "Michael", "Bauer");
             usersBox.put(user);
+
+            user = new User(0, "opti4apps.test@heilbronn.de", "test123", false, "Test", "User");
+            usersBox.put(user);
         }
     }
 

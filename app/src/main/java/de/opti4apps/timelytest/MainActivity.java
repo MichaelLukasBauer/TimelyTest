@@ -247,8 +247,11 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_signout) {
             tracker.interactionTrack(item, tracker.getInteractionClicID(),"","","");
             UserManager.changeUserSignedInStatus(currentUser, usersBox);
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            finishAffinity();
             MainActivity.this.startActivity(intent);
+            finish();
+            this.startService(intent);
         } else if (id == R.id.nav_time_sheet) {
             tracker.interactionTrack(item, tracker.getInteractionClicID(),TrackerHelper.SEND_GENERATE_REPORT,"","");
             if ( mDayBox.count() > 0) {
