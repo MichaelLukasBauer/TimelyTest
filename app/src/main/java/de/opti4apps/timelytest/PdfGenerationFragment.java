@@ -138,12 +138,13 @@ public class PdfGenerationFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        tracker = new TrackerHelper(TAG,getContext());
+        userID = getArguments().getLong(ARG_USER_ID);
+        tracker = new TrackerHelper(TAG,getContext(),userID);
         mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
         View view = inflater.inflate(R.layout.fragment_pdf_creation, container, false);
         ButterKnife.bind(this, view);
-        userID = getArguments().getLong(ARG_USER_ID);
+
 
         view.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {

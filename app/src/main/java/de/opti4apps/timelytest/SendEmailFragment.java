@@ -69,7 +69,6 @@ public class SendEmailFragment extends DialogFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         usersBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(User.class);
-        tracker = new TrackerHelper(TAG,getContext());
 
         int style = DialogFragment.STYLE_NORMAL, theme = android.R.style.Theme_Holo_Light_Dialog;
         setStyle(style, theme);
@@ -91,6 +90,7 @@ public class SendEmailFragment extends DialogFragment {
 
         getDialog().setTitle("Send report per Email");
         Long userID = getArguments().getLong(ARG_USER_ID);
+        tracker = new TrackerHelper(TAG,getContext(),userID);
         mUserQuery = usersBox.query().equal(User_.id, userID).build();
         currentUser = mUserQuery.findUnique();
         mEmail.setText(currentUser.getEmail());

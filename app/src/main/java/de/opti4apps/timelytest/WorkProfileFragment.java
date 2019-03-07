@@ -121,10 +121,11 @@ public class WorkProfileFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
-        tracker = new TrackerHelper(TAG,getContext());
 
         if (getArguments() != null) {
             userID = getArguments().getLong(ARG_USER_ID);
+            tracker = new TrackerHelper(TAG,getContext(),userID);
+            System.out.println(userID);
             DateTime currentMonth = new DateTime().dayOfMonth().withMinimumValue();
             mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
             mWorkProfileBoxed = TimelyHelper.getValidWorkingProfile(currentMonth, mWorkProfileBox, mDayBox,userID);

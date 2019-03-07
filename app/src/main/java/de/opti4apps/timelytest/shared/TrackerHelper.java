@@ -17,6 +17,7 @@ public class TrackerHelper {
     private static final String VIEW_TYPE_INDICATOR = "AppCompat";
     private static final String VIEW_ID_INDICATOR = "id/";
     private Context context;
+    private long userID = 0;
 
     public static final String SIGN_IN = "SIGN_IN";
 
@@ -44,12 +45,19 @@ public class TrackerHelper {
     public static final String NUMBER_INPUT = "NUMBER_INPUT";
     public static final String NUMBER_INPUT_GUID = "d7e4cafb-fc62-fc52-b420-a065031f15b2";
 
+    public static final String HELP = "HELP";
+
     public TrackerHelper(String activityName,Context context)
     {
         this.activityName = activityName;
         this.context = context;
     }
-
+    public TrackerHelper(String activityName,Context context,long userID )
+    {
+        this.activityName = activityName;
+        this.context = context;
+        this.userID = userID;
+    }
     private void handlePayload(String StartUserStoryName,String EndUserStoryName, String extraValue)
     {
         if (!StartUserStoryName.isEmpty())
@@ -80,6 +88,7 @@ public class TrackerHelper {
     {
         payload.clear();
         payload.put("ActivityName",activityName);
+        payload.put("UserID", String.valueOf(userID));
         handlePayload(StartUserStoryName,EndUserStoryName,extraValue);
         InteractionTracker.track(context,InteractionTracker.ActionTypes.OPEN,payload);
     }
@@ -88,6 +97,7 @@ public class TrackerHelper {
     {
         payload.clear();
         payload.put("ActivityName",activityName);
+        payload.put("UserID", String.valueOf(userID));
         handlePayload(StartUserStoryName,EndUserStoryName,extraValue);
         InteractionTracker.track(context,InteractionTracker.ActionTypes.CLOSE,payload);
     }
@@ -107,7 +117,7 @@ public class TrackerHelper {
     {
         payload.clear();
         payload.put("ActivityName", activityName);
-
+        payload.put("UserID", String.valueOf(userID));
         if (v instanceof  View) {
             payload.put("ViewID", getViewID((View)v));
             payload.put("ViewType", getViewType((View)v));

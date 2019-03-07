@@ -122,7 +122,7 @@ public class DayFragment extends Fragment {
         setHasOptionsMenu(true);
         userID = getArguments().getLong(ARG_USER_ID);
 
-        tracker = new TrackerHelper(TAG,getContext());
+        tracker = new TrackerHelper(TAG,getContext(),userID);
         mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
 

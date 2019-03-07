@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_drawer_layout">
 
     <group
@@ -24,9 +25,15 @@
             android:id="@+id/nav_time_sheet"
             android:title="Create Time Sheet" />
         <item
+            android:id="@+id/nav_help"
+            android:title="Help" />
+        <item
             android:id="@+id/nav_signout"
             android:title="Sign Out" />
-
+        <item
+            android:id="@+id/nav_close_app"
+            android:title="Close Timely"
+            android:textColor="	#FF0000" />
     </group>
 
 </menu>

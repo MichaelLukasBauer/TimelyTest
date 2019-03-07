@@ -108,13 +108,16 @@ public class DayListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        tracker = new TrackerHelper(TAG,getContext());
+
 
         mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
         userID = getArguments().getLong(ARG_USER_ID);
+
         mDayQuery = mDayBox.query().equal(Day_.userID,userID).orderDesc(Day_.day).build();
         EventBus.getDefault().register(this);
+
+        tracker = new TrackerHelper(TAG,getContext(),userID);
 
         mDayList.addAll(mDayQuery.find());
         setHasOptionsMenu(true);

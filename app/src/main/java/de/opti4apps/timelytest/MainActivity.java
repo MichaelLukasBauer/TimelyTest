@@ -1,6 +1,8 @@
 package de.opti4apps.timelytest;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,6 +23,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -80,7 +84,7 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tracker = new TrackerHelper(TAG,this);
+
 
         ButterKnife.bind(this);
         setSupportActionBar(mToolbar);
@@ -103,7 +107,7 @@ public class MainActivity extends AppCompatActivity
         usersBox = ((App) getApplication()).getBoxStore().boxFor(User.class);
 
         currentUser = UserManager.getUserByEmail(usersBox, currentUserEmail);
-
+        tracker = new TrackerHelper(TAG,this,currentUser.getId());
         if (mDayListFragment == null) {
             mDayListFragment = DayListFragment.newInstance(currentUser.getId());
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, mDayListFragment, DayListFragment.TAG);
@@ -164,6 +168,7 @@ public class MainActivity extends AppCompatActivity
     public void onPause() {
         super.onPause();
         if (isFinishing()) {
+            //showDiaryMessageForEvaluation();
             // we will not need this fragment anymore, this may also be a good place to signal
             // to the retained fragment object to perform its own cleanup.
             //getSupportFragmentManager().beginTransaction().remove(mDayListFragment).commit();
@@ -184,12 +189,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        //showDiaryMessageForEvaluation();
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
+
+
     }
 
     @Override
@@ -235,7 +243,7 @@ public class MainActivity extends AppCompatActivity
             tracker.interactionTrack(item , tracker.getInteractionClicID(),TrackerHelper.MONTH_OVERVIEW,"","");
             if (!mDayListFragment.isAdded()) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().add(R.id.fragmentContainer, mDayListFragment, DayListFragment.TAG);
-                //transaction.addToBackStack(null);
+                transaction.addToBackStack(null);
                 transaction.commit();
             }
         } else if (id == R.id.nav_work_profile) {
@@ -257,10 +265,21 @@ public class MainActivity extends AppCompatActivity
             if ( mDayBox.count() > 0) {
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, PdfGenerationFragment.newInstance(currentUser.getId()), PdfGenerationFragment.TAG);
                 //transaction.addToBackStack(null); TimelyHelper.getTotalReportedDayForMonth(DateTime.now(),mDayBox,currentUser.getId())
+                transaction.addToBackStack(null);
                 transaction.commit();
             } else {
                 showDayreateMessage();
             }
+        }
+        else if (id == R.id.nav_help) {
+            tracker.interactionTrack(item, tracker.getInteractionClicID(),TrackerHelper.HELP,"","");
+            //we need to get the current user ID and use it to create the working profile instance
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction().replace(R.id.fragmentContainer, HelpFragment.newInstance(currentUser.getId()), HelpFragment.TAG);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        }
+        else if (id == R.id.nav_close_app) {
+            showDiaryMessageForEvaluation();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -298,7 +317,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDestroy() {
         super.onDestroy();
-        this.stopService(intent);
+        if(intent != null){
+            this.stopService(intent);
+        }
+
     }
     private void showWPCreateMessage() {
         String message = getResources().getString(R.string.no_working_profile);
@@ -396,4 +418,17 @@ public class MainActivity extends AppCompatActivity
         GestureTracker.trackGesture(this,event,(ViewGroup)findViewById(android.R.id.content));
         return true;
     }
-}
+
+    public void showDiaryMessageForEvaluation(){
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage("Please make sure you edit your diary!")
+                .setCancelable(true)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show ();
+    }
+    }

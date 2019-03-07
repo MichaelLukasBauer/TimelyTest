@@ -75,4 +75,9 @@
     <string name="send">Send</string>
     <string name="prompt_email_2">Email:</string>
     <string name="no_days">You need to create at least one day</string>
+    <string name="help_title">Description of the Timely menu items</string>
+    <string name="capture_time_help_desc">Capture time allows the user to add a working day</string>
+    <string name="work_profile_help_desc">work profile allows the user to enter the working hours as specified in the contract</string>
+    <string name="mont_overview_help_desc">month overview lists all the days already registered</string>
+    <string name="create_time_sheet_help_desc">create time sheet allows the user to generate, save and send per email his/her monthly working hours report</string>
 </resources>

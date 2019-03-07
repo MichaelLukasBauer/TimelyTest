@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context="de.opti4apps.timelytest.PdfGenerationFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:id="@+id/layout_1">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,14 +41,20 @@
                 android:layout_weight="1" />
 
         </LinearLayout>
+    </LinearLayout>
 
-        <ScrollView
-            style="@android:style/Widget.DeviceDefault.Light.ScrollView"
-            android:layout_width="match_parent"
-            android:layout_height="372dp"
-            android:background="@drawable/rectangle_shape"
-            android:scrollbarStyle="outsideOverlay"
-            android:visibility="visible">
+
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        style="@android:style/Widget.DeviceDefault.Light.ScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout_1"
+        android:layout_above="@id/layout_3"
+        android:id="@+id/layout_2"
+        android:background="@drawable/rectangle_shape"
+        android:scrollbarStyle="outsideOverlay"
+        android:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -440,11 +453,12 @@
 
             </LinearLayout>
         </ScrollView>
-
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:id="@+id/layout_3"
+            android:layout_alignParentBottom="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -460,7 +474,7 @@
                     android:layout_marginTop="10dp"
                     android:text="@string/generate_report"
                     android:textColor="@color/colorTextWhite"
-                    app:backgroundTint="@color/colorAccent"
+                    android:backgroundTint="@color/colorAccent"
                     android:layout_weight="1"/>
             </LinearLayout>
 
@@ -479,14 +493,10 @@
                     android:layout_weight="1"
                     android:text="@string/send_per_mail"
                     android:textColor="@color/colorTextWhite"
-                    app:backgroundTint="@color/colorAccent" />
+                    android:backgroundTint="@color/colorAccent" />
             </LinearLayout>
         </LinearLayout>
+    </RelativeLayout>
 
-        <!--<ListView-->
-            <!--android:id="@+id/reportList"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"></ListView>-->
 
-        </LinearLayout>
-    </ScrollView>
+</android.support.constraint.ConstraintLayout>
