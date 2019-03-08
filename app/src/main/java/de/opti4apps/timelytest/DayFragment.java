@@ -1,6 +1,7 @@
 package de.opti4apps.timelytest;
 
 
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -28,6 +29,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -123,6 +125,9 @@ public class DayFragment extends Fragment {
         userID = getArguments().getLong(ARG_USER_ID);
 
         tracker = new TrackerHelper(TAG,getContext(),userID);
+
+
+
         mDayBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(Day.class);
         mWorkProfileBox = ((App) getActivity().getApplication()).getBoxStore().boxFor(WorkProfile.class);
 
