@@ -409,7 +409,7 @@ public class MainActivity extends AppCompatActivity
 
         });
         //intent.putExtra(CommonConfig.UPLOAD_URL, "https://hookbin.com/bin/EzgA3lDW/");
-        intent.putExtra(CommonConfig.UPLOAD_URL, "http://141.7.10.70:80/");
+        intent.putExtra(CommonConfig.UPLOAD_URL, "http://opti4apps-timely.iap.hs-heilbronn.de/");
         //intent.putExtra(CommonConfig.UPLOAD_URL, "http://172.20.10.6:8383/");
         //intent.putExtra(CommonConfig.UPLOAD_URL, "http://10.70.28.234:8383/");
         //intent.putExtra(CommonConfig.UPLOAD_URL, "http://10.0.2.2:8080/events/process/");

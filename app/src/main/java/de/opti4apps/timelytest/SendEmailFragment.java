@@ -129,7 +129,7 @@ public class SendEmailFragment extends DialogFragment {
 
 
 //            startActivity(Intent.createChooser(emailIntent, "Send mail..."));
-                    GMailSender sender = new GMailSender("timely.unitylab@gmail.com","TimelyUnityLab");
+                    GMailSender sender = new GMailSender("timely.unitylab@gmail.com","TimelyUnityLab!");
                     sender.addAttachment(storagePath +"/" + filename,filename);
                     sender.sendMail(getArguments().getString(ARG_MONTH_YEAR), getArguments().getString(ARG_MONTH_YEAR), "timely.unitylab@gmail.com", receiver);
 

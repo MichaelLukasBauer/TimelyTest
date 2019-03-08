@@ -36,13 +36,17 @@ public class App extends Application {
         List<User> users = usersBox.query().build().find();
 
         if (users == null || users.size() == 0) {
-            User user = new User(0, "kateryna.sergieieva@hs-heilbronn.de", "test123", false, "Kateryna", "Sergieieva");
+
+            User user = new User(0, "kaesyn.trindon@cowstore.net", "mwgcf2Q?", false, "User", "1");
             usersBox.put(user);
 
-            user = new User(0, "test@123.com", "test123", false, "John", "Smith");
+            user = new User(0, "jaidan.alistar@cowstore.net", "xuckc6X?", false, "User", "2");
             usersBox.put(user);
 
-            user = new User(0, "michael.bauer@hs-heilbronn.de", "test123", false, "Michael", "Bauer");
+            user = new User(0, "travontae.caid@cowstore.net", " yjjhg7D$", false, "User", "3");
+            usersBox.put(user);
+
+            user = new User(0, "kateryna.sergieieva@hs-heilbronn.de", "test123", false, "Kateryna", "Sergieieva");
             usersBox.put(user);
 
             user = new User(0, "opti4apps.test@heilbronn.de", "test123", false, "Test", "User");
